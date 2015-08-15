@@ -5,6 +5,8 @@
 #include <TCanvas.h>
 #include <TRandom3.h>
 #include <TString.h>
+#include <TH1F.h>
+#include <TCanvas.h>
 //#include "WDaughterEllipseCalculator.h"
 #include "topEventMinimizer.h"
 
@@ -45,6 +47,7 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch
+    std::cout<<"before fchain"<<std::endl;
    if (fChain == 0) return;
    TRandom3 rand;
    rand.SetSeed(10);
@@ -63,11 +66,17 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
    //gStyle->SetOptStat(101110);
    //TCanvas c1("c1","c1",500,500);
    //TH1D h_chi2("h_chi2","",100,0,100);
-
+   std::cout<<"hi!"<<std::endl;
 
    int jStart = whichLoop*(nentries/maxLoops) + ((whichLoop>(maxLoops-nentries%maxLoops))?(whichLoop+nentries%maxLoops-maxLoops):0);
 
    int jFinish = jStart + (nentries+whichLoop)/maxLoops;
+
+   std::cout<<jStart<<std::endl;
+   std::cout<<"nentries = "<< nentries<<std::endl;
+   std::cout<<jFinish<<std::endl;
+
+    //TH1F* bottomPt = new TH1F("bottomPt","bottomPt",100,-300,300);
 
    for (Long64_t jentry=jStart; jentry<jFinish; jentry++) {
      cout << "BEGINNING BRANCH NUMBER " << jentry << endl;
@@ -83,72 +92,56 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       XYZTLorentzVector lightParton1, lightParton2;
       XYZTLorentzVector topQuark, antiTopQuark;
       XYZTLorentzVector recoTopQuark(0,0,0,0), recoAntiTopQuark(0,0,0,0);
-      XYZTLorentzVector WPlus, WMinus;
+      XYZTLorentzVector WPlus, WMinus, higgs, qFromW, qbarFromW;
       XYZTLorentzVector recoWPlus(0,0,0,0), recoWMinus(0,0,0,0);
+      XYZTLorentzVector smearedLightQuark1, smearedLightQuark2, smearedBottomQuark, smearedAntiBottomQuark;
+      XYZTLorentzVector smearedLightParton1, smearedLightParton2, smearedLepton, smearedAntiLepton;
+      bool leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar branch is the leptonic one), 0 otherwise.
+
       double METx(0.), METy(0.);
       int iJet = 0;
-      for(int iParticle = 0 ; iParticle < n_particles; iParticle++)
-	{
-	  if( PID->at(iParticle) == 6 ) topQuark.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	  if( PID->at(iParticle) == -6 ) antiTopQuark.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	  if( PID->at(iParticle) == 24 ) WPlus.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	  if( PID->at(iParticle) == -24 ) WMinus.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	  if( PID->at(iParticle) == 11 || PID->at(iParticle) == 13 || PID->at(iParticle) == 15 ) 
-	    {
-	      lepton.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	      //recoWMinus += lepton;
-	      //recoAntiTopQuark += lepton;
-	    }
-	  if( PID->at(iParticle) == -11 || PID->at(iParticle) == -13 || PID->at(iParticle) == -15 )
-	    {
-	      antiLepton.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	      //recoWPlus += antiLepton;
-	      //recoTopQuark += antiLepton;
-	    }
-	  if( PID->at(iParticle) == 12 || PID->at(iParticle) == 14 || PID->at(iParticle) == 16 )
-	    {
-	      neutrino.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	      //recoWPlus += neutrino;
-	      //recoTopQuark += neutrino;
-	    }
-	  if( PID->at(iParticle) == -12 || PID->at(iParticle) == -14 || PID->at(iParticle) == -16 ) 
-	    {
-	      antiNeutrino.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	      //recoWMinus += antiNeutrino;
-	      //recoAntiTopQuark += antiNeutrino;
-	    }
-	  if( PID->at(iParticle) == 5 ) 
-	    {
-	      bottomQuark.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	      //recoTopQuark += bottomQuark;
-	    }
-	  if( PID->at(iParticle) == -5 )
-	    {
-	      antiBottomQuark.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-	      //recoAntiTopQuark += antiBottomQuark;
-	    }
-	  if( status->at(iParticle) == 1 )
-	    {
-	      if(abs(PID->at(iParticle)) == 1 || 
-		 abs(PID->at(iParticle)) == 2 ||  
-		 abs(PID->at(iParticle)) == 3 ||  
-		 abs(PID->at(iParticle)) == 4 ||  
-		 abs(PID->at(iParticle)) == 21 )
-		{
-		  if (iJet == 0)
-		    {
-		      lightParton1.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-		      iJet++;
-		    }
-		  else if (iJet == 1)
-		    {
-		      lightParton2.SetPxPyPzE(P_X->at(iParticle),P_Y->at(iParticle),P_Z->at(iParticle),E->at(iParticle));
-		      iJet++;
-		    }
-		  else cout <<"too many light partons"<<endl;
-		}
-	    }
-	} //end loop over particles
+//      for(int iParticle = 0 ; iParticle < n_particles; iParticle++)
+//	{
+	  smearedLightQuark1.SetPxPyPzE(P_X->at(3),P_Y->at(3),P_Z->at(3),E->at(3));
+	  smearedLightQuark2.SetPxPyPzE(P_X->at(4),P_Y->at(4),P_Z->at(4),E->at(4));
+	  smearedBottomQuark.SetPxPyPzE(P_X->at(1),P_Y->at(1),P_Z->at(1),E->at(1));
+	  smearedAntiBottomQuark.SetPxPyPzE(P_X->at(2),P_Y->at(2),P_Z->at(2),E->at(2));
+	  smearedLightParton1.SetPxPyPzE(P_X->at(5),P_Y->at(5),P_Z->at(5),E->at(5));
+	  smearedLightParton2.SetPxPyPzE(P_X->at(6),P_Y->at(6),P_Z->at(6),E->at(6));
+	  //smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+
+	  topQuark.SetPxPyPzE(P_X->at(14),P_Y->at(14),P_Z->at(14),E->at(14));
+	  antiTopQuark.SetPxPyPzE(P_X->at(15),P_Y->at(15),P_Z->at(15),E->at(15));
+	  WPlus.SetPxPyPzE(P_X->at(16),P_Y->at(16),P_Z->at(16),E->at(16));
+	  WMinus.SetPxPyPzE(P_X->at(17),P_Y->at(17),P_Z->at(17),E->at(17));
+          //lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
+	  //neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+	  bottomQuark.SetPxPyPzE(P_X->at(8),P_Y->at(8),P_Z->at(8),E->at(8));
+	  antiBottomQuark.SetPxPyPzE(P_X->at(9),P_Y->at(9),P_Z->at(9),E->at(9));
+	  qFromW.SetPxPyPzE(P_X->at(10),P_Y->at(10),P_Z->at(10),E->at(10));
+	  qbarFromW.SetPxPyPzE(P_X->at(11),P_Y->at(11),P_Z->at(11),E->at(11));
+	  lightParton1.SetPxPyPzE(P_X->at(12),P_Y->at(12),P_Z->at(12),E->at(12));
+	  lightParton2.SetPxPyPzE(P_X->at(13),P_Y->at(13),P_Z->at(13),E->at(13));
+	  higgs.SetPxPyPzE(P_X->at(19),P_Y->at(19),P_Z->at(19),E->at(19));
+
+          if (PID->at(0) == 13) {
+        	  smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+                  lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
+        	  antiNeutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+                  leptonFlag = 1;
+          } else if (PID->at(0) == -13){
+        	  smearedAntiLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+                  antiLepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
+        	  neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+                  leptonFlag = 0;
+          }
+
+
+
+
+          
+          
+          //	} //end loop over particles
 
       //cout << "true W+             mass is " << WPlus.M()        << endl;
       //cout << "true top quark      mass is " << topQuark.M()     << endl;
@@ -183,15 +176,15 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       METy -= antiLepton.Py();
 
 
-      XYZTLorentzVector smearedBottomQuark;
+/*      XYZTLorentzVector smearedBottomQuark;
       XYZTLorentzVector smearedAntiBottomQuark;
       XYZTLorentzVector smearedLightQuark1;
       XYZTLorentzVector smearedLightQuark2;
       XYZTLorentzVector smearedLightParton1;
       XYZTLorentzVector smearedLightParton2;
       XYZTLorentzVector tempP4;
-
-      double bJet1PtSmear = log(1.+0.1)*rand.Gaus();
+*/
+/*      double bJet1PtSmear = log(1.+0.1)*rand.Gaus();
       double bJet2PtSmear = log(1.+0.1)*rand.Gaus();
       double lightJet1PtSmear = log(1.+0.1)*rand.Gaus();
       double lightJet2PtSmear = log(1.+0.1)*rand.Gaus();
@@ -208,9 +201,9 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       double antiNeutrinoPtSmear = log(1.+0.1)*rand.Gaus();
       double antiNeutrinoPhiSmear = 0.01*rand.Gaus();
       double antiNeutrinoEtaSmear = 0.01*rand.Gaus();
+*/
 
-
-      
+/*      
       double pt(bottomQuark.Pt()*exp(bJet1PtSmear));
       double phi(bottomQuark.Phi()+bJet1PhiSmear);
       double eta(bottomQuark.Eta()+bJet1EtaSmear);
@@ -220,9 +213,9 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       smearedBottomQuark.SetPy(pt*sin(phi));
       smearedBottomQuark.SetPz(pt*sinh(eta));
       smearedBottomQuark.SetE(energy);
-      
+*/      
       recoTopQuark+=smearedBottomQuark;
-	  
+/*	  
       METx -= smearedBottomQuark.Px();
       METy -= smearedBottomQuark.Py();
 	  
@@ -235,9 +228,9 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       smearedAntiBottomQuark.SetPy(pt*sin(phi));
       smearedAntiBottomQuark.SetPz(pt*sinh(eta));
       smearedAntiBottomQuark.SetE(energy);
-      
+*/      
       recoAntiTopQuark+=smearedAntiBottomQuark;
-	  
+/*	  
       METx -= smearedAntiBottomQuark.Px();
       METy -= smearedAntiBottomQuark.Py();
 
@@ -295,7 +288,7 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       METx -= smearedLightParton2.Px();
       METy -= smearedLightParton2.Py();
 
-
+*/
 
 //      if(smearedLightParton2.Pt()>smearedLightParton1.Pt())
 //	{
@@ -322,13 +315,20 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       nonTopObjectPhiWidths.push_back(0.01);
 
 
-      recoWMinus += smearedLightQuark1;
-      recoWMinus += smearedLightQuark2;
-      recoAntiTopQuark+=recoWMinus;
-
+      if (leptonFlag == 0){
       recoWPlus += antiLepton;
       recoWPlus += neutrino;
+      recoWMinus += smearedLightQuark1;
+      recoWMinus += smearedLightQuark2;
+      } else if (leptonFlag == 1){
+      recoWMinus += lepton;
+      recoWMinus += antiNeutrino;
+      recoWPlus += smearedLightQuark1;
+      recoWPlus += smearedLightQuark2;
+      }
+
       recoTopQuark+=recoWPlus;
+      recoAntiTopQuark+=recoWMinus;
 
 
 
@@ -373,15 +373,15 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       
 
 
-      double bJet1Px = smearedAntiBottomQuark.Px();
-      double bJet1Py = smearedAntiBottomQuark.Py();
-      double bJet1Pz = smearedAntiBottomQuark.Pz();
-      double bJet1E  = smearedAntiBottomQuark.E() ;
+      double bJet2Px = smearedAntiBottomQuark.Px();
+      double bJet2Py = smearedAntiBottomQuark.Py();
+      double bJet2Pz = smearedAntiBottomQuark.Pz();
+      double bJet2E  = smearedAntiBottomQuark.E() ;
 
-      double bJet2Px = smearedBottomQuark.Px();
-      double bJet2Py = smearedBottomQuark.Py();
-      double bJet2Pz = smearedBottomQuark.Pz();
-      double bJet2E  = smearedBottomQuark.E() ;
+      double bJet1Px = smearedBottomQuark.Px();
+      double bJet1Py = smearedBottomQuark.Py();
+      double bJet1Pz = smearedBottomQuark.Pz();
+      double bJet1E  = smearedBottomQuark.E() ;
 
       double lightJet1Px = smearedLightQuark1.Px();
       double lightJet1Py = smearedLightQuark1.Py();
@@ -393,20 +393,26 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       double lightJet2Pz = smearedLightQuark2.Pz();
       double lightJet2E  = smearedLightQuark2.E() ;
 
-      double antiLeptonPx = antiLepton.Px();
-      double antiLeptonPy = antiLepton.Py();
-      double antiLeptonPz = antiLepton.Pz();
-      double antiLeptonE  = antiLepton.E() ;
+      double antiLeptonPx, antiLeptonPy, antiLeptonPz, antiLeptonE;
+      if (leptonFlag == 0){
+       antiLeptonPx = smearedAntiLepton.Px();
+       antiLeptonPy = smearedAntiLepton.Py();
+       antiLeptonPz = smearedAntiLepton.Pz();
+       antiLeptonE  = smearedAntiLepton.E() ;
+      }
 
-      //double leptonPx = lepton.Px();
-      //double leptonPy = lepton.Py();
-      //double leptonPz = lepton.Pz();
-      //double leptonE  = lepton.E() ;
+      double leptonPx, leptonPy, leptonPz, leptonE;
+      if (leptonFlag == 1){
+       leptonPx = smearedLepton.Px();
+       leptonPy = smearedLepton.Py();
+       leptonPz = smearedLepton.Pz();
+       leptonE  = smearedLepton.E() ;
+      }
 
       double mTop=173., mW=80.4;
       double sigmaMTop=2.0, sigmaMW=2.085;
       double sigmaPtJet=0.1, sigmaPhiJet=0.01, sigmaEtaJet=0.01;
-      double sigmaPtLep=0. , sigmaPhiLep=0.  , sigmaEtaLep=0.  ;
+      double sigmaPtLep=0.1 , sigmaPhiLep=0.01  , sigmaEtaLep=0.01  ;
 
       topEventMinimizer ev(nonTopObjects,
 			   nonTopObjectPtWidths,
@@ -416,25 +422,47 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
 			   mW,sigmaMW
 			   );
 
-      ev.addLeptonicTop(bJet2Px,bJet2Py,bJet2Pz,bJet2E,
+      if (leptonFlag == 0){
+      ev.addLeptonicTop(bJet1Px,bJet1Py,bJet1Pz,bJet1E,
                         sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
                         antiLeptonPx,antiLeptonPy,antiLeptonPz,antiLeptonE,
                         sigmaPtLep,sigmaEtaLep,sigmaPhiLep,
                         mTop,sigmaMTop,
                         mW,sigmaMW);
       
+      ev.addHadronicTop(bJet2Px,bJet2Py,bJet2Pz,bJet2E,
+			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
+			lightJet1Px,lightJet1Py,lightJet1Pz,lightJet1E,
+			//lightJet2Px,lightJet2Py,lightJet2Pz,lightJet2E,
+			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
+			lightJet2Px,lightJet2Py,lightJet2Pz,lightJet2E,
+			//lightJet1Px,lightJet1Py,lightJet1Pz,lightJet1E,
+			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
+			mTop,sigmaMTop,
+			mW,sigmaMW);
+      }
+
+      if (leptonFlag == 1){
       ev.addHadronicTop(bJet1Px,bJet1Py,bJet1Pz,bJet1E,
 			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
-			//lightJet1Px,lightJet1Py,lightJet1Pz,lightJet1E,
-			lightJet2Px,lightJet2Py,lightJet2Pz,lightJet2E,
-			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
-			//lightJet2Px,lightJet2Py,lightJet2Pz,lightJet2E,
 			lightJet1Px,lightJet1Py,lightJet1Pz,lightJet1E,
+			//lightJet2Px,lightJet2Py,lightJet2Pz,lightJet2E,
+			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
+			lightJet2Px,lightJet2Py,lightJet2Pz,lightJet2E,
+			//lightJet1Px,lightJet1Py,lightJet1Pz,lightJet1E,
 			sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
 			mTop,sigmaMTop,
 			mW,sigmaMW);
 
-      
+      ev.addLeptonicTop(bJet2Px,bJet2Py,bJet2Pz,bJet2E,
+                        sigmaPtJet,sigmaEtaJet,sigmaPhiJet,
+                        leptonPx,leptonPy,leptonPz,leptonE,
+                        sigmaPtLep,sigmaEtaLep,sigmaPhiLep,
+                        mTop,sigmaMTop,
+                        mW,sigmaMW);
+      }
+
+ 
       //ev.printTopConstituents();
       ev.initializeDeltas();
       //ev.calcTopMassRanges();
@@ -487,6 +515,7 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       bJet1TrueEta      =bottomQuark.Eta();
       bJet1TruePhi      =bottomQuark.Phi();
       bJet1TrueE        =bottomQuark.E()  ;
+      if (leptonFlag == 0){
       W1Daughter1TruePt =antiLepton.Pt()  ;
       W1Daughter1TrueEta=antiLepton.Eta() ;
       W1Daughter1TruePhi=antiLepton.Phi() ;
@@ -495,6 +524,17 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W1Daughter2TrueEta=neutrino.Eta()   ;
       W1Daughter2TruePhi=neutrino.Phi()   ;
       W1Daughter2TrueE  =neutrino.E()     ;
+      }
+      else if (leptonFlag == 1){
+      W1Daughter1TruePt =qFromW.Pt()  ;
+      W1Daughter1TrueEta=qFromW.Eta() ;
+      W1Daughter1TruePhi=qFromW.Phi() ;
+      W1Daughter1TrueE  =qFromW.E()   ;
+      W1Daughter2TruePt =qbarFromW.Pt()    ;
+      W1Daughter2TrueEta=qbarFromW.Eta()   ;
+      W1Daughter2TruePhi=qbarFromW.Phi()   ;
+      W1Daughter2TrueE  =qbarFromW.E()     ;
+      }
       lightJet1TruePx   =lightParton1.Px(); 
       lightJet1TruePy   =lightParton1.Py();
       lightJet1TruePz   =lightParton1.Pz();
@@ -516,14 +556,25 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       bJet2TrueEta      =antiBottomQuark.Eta();
       bJet2TruePhi      =antiBottomQuark.Phi();
       bJet2TrueE        =antiBottomQuark.E()  ;
-      W2Daughter1TruePt =antiNeutrino.Pt()    ;
-      W2Daughter1TrueEta=antiNeutrino.Eta()   ;
-      W2Daughter1TruePhi=antiNeutrino.Phi()   ;
-      W2Daughter1TrueE  =antiNeutrino.E()     ;
-      W2Daughter2TruePt =lepton.Pt()          ;
-      W2Daughter2TrueEta=lepton.Eta()         ;
-      W2Daughter2TruePhi=lepton.Phi()         ;
-      W2Daughter2TrueE  =lepton.E()           ;
+      if (leptonFlag == 1){
+      W2Daughter2TruePt =antiNeutrino.Pt()    ;
+      W2Daughter2TrueEta=antiNeutrino.Eta()   ;
+      W2Daughter2TruePhi=antiNeutrino.Phi()   ;
+      W2Daughter2TrueE  =antiNeutrino.E()     ;
+      W2Daughter1TruePt =lepton.Pt()          ;
+      W2Daughter1TrueEta=lepton.Eta()         ;
+      W2Daughter1TruePhi=lepton.Phi()         ;
+      W2Daughter1TrueE  =lepton.E()           ;
+      } else if (leptonFlag == 0){
+      W2Daughter1TruePt =qFromW.Pt()    ;
+      W2Daughter1TrueEta=qFromW.Eta()   ;
+      W2Daughter1TruePhi=qFromW.Phi()   ;
+      W2Daughter1TrueE  =qFromW.E()     ;
+      W2Daughter2TruePt =qbarFromW.Pt()          ;
+      W2Daughter2TrueEta=qbarFromW.Eta()         ;
+      W2Daughter2TruePhi=qbarFromW.Phi()         ;
+      W2Daughter2TrueE  =qbarFromW.E()           ;
+      }
       lightJet2TruePx   =lightParton2.Px()    ;
       lightJet2TruePy   =lightParton2.Py()    ;
       lightJet2TruePz   =lightParton2.Pz()    ;
@@ -547,14 +598,25 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       bJet1SmearedEta      =smearedBottomQuark.Eta();
       bJet1SmearedPhi      =smearedBottomQuark.Phi();
       bJet1SmearedE        =smearedBottomQuark.E()  ;
-      W1Daughter1SmearedPt =antiLepton.Pt()         ;
-      W1Daughter1SmearedEta=antiLepton.Eta()        ;
-      W1Daughter1SmearedPhi=antiLepton.Phi()        ;
-      W1Daughter1SmearedE  =antiLepton.E()          ;
+      if (leptonFlag == 0){
+      W1Daughter1SmearedPt =smearedAntiLepton.Pt()         ;
+      W1Daughter1SmearedEta=smearedAntiLepton.Eta()        ;
+      W1Daughter1SmearedPhi=smearedAntiLepton.Phi()        ;
+      W1Daughter1SmearedE  =smearedAntiLepton.E()          ;
       W1Daughter2SmearedPt =-1.                     ;
       W1Daughter2SmearedEta=-1.                     ;
       W1Daughter2SmearedPhi=-1.                     ;
       W1Daughter2SmearedE  =-1.                     ;
+      } else if (leptonFlag == 1){
+      W1Daughter1SmearedPt =smearedLightQuark1.Pt()         ;
+      W1Daughter1SmearedEta=smearedLightQuark1.Eta()        ;
+      W1Daughter1SmearedPhi=smearedLightQuark1.Phi()        ;
+      W1Daughter1SmearedE  =smearedLightQuark1.E()          ;
+      W1Daughter2SmearedPt =smearedLightQuark2.Pt()                     ;
+      W1Daughter2SmearedEta=smearedLightQuark2.Eta()                     ;
+      W1Daughter2SmearedPhi=smearedLightQuark2.Phi()                     ;
+      W1Daughter2SmearedE  =smearedLightQuark2.E()                    ;
+      }
       lightJet1SmearedPx   =smearedLightParton1.Px();
       lightJet1SmearedPy   =smearedLightParton1.Py();
       lightJet1SmearedPz   =smearedLightParton1.Pz();
@@ -575,14 +637,25 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       bJet2SmearedEta      =smearedAntiBottomQuark.Eta();
       bJet2SmearedPhi      =smearedAntiBottomQuark.Phi();
       bJet2SmearedE        =smearedAntiBottomQuark.E()  ;
-      W2Daughter1SmearedPt =smearedLightQuark2.Pt()     ;
-      W2Daughter1SmearedEta=smearedLightQuark2.Eta()    ;
-      W2Daughter1SmearedPhi=smearedLightQuark2.Phi()    ;
-      W2Daughter1SmearedE  =smearedLightQuark2.E()      ;
-      W2Daughter2SmearedPt =smearedLightQuark1.Pt()     ;
-      W2Daughter2SmearedEta=smearedLightQuark1.Eta()    ;
-      W2Daughter2SmearedPhi=smearedLightQuark1.Phi()    ;
-      W2Daughter2SmearedE  =smearedLightQuark1.E()      ;
+      if (leptonFlag == 0){
+      W2Daughter1SmearedPt =smearedLightQuark1.Pt()     ;
+      W2Daughter1SmearedEta=smearedLightQuark1.Eta()    ;
+      W2Daughter1SmearedPhi=smearedLightQuark1.Phi()    ;
+      W2Daughter1SmearedE  =smearedLightQuark1.E()      ;
+      W2Daughter2SmearedPt =smearedLightQuark2.Pt()     ;
+      W2Daughter2SmearedEta=smearedLightQuark2.Eta()    ;
+      W2Daughter2SmearedPhi=smearedLightQuark2.Phi()    ;
+      W2Daughter2SmearedE  =smearedLightQuark2.E()      ;
+      } else if (leptonFlag == 1){
+      W2Daughter1SmearedPt =smearedLepton.Pt()         ;
+      W2Daughter1SmearedEta=smearedLepton.Eta()        ;
+      W2Daughter1SmearedPhi=smearedLepton.Phi()        ;
+      W2Daughter1SmearedE  =smearedLepton.E()          ;
+      W2Daughter2SmearedPt =-1.                     ;
+      W2Daughter2SmearedEta=-1.                     ;
+      W2Daughter2SmearedPhi=-1.                     ;
+      W2Daughter2SmearedE  =-1.                     ;
+      }
       lightJet2SmearedPx   =smearedLightParton2.Px()    ;
       lightJet2SmearedPy   =smearedLightParton2.Py()    ;
       lightJet2SmearedPz   =smearedLightParton2.Pz()    ;
@@ -750,11 +823,18 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W1DeltaRTrueSmeared          =deltaR(WPlus,recoWPlus); 
       W1DeltaMTrueSmeared          =W1TrueMass-W1SmearedMass;
       bJet1DeltaPtTrueSmeared      =bJet1TruePt-bJet1SmearedPt; 
-      bJet1DeltaRTrueSmeared       =deltaR(bottomQuark,smearedBottomQuark); 
-      W1Daughter1DeltaPtTrueSmeared=0;
-      W1Daughter1DeltaRTrueSmeared =0;
+      bJet1DeltaRTrueSmeared       =deltaR(bottomQuark,smearedBottomQuark);
+      if (leptonFlag == 0){
+      W1Daughter1DeltaPtTrueSmeared=W1Daughter1TruePt-W1Daughter1SmearedPt;
+      W1Daughter1DeltaRTrueSmeared =deltaR(antiLepton,smearedAntiLepton);
       W1Daughter2DeltaPtTrueSmeared=-1;
       W1Daughter2DeltaRTrueSmeared =-1;
+      } else if (leptonFlag == 1){
+      W1Daughter1DeltaPtTrueSmeared=W1Daughter1TruePt-W1Daughter1SmearedPt;
+      W1Daughter1DeltaRTrueSmeared =deltaR(qFromW,smearedLightQuark1);
+      W1Daughter2DeltaPtTrueSmeared=W1Daughter2TruePt-W1Daughter2SmearedPt;
+      W1Daughter2DeltaRTrueSmeared =deltaR(qbarFromW,smearedLightQuark2);
+      }
       lightJet1DeltaPxTrueSmeared  =lightJet1TruePx-lightJet1SmearedPx;
       lightJet1DeltaPyTrueSmeared  =lightJet1TruePy-lightJet1SmearedPy;
       lightJet1DeltaRTrueSmeared   =deltaR(lightParton1,smearedLightParton1);
@@ -767,10 +847,17 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W2DeltaMTrueSmeared          =W2TrueMass-W2SmearedMass;
       bJet2DeltaPtTrueSmeared      =bJet2TruePt-bJet2SmearedPt;
       bJet2DeltaRTrueSmeared       =deltaR(antiBottomQuark,smearedAntiBottomQuark);
+      if (leptonFlag == 0){
       W2Daughter1DeltaPtTrueSmeared=W2Daughter1TruePt-W2Daughter1SmearedPt;
-      W2Daughter1DeltaRTrueSmeared =deltaR(antiNeutrino,smearedLightQuark2);
+      W2Daughter1DeltaRTrueSmeared =deltaR(qFromW,smearedLightQuark1);
       W2Daughter2DeltaPtTrueSmeared=W2Daughter2TruePt-W2Daughter2SmearedPt;
-      W2Daughter2DeltaRTrueSmeared =deltaR(lepton,smearedLightQuark1);
+      W2Daughter2DeltaRTrueSmeared =deltaR(qbarFromW,smearedLightQuark2);
+      } else if (leptonFlag == 1){
+      W2Daughter1DeltaPtTrueSmeared=W2Daughter1TruePt-W2Daughter1SmearedPt;
+      W2Daughter1DeltaRTrueSmeared =deltaR(lepton,smearedLepton);
+      W2Daughter2DeltaPtTrueSmeared=-1;
+      W2Daughter2DeltaRTrueSmeared =-1;
+      }
       lightJet2DeltaPxTrueSmeared  =lightJet2TruePx-lightJet2SmearedPx;
       lightJet2DeltaPyTrueSmeared  =lightJet2TruePy-lightJet2SmearedPy;
       lightJet2DeltaRTrueSmeared   =deltaR(lightParton2,smearedLightParton2);
@@ -786,10 +873,17 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W1DeltaMTrueBest          =W1TrueMass-W1BestMass;
       bJet1DeltaPtTrueBest      =bJet1TruePt-bJet1BestPt;
       bJet1DeltaRTrueBest       =deltaR(bottomQuark,bJet1Best);
+      if (leptonFlag == 0){
       W1Daughter1DeltaPtTrueBest=W1Daughter1TruePt-W1Daughter1BestPt;
       W1Daughter1DeltaRTrueBest =deltaR(antiLepton,W1Daughter1Best);
       W1Daughter2DeltaPtTrueBest=W1Daughter2TruePt-W1Daughter2BestPt;
       W1Daughter2DeltaRTrueBest =deltaR(neutrino,W1Daughter2Best);
+      } else if (leptonFlag == 1){
+      W1Daughter1DeltaPtTrueBest=W1Daughter1TruePt-W1Daughter1BestPt;
+      W1Daughter1DeltaRTrueBest =deltaR(qFromW,W1Daughter1Best);
+      W1Daughter2DeltaPtTrueBest=W1Daughter2TruePt-W1Daughter2BestPt;
+      W1Daughter2DeltaRTrueBest =deltaR(qbarFromW,W1Daughter2Best);
+      }
       lightJet1DeltaPxTrueBest  =lightJet1TruePx-lightJet1BestPx;
       lightJet1DeltaPyTrueBest  =lightJet1TruePy-lightJet1BestPy;
       lightJet1DeltaRTrueBest   =deltaR(lightParton1,lightJet1Best);
@@ -802,10 +896,17 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W2DeltaMTrueBest          =W2TrueMass-W2BestMass;
       bJet2DeltaPtTrueBest      =bJet2TruePt-bJet2BestPt;
       bJet2DeltaRTrueBest       =deltaR(antiBottomQuark,bJet2Best);
+      if (leptonFlag == 0){
+      W2Daughter1DeltaPtTrueBest=W2Daughter1TruePt-W2Daughter1BestPt;
+      W2Daughter1DeltaRTrueBest =deltaR(qFromW,W2Daughter1Best);
+      W2Daughter2DeltaPtTrueBest=W2Daughter2TruePt-W2Daughter2BestPt;
+      W2Daughter2DeltaRTrueBest =deltaR(qbarFromW,W2Daughter2Best);
+      } else if (leptonFlag == 1){
       W2Daughter1DeltaPtTrueBest=W2Daughter1TruePt-W2Daughter1BestPt;
       W2Daughter1DeltaRTrueBest =deltaR(antiNeutrino,W2Daughter1Best);
       W2Daughter2DeltaPtTrueBest=W2Daughter2TruePt-W2Daughter2BestPt;
       W2Daughter2DeltaRTrueBest =deltaR(lepton,W2Daughter2Best);
+      }
       lightJet2DeltaPxTrueBest  =lightJet2TruePx-lightJet2BestPx;
       lightJet2DeltaPyTrueBest  =lightJet2TruePy-lightJet2BestPy;
       lightJet2DeltaRTrueBest   =deltaR(lightParton2,lightJet2Best);
@@ -820,10 +921,17 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W1DeltaMSmearedBest          =W1SmearedMass-W1BestMass;
       bJet1DeltaPtSmearedBest      =bJet1SmearedPt-bJet1BestPt;
       bJet1DeltaRSmearedBest       =deltaR(smearedBottomQuark,bJet1Best);
+      if (leptonFlag == 0){
       W1Daughter1DeltaPtSmearedBest=W1Daughter1SmearedPt-W1Daughter1BestPt;
       W1Daughter1DeltaRSmearedBest =deltaR(antiLepton,W1Daughter1Best);
       W1Daughter2DeltaPtSmearedBest=-1;
       W1Daughter2DeltaRSmearedBest =-1;
+      } else if (leptonFlag == 1){
+      W1Daughter1DeltaPtSmearedBest=W1Daughter1SmearedPt-W1Daughter1BestPt;
+      W1Daughter1DeltaRSmearedBest =deltaR(smearedLightQuark1,W1Daughter1Best);
+      W1Daughter2DeltaPtSmearedBest=W1Daughter2SmearedPt-W1Daughter2BestPt;
+      W1Daughter2DeltaRSmearedBest =deltaR(smearedLightQuark2,W1Daughter2Best);
+      }
       lightJet1DeltaPxSmearedBest  =lightJet1SmearedPx-lightJet1BestPx;
       lightJet1DeltaPySmearedBest  =lightJet1SmearedPy-lightJet1BestPy;
       lightJet1DeltaRSmearedBest   =deltaR(smearedLightParton1,lightJet1Best);
@@ -836,22 +944,78 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
       W2DeltaMSmearedBest          =W2SmearedMass-W2BestMass;
       bJet2DeltaPtSmearedBest      =bJet2SmearedPt-bJet2BestPt;
       bJet2DeltaRSmearedBest       =deltaR(smearedAntiBottomQuark,bJet2Best);
+      if (leptonFlag == 0){
       W2Daughter1DeltaPtSmearedBest=W2Daughter1SmearedPt-W2Daughter1BestPt;
-      W2Daughter1DeltaRSmearedBest =deltaR(smearedLightQuark2,W2Daughter1Best);
+      W2Daughter1DeltaRSmearedBest =deltaR(smearedLightQuark1,W2Daughter1Best);
       W2Daughter2DeltaPtSmearedBest=W2Daughter2SmearedPt-W2Daughter2BestPt;
-      W2Daughter2DeltaRSmearedBest =deltaR(smearedLightQuark1,W2Daughter2Best);
+      W2Daughter2DeltaRSmearedBest =deltaR(smearedLightQuark2,W2Daughter2Best);
+      } else if (leptonFlag == 1){
+      W2Daughter1DeltaPtSmearedBest=W2Daughter1SmearedPt-W2Daughter1BestPt;
+      W2Daughter1DeltaRSmearedBest =deltaR(lepton,W2Daughter1Best);
+      W2Daughter2DeltaPtSmearedBest=-1;
+      W2Daughter2DeltaRSmearedBest =-1;
+      }
       lightJet2DeltaPxSmearedBest  =lightJet2SmearedPx-lightJet2BestPx;
       lightJet2DeltaPySmearedBest  =lightJet2SmearedPy-lightJet2BestPy;
       lightJet2DeltaRSmearedBest   =deltaR(smearedLightParton2,lightJet2Best);
 
       
       outTree->Fill();
+      std::cout<<"hello!"<<std::endl;
 
+      if (leptonFlag == 0){
+      leptonicBottomPtTS->Fill(bJet1DeltaPtTrueSmeared);
+      leptonicBottomPtTC->Fill(bJet1DeltaPtTrueBest);
+      leptonPtTS->Fill(W1Daughter1DeltaPtTrueSmeared);
+      leptonPtTC->Fill(W1Daughter1DeltaPtTrueBest);
+      neutrinoPtTC->Fill(W1Daughter2DeltaPtTrueSmeared);
+      leptonicTopPtTS->Fill(top1DeltaPtTrueSmeared);
+      leptonicTopPtTC->Fill(top1DeltaPtTrueBest);
+      leptonicWPtTS->Fill(W1DeltaPtTrueSmeared);
+      leptonicWPtTC->Fill(W1DeltaPtTrueBest);
+
+      hadronicBottomPtTS->Fill(bJet2DeltaPtTrueSmeared);
+      hadronicBottomPtTC->Fill(bJet2DeltaPtTrueBest);
+      hadronicQuarkPtTS->Fill(W2Daughter1DeltaPtTrueSmeared);
+      hadronicQuarkPtTC->Fill(W2Daughter1DeltaPtTrueBest);
+      hadronicAntiQuarkPtTS->Fill(W2Daughter2DeltaPtTrueSmeared);
+      hadronicAntiQuarkPtTC->Fill(W2Daughter2DeltaPtTrueBest);
+      hadronicTopPtTS->Fill(top2DeltaPtTrueSmeared);
+      hadronicTopPtTC->Fill(top2DeltaPtTrueBest);
+      hadronicWPtTS->Fill(W2DeltaPtTrueSmeared);
+      hadronicWPtTC->Fill(W2DeltaPtTrueBest);
+
+      lightBottomPxTS->Fill(lightJet1DeltaPxTrueSmeared);
+      lightBottomPxTC->Fill(lightJet1DeltaPxTrueBest);
+      lightAntiBottomPxTS->Fill(lightJet2DeltaPxTrueSmeared);
+      lightAntiBottomPxTC->Fill(lightJet2DeltaPxTrueBest);
+
+      }
+
+      //std::cout<<"bJet1SmearedE = "<< bJet1SmearedE<<std::endl;
+      //std::cout<<"bJet1TrueE = "<<bJet1TrueE<<std::endl;
    } //end loop over events
+
+   int mc1 = 5;
+   int mc2 = 4;
+
+   leptonicBottomPtTS->SetFillColor(mc1);
+   leptonicBottomPtTS->SetLineColor(mc1);
+   leptonicBottomPtTC->SetLineColor(mc2);
+   cleptonicBottomPt->cd();
+   leptonicBottomPtTS->DrawCopy("HIST");
+   leptonicBottomPtTC->DrawCopy("SAME");
+   leptonicBottomPtTS->GetXaxis()->SetTitle("Pt res (GeV)");
+   leptonicBottomPtTS->GetYaxis()->SetTitle("Events");
+   leptonicBottomPtTS->SetTitle("Leptonic Bottom");
+   cleptonicBottomPt->Write();
+   cleptonicBottomPt->ls();
+
+
 
    outFile->cd();
    outFile->Write();
-   outFile->Close();
+   outFile->Close(); 
 
    //c1.cd();
    //h_chi2.GetXaxis()->SetTitle("total #chi^{2} minimum");

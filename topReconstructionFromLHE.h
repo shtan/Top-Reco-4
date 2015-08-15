@@ -12,6 +12,8 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TH1F.h>
+#include <TCanvas.h>
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
@@ -35,9 +37,9 @@ public :
    vector<double>  *E;
    vector<double>  *M;
    vector<int>     *status;
-   vector<int>     *particleID;
-   vector<int>     *parent1ID;
-   vector<int>     *parent2ID;
+//   vector<int>     *particleID;
+//   vector<int>     *parent1ID;
+//   vector<int>     *parent2ID;
 
    // List of branches
    TBranch        *b_n_particles;   //!
@@ -48,9 +50,9 @@ public :
    TBranch        *b_E;   //!
    TBranch        *b_M;   //!
    TBranch        *b_status;   //!
-   TBranch        *b_particleID;   //!
-   TBranch        *b_parent1ID;   //!
-   TBranch        *b_parent2ID;   //!
+//   TBranch        *b_particleID;   //!
+//   TBranch        *b_parent1ID;   //!
+//   TBranch        *b_parent2ID;   //!
 
    topReconstructionFromLHE(TTree *tree=0);
    virtual ~topReconstructionFromLHE();
@@ -70,6 +72,49 @@ public :
    TFile* outFile;
    TTree* outTree;
    void initOutput(TString, int);
+
+   TH1F* leptonicBottomPtTS;
+   TH1F* leptonicBottomPtTC;
+   TH1F* leptonicTopPtTS;
+   TH1F* leptonicTopPtTC;
+   TH1F* leptonicWPtTS;
+   TH1F* leptonicWPtTC;
+   TH1F* leptonPtTS;
+   TH1F* leptonPtTC;
+   //TH1F* neutrinoPtTS;
+   TH1F* neutrinoPtTC;
+
+   TH1F* hadronicBottomPtTS;
+   TH1F* hadronicBottomPtTC;
+   TH1F* hadronicTopPtTS;
+   TH1F* hadronicTopPtTC;
+   TH1F* hadronicWPtTS;
+   TH1F* hadronicWPtTC;
+   TH1F* hadronicQuarkPtTS;
+   TH1F* hadronicQuarkPtTC;
+   TH1F* hadronicAntiQuarkPtTS;
+   TH1F* hadronicAntiQuarkPtTC;
+
+   TH1F* lightBottomPxTS;
+   TH1F* lightBottomPxTC;
+   TH1F* lightAntiBottomPxTS;
+   TH1F* lightAntiBottomPxTC;
+   //TH1F* higgsTS;
+   //TH1F* higgsTC;
+
+   TCanvas* cleptonicBottomPt;
+   TCanvas* cleptonicTopPt;
+   TCanvas* cleptonicWPt;
+   TCanvas* cleptonPt;
+   TCanvas* cneutrinoPt;
+   TCanvas* chadronicBottomPt;
+   TCanvas* chadronicTopPt;
+   TCanvas* chadronicWPt;
+   TCanvas* chadronicQuarkPt;
+   TCanvas* chadronicAntiQuarkPt;
+   TCanvas* clightBottomPx;
+   TCanvas* clightAntiBottomPx;
+   //TCanvas* chiggsPt;
 
 
    //Branches
@@ -245,11 +290,11 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("lhe.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("lhe.root");
+         f = new TFile("skimmedntuple.root");
       }
-      f->GetObject("Physics",tree);
+      f->GetObject("physics",tree);
 
    }
    Init(tree);
@@ -297,8 +342,55 @@ void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
   fileName+="output_";
   fileName+=whichLoop;
   fileName+=".root";
+
+  float leftbound = -100.;
+  float rightbound = 100.;
+  float canvsize1 = 700;
+  float canvsize2 = 700;
+  int numbins = 100;
+
   outFile = new TFile(fileName,"RECREATE","tree");
   outTree = new TTree("tree","tree");
+
+  leptonicBottomPtTS = new TH1F("leptonicBottomPtTS","leptonicBottomPtTS",numbins,leftbound,rightbound);
+  leptonicBottomPtTC = new TH1F("leptonicBottomPtTC","leptonicBottomPtTC",numbins,leftbound,rightbound);
+  cleptonicBottomPt = new TCanvas("leptonicBottomPt","leptonicBottomPt",canvsize1,canvsize2);
+  leptonicTopPtTS = new TH1F("leptonicTopPtTS","leptonicTopPtTS",numbins,leftbound,rightbound);
+  leptonicTopPtTC = new TH1F("leptonicTopPtTC","leptonicTopPtTC",numbins,leftbound,rightbound);
+  cleptonicTopPt = new TCanvas("leptonicTopPt","leptonicTopPt",canvsize1,canvsize2);
+  leptonicWPtTS = new TH1F("leptonicWPtTS","leptonicWPtTS",numbins,leftbound,rightbound);
+  leptonicWPtTC = new TH1F("leptonicWPtTC","leptonicWPtTC",numbins,leftbound,rightbound);
+  cleptonicWPt = new TCanvas("leptonicWPt","leptonicWPt",canvsize1,canvsize2);
+  leptonPtTS = new TH1F("leptonPtTS","leptonPtTS",numbins,leftbound,rightbound);
+  leptonPtTC = new TH1F("leptonPtTC","leptonPtTC",numbins,leftbound,rightbound);
+  cleptonPt = new TCanvas("leptonPt","leptonPt",canvsize1,canvsize2);
+//  neutrinoPtTS = new TH1F("neutrinoPtTS","neutrinoPtTS",numbins,leftbound,rightbound);
+  neutrinoPtTC = new TH1F("neutrinoPtTC","neutrinoPtTC",numbins,leftbound,rightbound);
+  cneutrinoPt = new TCanvas("neutrinoPt","neutrinoPt",canvsize1,canvsize2);
+  hadronicBottomPtTS = new TH1F("hadronicBottomPtTS","hadronicBottomPtTS",numbins,leftbound,rightbound);
+  hadronicBottomPtTC = new TH1F("hadronicBottomPtTC","hadronicBottomPtTC",numbins,leftbound,rightbound);
+  chadronicBottomPt = new TCanvas("hadronicBottomPt","hadronicBottomPt",canvsize1,canvsize2);
+  hadronicTopPtTS = new TH1F("hadronicTopPtTS","hadronicTopPtTS",numbins,leftbound,rightbound);
+  hadronicTopPtTC = new TH1F("hadronicTopPtTC","hadronicTopPtTC",numbins,leftbound,rightbound);
+  chadronicTopPt = new TCanvas("hadronicTopPt","hadronicTopPt",canvsize1,canvsize2);
+  hadronicWPtTS = new TH1F("hadronicWPtTS","hadronicWPtTS",numbins,leftbound,rightbound);
+  hadronicWPtTC = new TH1F("hadronicWPtTC","hadronicWPtTC",numbins,leftbound,rightbound);
+  chadronicWPt = new TCanvas("hadronicWPt","hadronicWPt",canvsize1,canvsize2);
+  hadronicQuarkPtTS = new TH1F("hadronicQuarkPtTS","hadronicQuarkPtTS",numbins,leftbound,rightbound);
+  hadronicQuarkPtTC = new TH1F("hadronicQuarkPtTC","hadronicQuarkPtTC",numbins,leftbound,rightbound);
+  chadronicQuarkPt = new TCanvas("hadronicQuarkPt","hadronicQuarkPt",canvsize1,canvsize2);
+  hadronicAntiQuarkPtTS = new TH1F("hadronicAntiQuarkPtTS","hadronicAntiQuarkPtTS",numbins,leftbound,rightbound);
+  hadronicAntiQuarkPtTC = new TH1F("hadronicAntiQuarkPtTC","hadronicAntiQuarkPtTC",numbins,leftbound,rightbound);
+  chadronicAntiQuarkPt = new TCanvas("hadronicAntiQuarkPt","hadronicAntiQuarkPt",canvsize1,canvsize2);
+  lightBottomPxTS = new TH1F("lightBottomPxTS","lightBottomPxTS",numbins,leftbound,rightbound);
+  lightBottomPxTC = new TH1F("lightBottomPxTC","lightBottomPxTC",numbins,leftbound,rightbound);
+  clightBottomPx = new TCanvas("lightBottomPx","lightBottomPx",canvsize1,canvsize2);
+  lightAntiBottomPxTS = new TH1F("lightAntiBottomPxTS","lightAntiBottomPxTS",numbins,leftbound,rightbound);
+  lightAntiBottomPxTC = new TH1F("lightAntiBottomPxTC","lightAntiBottomPxTC",numbins,leftbound,rightbound);
+  clightAntiBottomPx = new TCanvas("lightAntiBottomPx","lightAntiBottomPx",canvsize1,canvsize2);
+//  higgsPtTS = new TH1F("higgsPtTS","higgsPtTS",numbins,leftbound,rightbound);
+//  higgsPtTC = new TH1F("higgsPtTC","higgsPtTC",numbins,leftbound,rightbound);
+//  chiggsPt = new TCanvas("higgsPt","higgsPt",canvsize1,canvsize2);
 
   outTree->Branch( "eventNumber"  ,  &eventNumber  ) ;
 
@@ -671,9 +763,9 @@ void topReconstructionFromLHE::Init(TTree *tree)
    E = 0;
    M = 0;
    status = 0;
-   particleID = 0;
-   parent1ID = 0;
-   parent2ID = 0;
+//   particleID = 0;
+//   parent1ID = 0;
+//   parent2ID = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -688,9 +780,9 @@ void topReconstructionFromLHE::Init(TTree *tree)
    fChain->SetBranchAddress("E", &E, &b_E);
    fChain->SetBranchAddress("M", &M, &b_M);
    fChain->SetBranchAddress("status", &status, &b_status);
-   fChain->SetBranchAddress("particleID", &particleID, &b_particleID);
-   fChain->SetBranchAddress("parent1ID", &parent1ID, &b_parent1ID);
-   fChain->SetBranchAddress("parent2ID", &parent2ID, &b_parent2ID);
+//   fChain->SetBranchAddress("particleID", &particleID, &b_particleID);
+//   fChain->SetBranchAddress("parent1ID", &parent1ID, &b_parent1ID);
+//   fChain->SetBranchAddress("parent2ID", &parent2ID, &b_parent2ID);
    Notify();
 }
 
