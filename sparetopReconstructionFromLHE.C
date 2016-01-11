@@ -10,7 +10,6 @@
 //#include "WDaughterEllipseCalculator.h"
 #include "topEventMinimizer.h"
 #include <TPaveStats.h>
-#include "Math/GenVector/LorentzVector.h"
 
 using namespace std;
 using namespace ROOT::Math;
@@ -95,11 +94,11 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
    //TH1D h_chi2("h_chi2","",100,0,100);
    std::cout<<"hi!"<<std::endl;
 
-   //int jStart = whichLoop*(nentries/maxLoops) + ((whichLoop>(maxLoops-nentries%maxLoops))?(whichLoop+nentries%maxLoops-maxLoops):0);
-int jStart = 0;
-   //int jFinish = jStart + (nentries+whichLoop)/maxLoops;
+   int jStart = whichLoop*(nentries/maxLoops) + ((whichLoop>(maxLoops-nentries%maxLoops))?(whichLoop+nentries%maxLoops-maxLoops):0);
+//int jStart = 17;
+   int jFinish = jStart + (nentries+whichLoop)/maxLoops;
    std::cout<<"number of entries = "<<nentries<<std::endl;
-   int jFinish = 1000;
+   //int jFinish = 5;
 
    std::cout<<jStart<<std::endl;
    std::cout<<"nentries = "<< nentries<<std::endl;
@@ -170,7 +169,6 @@ int jStart = 0;
           std::cout<<"SIZEEEEEEEEEEEEEEEEEEE = " << smearedOtherLightPartons.size() << std::endl;
 
         XYZTLorentzVector leptonToAdd;
-        XYZTLorentzVector leptonToAddGen;
 
           if (PID->at(0) == 13) {
         	  smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
@@ -178,19 +176,15 @@ int jStart = 0;
         	  antiNeutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
                   leptonFlag = 1;
                   leptonToAdd = smearedLepton;
-                  leptonToAddGen = lepton;
           } else if (PID->at(0) == -13){
         	  smearedAntiLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
                   antiLepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
         	  neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
                   leptonFlag = 0;
                   leptonToAdd = smearedAntiLepton;
-                  leptonToAddGen = antiLepton;
           }
 
     XYZTLorentzVector allVisible = smearedLightQuark1 + smearedLightQuark2 + smearedBottomQuark + smearedAntiBottomQuark + smearedLightParton1 + smearedLightParton2 + leptonToAdd + allExternal;
-
-    XYZTLorentzVector allVisibleGen = bottomQuark + antiBottomQuark + qFromW + qbarFromW + lightParton1 + lightParton2 + leptonToAddGen;
 
     std::cout<< "comparison "<<std::endl;
     std::cout<< allVisible.Px() <<std::endl;
@@ -204,37 +198,9 @@ int jStart = 0;
     extraParticle.SetPxPyPzE(-allVisible.Px()-met.Px(), -allVisible.Py()-met.Py(), 0, pow( (allVisible.Px()+met.Px()),2) + pow( (allVisible.Py()+met.Py()),2) );
 
     std::cout<< (allVisible.Px()+extraParticle.Px()) <<std::endl;
-    std::cout<< "met = " << met.Px() << std::endl;
-    std::cout<< "antiNeutrino = " << antiNeutrino.Px()<<endl;
-    std::cout<< "allVisibleGen = " << allVisibleGen.Px()<<endl;
+    std::cout<< met.Px() << std::endl;
 
-    //XYZTLorentzVector wHadronic = smearedLightQuark1 + smearedLightQuark2;
-    //double wHadronicM = wHadronic.M();
-
-    //check masses
-    std::cout<< "MW hadronic "<< (smearedLightQuark1 + smearedLightQuark2).M() <<std::endl;
-    std::cout<< "Mtop "<< (smearedLightQuark1 + smearedLightQuark2 + smearedBottomQuark).M() <<endl;
-    cout<< "MW minus " << (smearedLepton + antiNeutrino).M() <<std::endl;
-    cout<< "Mtopbar "<< (smearedLepton + antiNeutrino + smearedAntiBottomQuark).M() <<endl;
-    cout <<"M Higgs "<< (smearedLightParton1 + smearedLightParton2).M()<<endl;
-
-    std::cout<< "MW plus gen " <<(qFromW + qbarFromW).M() <<endl;
-    std::cout<< "Mtop gen "<<(qFromW + qbarFromW + bottomQuark).M() <<endl;
-    cout<< "MW minus gen "<< (lepton + antiNeutrino).M()<<endl;
-    cout<< "M topbar gen "<< (lepton + antiNeutrino + antiBottomQuark).M() <<endl;
-    cout<< "M Higgs gen "<< (lightParton1 + lightParton2).M()<<endl;
-
-    cout<< bottomQuark.M() << " " << smearedBottomQuark.M() << endl;
-    cout << antiBottomQuark.M() << " " <<smearedAntiBottomQuark.M() <<endl;
-    cout<< qFromW.M() << " " << smearedLightQuark1.M() <<endl;
-    cout<< qbarFromW.M() << " "<< smearedLightQuark2.M()<<endl;
-    cout<< lepton.M() <<" " <<smearedLepton.M() <<endl;
-    cout<< lightParton1.M() <<" "<<smearedLightParton1.M()<<endl;
-    cout<< lightParton2.M() <<" "<<smearedLightParton2.M()<<endl;
-    cout<< bottomQuark.E() << " " << smearedBottomQuark.E() <<endl;
-
-    cout << sqrt( -pow(smearedBottomQuark.Px(),2) - pow(smearedBottomQuark.Py(),2) - pow(smearedBottomQuark.Pz(),2) + pow(smearedBottomQuark.E(),2) ) << endl;
-
+          
           
           //	} //end loop over particles
 
@@ -418,10 +384,10 @@ int jStart = 0;
       }
 
       //hack test of extra particle
-      //nonTopObjects.push_back(extraParticle);
-      //nonTopObjectPtWidths.push_back( sqrt(extraParticle.pt()) );
-      //nonTopObjectEtaWidths.push_back(0.01);
-      //nonTopObjectPhiWidths.push_back(0.01);
+      nonTopObjects.push_back(extraParticle);
+      nonTopObjectPtWidths.push_back( sqrt(extraParticle.pt()) );
+      nonTopObjectEtaWidths.push_back(0.01);
+      nonTopObjectPhiWidths.push_back(0.01);
 
       std::cout<<"SIZEEEEEEEEEEEEEEEEEEEEEEE = "<<nonTopObjects.size() << std::endl;
 

@@ -460,29 +460,31 @@ void topSystemChiSquare::calcTopMassRange()
   mTopEdge2=maxRoot;
 
 //  if(mTopEdge1<=-DBL_MAX) 
-  if(mTopEdge1<=-10E10) 
+  if(mTopEdge1<=0) 
     {
       cout << "infinite lower edge" << endl;
-      cout << "first W daughter energy is " << WDaughter1E_ << endl; 
-      cout << "first W daughter momentum is " << WDaughter1P << endl;
-      return;
+      //cout << "first W daughter energy is " << WDaughter1E_ << endl; 
+      //cout << "first W daughter momentum is " << WDaughter1P << endl;
+      //mTopEdge1 = 0;
+      //return;
     }
 //  if(mTopEdge2>= DBL_MAX) 
-  if(mTopEdge2>= 10E10) 
+  if(mTopEdge2>= 500) 
     {
       cout << "infinite upper edge" << endl;
-      cout << "first W daughter energy is " << WDaughter1E_ << endl;
-      cout << "first W daughter momentum is " << WDaughter1P << endl;
-      return;
+      //cout << "first W daughter energy is " << WDaughter1E_ << endl;
+      //cout << "first W daughter momentum is " << WDaughter1P << endl;
+      //mTopEdge2 = 500;
+      //return;
     }
 
   //double tempTheta=theta_;
 
 
-  //cout << "Printing out some starting values" << endl;
+  cout << "Printing out some starting values" << endl;
 
   //cout << "Current top mass is " << tempTopMass << endl;
-  //cout << "Current ellipse angle is " << getEllipseAngle() << endl;
+  cout << "Current ellipse angle is " << getEllipseAngle() << endl;
 
   double Z2, mTop;
   hasHighEdge_=false;
@@ -643,16 +645,16 @@ void topSystemChiSquare::calcTopMassRange()
 	}
     }
 
-//cout<<"before rangeflag check"<<endl;
+  cout<<"before rangeflag check"<<endl;
   if(!rangeFlag_)
     {
       cout << "No top mass range where Z^2 is positive was found" << endl;
       return;
     }
-  //cout<<"aftercheck"<<endl;
+  cout<<"aftercheck"<<endl;
 
-  //if(hasHighEdge_) cout << "Allowed top mass range is [ " << mTopEdgeLow_ << " , " << mTopEdgeHigh_ << " ]" << endl;
-  //else cout << "Allowed top mass range is [ " << mTopEdgeLow_ << " , +inf [" << endl;
+  if(hasHighEdge_) cout << "Allowed top mass range is [ " << mTopEdgeLow_ << " , " << mTopEdgeHigh_ << " ]" << endl;
+  else cout << "Allowed top mass range is [ " << mTopEdgeLow_ << " , +inf [" << endl;
 
 
   if(hasHighEdge_ && mTopEdgeHigh_ < mTopEdgeLow_) cout << "Inverted interval" << endl;
@@ -663,17 +665,17 @@ void topSystemChiSquare::calcTopMassRange()
   if(mTopEdgeLow_ < mW)
     {
       deltaMTopRangeLow_=(mW-mTop_)/sigmaMTop_;
-      //cout<<"first "<<deltaMTopRangeLow_<<endl;
+      cout<<"first "<<deltaMTopRangeLow_<<endl;
     }
   else
     {
       deltaMTopRangeLow_=(mTopEdgeLow_-mTop_)/sigmaMTop_; //can be positive or negative
-      //cout<<"mtopedgelow = "<<mTopEdgeLow_<<endl;
-     // cout<<"mtop = "<<mTop_<<endl;
-      //cout<<"sigmamtop = "<<sigmaMTop_<<endl;
-      //cout<<"mtopedge1 = "<<mTopEdge1<<endl;
-      //cout<<"mtopedge2 = "<<mTopEdge2<<endl;
-      //cout<<deltaMTopRangeLow_<<endl;
+      cout<<"mtopedgelow = "<<mTopEdgeLow_<<endl;
+      cout<<"mtop = "<<mTop_<<endl;
+      cout<<"sigmamtop = "<<sigmaMTop_<<endl;
+      cout<<"mtopedge1 = "<<mTopEdge1<<endl;
+      cout<<"mtopedge2 = "<<mTopEdge2<<endl;
+      cout<<deltaMTopRangeLow_<<endl;
     }
 
   if(hasHighEdge_)
@@ -687,11 +689,11 @@ void topSystemChiSquare::calcTopMassRange()
 
   
 
-//  cout << "Setting lower edge delta to " << deltaMTopRangeLow_ << endl;
-//  if(hasHighEdge_) cout << "Setting upper edge delta to " << deltaMTopRangeHigh_ << endl;
+  cout << "Setting lower edge delta to " << deltaMTopRangeLow_ << endl;
+  if(hasHighEdge_) cout << "Setting upper edge delta to " << deltaMTopRangeHigh_ << endl;
 //  
-//  cout << "setting low edge to " << mTop_ + deltaMTopRangeLow_*sigmaMTop_ << endl;
-//  if(hasHighEdge_) cout << "setting high edge to " << mTop_ + deltaMTopRangeHigh_*sigmaMTop_ << endl;
+  cout << "setting low edge to " << mTop_ + deltaMTopRangeLow_*sigmaMTop_ << endl;
+  if(hasHighEdge_) cout << "setting high edge to " << mTop_ + deltaMTopRangeHigh_*sigmaMTop_ << endl;
 
 
   //reset to initial mass value
@@ -701,16 +703,18 @@ void topSystemChiSquare::calcTopMassRange()
       cout << "Setting the top mass to a value that makes the current Z^2 positive" << endl;
 
       deltaMTop_=deltaMTopRangeLow_;
-      while(currentZ2<=0)
+      int whilecount = 0;
+      while(currentZ2<=0 and whilecount<=10000)
 	{
-            //cout<<"mtop is "<<mTop_<<endl;
+            cout<<"mtop is "<<mTop_<<endl;
 	  deltaMTop_+=1.e-3*mTop_;
-	  //cout << "New deltaMTop is " << deltaMTop_ << endl;
-	  //cout << "New top mass is " << mTop_+sigmaMTop_*deltaMTop_ << endl;
+	  cout << "New deltaMTop is " << deltaMTop_ << endl;
+	  cout << "New top mass is " << mTop_+sigmaMTop_*deltaMTop_ << endl;
 	  setupWDaughter2Ellipse();
 	  //WDaughter2Calc_.setupEllipse(mTop_+sigmaMTop_*deltaMTop_,mW,mWDaughter2_);
 	  currentZ2=getZ2(mTop_+sigmaMTop_*deltaMTop_,mW,mWDaughter2_);
-	  //cout << "Current Z^2 is " << currentZ2 << endl;
+	  cout << "Current Z^2 is " << currentZ2 << endl;
+          whilecount++;
 	}
       //WDaughter2Calc_.calcWDaughterEllipse();
       //WDaughter2Calc_.calcExtendedWDaughterEllipse();
@@ -718,14 +722,14 @@ void topSystemChiSquare::calcTopMassRange()
 
   else
     {
-      //cout << "Resetting to starting values" << endl;
+      cout << "Resetting to starting values" << endl;
 
       setupWDaughter2Ellipse();
       //WDaughter2Calc_.setupEllipse(mTop_+sigmaMTop_*deltaMTop_,mW,mWDaughter2_);
       //calcWDaughter2Ellipse();
       //WDaughter2Calc_.calcWDaughterEllipse();
       //WDaughter2Calc_.calcExtendedWDaughterEllipse();
-      //cout << "Resetting second W daughter" << endl;
+      cout << "Resetting second W daughter" << endl;
       //if(tempTheta!=0) resetWDaughter2(tempTheta);
 
       //printWDaughter2();
@@ -736,7 +740,7 @@ void topSystemChiSquare::calcTopMassRange()
 
       //if(tempTheta!=getEllipseAngle()) cout << "Issue resetting ellipse angle to starting value" << endl;
 
-      //cout << "Current ellipse angle is " << tempTheta << endl;
+     // cout << "Current ellipse angle is " << tempTheta << endl;
 
     }
 

@@ -14,6 +14,8 @@
 #include <TTree.h>
 #include <TH1F.h>
 #include <TCanvas.h>
+#include <TLorentzVector.h>
+#include <TRandom3.h>
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
@@ -25,38 +27,38 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > XYZTLorentzVec
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
-class topReconstructionFromLHE {
+class converter {
 public :
-   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
-   Int_t           fCurrent; //!current Tree number in a TChain
+//   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+//   Int_t           fCurrent; //!current Tree number in a TChain
 
    // Declaration of leaf types
-   Int_t           n_particles;
+/*   Int_t           n_particles;
    vector<int>     *PID;
    vector<double>  *P_X;
    vector<double>  *P_Y;
    vector<double>  *P_Z;
    vector<double>  *E;
    vector<double>  *M;
-   vector<int>     *status;
+   vector<int>     *status;*/
 //   vector<int>     *particleID;
 //   vector<int>     *parent1ID;
 //   vector<int>     *parent2ID;
 
    // List of branches
-   TBranch        *b_n_particles;   //!
+/*   TBranch        *b_n_particles;   //!
    TBranch        *b_PID;   //!
    TBranch        *b_P_X;   //!
    TBranch        *b_P_Y;   //!
    TBranch        *b_P_Z;   //!
    TBranch        *b_E;   //!
    TBranch        *b_M;   //!
-   TBranch        *b_status;   //!
+   TBranch        *b_status;   //!*/
 //   TBranch        *b_particleID;   //!
 //   TBranch        *b_parent1ID;   //!
 //   TBranch        *b_parent2ID;   //!
 
-   topReconstructionFromLHE(TTree *tree=0);
+/*   topReconstructionFromLHE(TTree *tree=0);
    virtual ~topReconstructionFromLHE();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -66,17 +68,36 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    void printVector(XYZTLorentzVector&);
-    void moveStatsBox(TH1F*);
-
+    void moveStatsBox(TH1F*);*/
+/*
    double deltaR(XYZTLorentzVector& , XYZTLorentzVector&  );
    double deltaPhi(XYZTLorentzVector& , XYZTLorentzVector&  );
 
    //store minimizer results in a tree;
-   TFile* outFile;
-   TTree* outTree;
+   //TFile* outFile;
+   //TTree* outTree;
    void initOutput(TString, int);
+*/
+   //converter variables
+   vector<double> Px, Py, Pz, En, Ma;
+   vector<int> Pid, mother1, mother2;
+   //double_t  Px, Py, Pz, En, Ma;
+   //double_t  Pid, mother1, mother2;
+   int numpar;
+   vector<double> P_X, P_Y, P_Z, E, M;
+   vector<int> PID;
 
-   //TS and TC hists
+   void Smearer( TLorentzVector& );
+   void Filler ( int, int);
+   void SmearedFiller( int, TLorentzVector&, int);
+   void Loop();
+
+     TRandom3 rand;
+    //rand.SetSeed(10);
+
+};
+
+/*   //TS and TC hists
    TH1F* leptonicBottomPtTS;
    TH1F* leptonicBottomPtTC;
    TH1F* leptonicTopPtTS;
@@ -327,11 +348,9 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-//      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("fixedsinglemuntuple.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
       if (!f || !f->IsOpen()) {
-//         f = new TFile("skimmedntuple.root");
-         f = new TFile("fixedsinglemuntuple.root");
+         f = new TFile("skimmedntuple.root");
       }
       f->GetObject("physics",tree);
 
@@ -373,8 +392,8 @@ double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVect
     }
   return thisDeltaPhi;
 }
-
-void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
+*/
+/*void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
 {
   TString fileName=dir; 
   if(dir!="") fileName+="/";
@@ -792,8 +811,8 @@ void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
   outTree->Branch( "lightJet2DeltaRSmearedBest"     ,  &lightJet2DeltaRSmearedBest    ) ;
 
   //outTree->Branch( "smearingSwitchedLightJetOrdering" ,  &smearingSwitchedLightJetOrdering ) ;
-}
-
+}*/
+/*
 Int_t topReconstructionFromLHE::GetEntry(Long64_t entry)
 {
 // Read contents of entry.
@@ -878,5 +897,5 @@ Int_t topReconstructionFromLHE::Cut(Long64_t entry)
 // returns  1 if entry is accepted.
 // returns -1 otherwise.
    return 1;
-}
+}*/
 #endif // #ifdef topReconstructionFromLHE_cxx
