@@ -20,7 +20,7 @@ void Plotter::DeclareHist(double varstring)
     hists_[histStr] = new TH1D(histChar, histChar, 50, -1, 1);
 }
 
-
+void Plotter::Declare
 
 void Plotter::Loop()
 {

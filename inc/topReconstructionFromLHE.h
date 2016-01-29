@@ -18,6 +18,7 @@
 // Header file for the classes stored in the TTree if any.
 #include <vector>
 #include "Math/GenVector/LorentzVector.h"
+#include "TLorentzVector.h"
 
 using namespace std;
 
@@ -25,10 +26,47 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > XYZTLorentzVec
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
+/*struct handleEvent {
+    TLorentzVector trueParticles [] = {
+}*/
+
+
 class topReconstructionFromLHE {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
+
+    //Declaration of list of variables
+   static vector<string> particleNames;
+    //vector<string> particleNames = {"topQuark", "antiTopQuark", "bJet", "bbarJet", "Wplus", "Wminus", "lepton", "antiNeutrino", "qFromW", "qbarFromW", "higgs", "bFromH", "bbarFromH"};
+   //vector<string> smearedParticlesNames = {"topQuark", "antiTopQuark", "bJet", "bbarJet", "Wplus", "Wminus", "lepton", "antiNeutrino", "qFromW", "qbarFromW", "higgs", "bFromH", "bbarFromH"};
+   //vector<string> bestParticlesNames = {
+   
+    //Declaration and definition of structure
+    struct handleEvent{
+
+        map< string, XYZTLorentzVector* > trueParticles, smearedParticles, bestParticles;
+
+        handleEvent() {
+            
+            for (vector<string>::const_iterator t = particleNames.begin(); t < particleNames.end(); t++){
+                string name = *t;
+                //char namec = name.c_str();
+                trueParticles[name] = new XYZTLorentzVector();
+                smearedParticles[name] = new XYZTLorentzVector();
+                bestParticles[name] = new XYZTLorentzVector();
+            }
+        }
+    };
+
+    typedef map< string, map< string, map< string, TH1D* >>> hmap3;
+    typedef map< string, map< string, TH1D* >> hmap2;
+    typedef map< string, TH1D* > hmap1;
+    hmap3 histdif;
+
+    typedef map< string, TCanvas* > cmap1;
+    typedef map< string, cmap1 > cmap2;
+    cmap2 canvasdif;
 
    // Declaration of leaf types
    Int_t           n_particles;
@@ -66,7 +104,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    void printVector(XYZTLorentzVector&);
-    void moveStatsBox(TH1F*);
+    void moveStatsBox(TH1D*);
 
    double deltaR(XYZTLorentzVector& , XYZTLorentzVector&  );
    double deltaPhi(XYZTLorentzVector& , XYZTLorentzVector&  );
@@ -317,6 +355,57 @@ public :
 
    bool smearingSwitchedLightJetOrdering;
 
+    private:
+    typedef void (*FnPtr)(int, double, double, double, double);
+    map < string, FnPtr > getBestMap;
+    //map < string, array<string, 2> > nameMap = {
+    //        {"bottom"
+    
+    void DeclareMaps();
+    void DeclareHists();
+    void FillHists(handleEvent, bool);
+    void DeclareCanvases();
+    void PlotHists();
+    void DeclareOutBranches();
+
+    XYZTLorentzVector testvec;
+
+
+    handleEvent evh_outside;
+
+    vector<string> names = {"Leptonic_Bottom", "Hadronic_Bottom", "Leptonic_Top", "Hadronic_Top", "Leptonic_W", "Hadronic_W", "Lepton_or_AntiLepton", "Neutrino_or_AntiNeutrino", "Quark_from_W", "Antiquark_from_W", "Higgs", "B_from_H", "Bbar_from_H"};
+    vector<string> varTypes = {"Pt", "Eta", "Phi"};
+    vector<string> difTypes = {"smearedTrue", "bestTrue"};
+
+    vector< vector< string> > nameMap = {{"0", "Leptonic_Bottom", "bottom"},
+                                         {"0", "Hadronic_Bottom", "antiBottom"},
+                                         {"0", "Leptonic_Top", "top"},
+                                         {"0", "Hadronic_Top", "antiTop"},
+                                         {"0", "Leptonic_W", "Wplus"},
+                                         {"0", "Hadronic_W", "Wminus"},
+                                         {"0", "Lepton_or_AntiLepton", "antiLepton"},
+                                         {"0", "Neutrino_or_AntiNeutrino", "neutrino"},
+                                         {"0", "Quark_from_W", "qFromW"},
+                                         {"0", "Antiquark_from_W", "qbarFromW"},
+                                         {"0", "Higgs", "higgs"},
+                                         {"0", "B_from_H", "bFromH"},
+                                         {"0", "Bbar_from_H", "bbarFromH"},
+                                         {"1", "Leptonic_Bottom", "antiBottom"},
+                                         {"1", "Hadronic_Bottom", "bottom"},
+                                         {"1", "Leptonic_Top", "antiTop"},
+                                         {"1", "Hadronic_Top", "top"},
+                                         {"1", "Leptonic_W", "Wminus"},
+                                         {"1", "Hadronic_W", "Wplus"},
+                                         {"1", "Lepton_or_AntiLepton", "lepton"},
+                                         {"1", "Neutrino_or_AntiNeutrino", "antiNeutrino"},
+                                         {"1", "Quark_from_W", "qFromW"},
+                                         {"1", "Antiquark_from_W", "qbarFromW"},
+                                         {"1", "Higgs", "higgs"},
+                                         {"1", "B_from_H", "bFromH"},
+                                         {"1", "Bbar_from_H", "bbarFromH"}};
+ 
+
+
 };
 
 #endif
@@ -337,6 +426,16 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 
    }
    Init(tree);
+
+    string particleNameArray [15] = {"top", "antiTop", "bottom", "antiBottom", "Wplus", "Wminus", "lepton", "antiNeutrino", "antiLepton", "neutrino", "qFromW", "qbarFromW", "higgs", "bFromH", "bbarFromH"};
+    particleNames.clear();
+    for (int i = 0; i<15; i++){
+        particleNames.push_back(particleNameArray[i]);
+     }
+    //particleNames(particleNameArray, particleNameArray+13);
+    
+    //getBestMap["bottom"] = 
+
 }
 
 topReconstructionFromLHE::~topReconstructionFromLHE()
@@ -460,6 +559,9 @@ void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
 //  higgsPtSC = new TH1F("higgsPtSC","higgsPtSC",numbins,leftbound,rightbound);
 //  chiggsPtSC = new TCanvas("higgsPtSC","higgsPtSC",canvsize1,canvsize2);
 
+    //XYZTLorentzVector testvec;
+
+  /*
   outTree->Branch( "eventNumber"  ,  &eventNumber  ) ;
 
   outTree->Branch( "innerMinStatus"  ,  &innerMinStatus  ) ;
@@ -790,7 +892,7 @@ void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
   outTree->Branch( "lightJet2DeltaPxSmearedBest"    ,  &lightJet2DeltaPxSmearedBest   ) ;
   outTree->Branch( "lightJet2DeltaPySmearedBest"    ,  &lightJet2DeltaPySmearedBest   ) ;
   outTree->Branch( "lightJet2DeltaRSmearedBest"     ,  &lightJet2DeltaRSmearedBest    ) ;
-
+*/
   //outTree->Branch( "smearingSwitchedLightJetOrdering" ,  &smearingSwitchedLightJetOrdering ) ;
 }
 

@@ -6,6 +6,8 @@
 #include "hadronicTopSystemChiSquare.h"
 #include "leptonicTopSystemChiSquare.h"
 #include "lightJetChiSquareMinimumSolver.h"
+#include "TLorentzVector.h"
+#include <map>
 
 class topEventMinimizer
 {
@@ -158,6 +160,15 @@ class topEventMinimizer
 */
   void setBestValues();
 
+  void setupMap();
+  void testfunc();
+
+    typedef void (topEventMinimizer::*FnPtr)(int, double&, double&, double&, double&);
+    map < string, FnPtr > funcMap;
+
+    //typedef void (topEventMinimizer::FnTestPtr)();
+    //map < string, FnTestPtr* > testMap;
+
  public:
 
   topEventMinimizer(vector<XYZTLorentzVector> ,
@@ -255,6 +266,9 @@ class topEventMinimizer
   void getTop(int, double& , double& , double& , double& );
   void getW(int, double& , double& , double& , double& );
   void getNonTopObject(int, double& , double& );
+  void getNonTopObject4(int, double&, double&, double&, double&);
+
+  XYZTLorentzVector getConverter(string, int);
 
   void plotEllipses(TString);
 

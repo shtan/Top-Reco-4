@@ -30,6 +30,8 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
 {
   //cout << "Basic constructor" << endl;
 
+    setupMap();
+
   calcNonTopMomentum();
 
   nonTopChiSquare_.setupEquations(nonTopObjects_,nonTopObjectPtWidths_,nonTopObjectPhiWidths_,nonTopObjectEtaWidths_);
@@ -76,6 +78,8 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> allObjects,
 {
   //cout << "constructor with input tops" << endl;
 
+    setupMap();
+
   if(!checkInputSizes()) return;
   
   //setBJets();
@@ -111,6 +115,22 @@ topEventMinimizer::~topEventMinimizer()
   //delete innerMin_;
   //delete outerMin_;
 }
+
+void topEventMinimizer::setupMap(){
+    //typedef void *FnTestPtr();
+    //map < string, FnTestPtr > testMap;
+    //testMap["lah"] = topEventMinimizer::testfunc;
+    //typedef void (*FnPtr)(int, double, double, double, double);
+    //map < string, FnPtr > funcMap;
+    funcMap["getTop"] = &topEventMinimizer::getTop;
+    funcMap["getW"] = &topEventMinimizer::getW;
+    funcMap["getNonTopObject4"] = &topEventMinimizer::getNonTopObject4;
+    funcMap["getBJet"] = &topEventMinimizer::getBJet;
+    funcMap["getWDaughter1"] = &topEventMinimizer::getWDaughter1;
+    funcMap["getWDaughter2"] = &topEventMinimizer::getWDaughter2;
+}
+
+void topEventMinimizer::testfunc(){}
 
 bool topEventMinimizer::checkInputSizes()
 {
@@ -1115,6 +1135,45 @@ void topEventMinimizer::getWDaughter2(int whichTop, double& px, double& py, doub
   (topSystemChiSquares_.at(whichTop)).first->getWDaughter2(px,py,pz,e);
 }
 
+XYZTLorentzVector topEventMinimizer::getConverter(string whichFunc, int whichTop)
+{
+   /* typedef void (*FnPtr)(int, double, double, double, double);
+    map < string, FnPtr > funcMap;
+    funcMap["getTop"] = getTop;
+    funcMap["getW"] = getW;
+    funcMap["getNonTopObject"] = getNonTopObject;
+    funcMap["getBJet"] = getBJet;
+    funcMap["getWDaughter1"] = getWDaughter1;
+    funcMap["getWDaughter2"] = getWDaughter2;*/
+
+    double px, py, pz, e;
+    px = 0;
+    py = 0;
+    pz = 0;
+    e = 0;
+
+    //typedef map<string, TLorentzVector> tmap;
+    //for (tmap::iterator h = funcMap.begin(); h != funcMap.end(); h++){
+    //    std::size_t foundString = (h->first).find( whichFunc );
+    //    if (foundString != string::npos){
+            
+    //FnPtr f = funcMap[whichFunc];
+    //(*f)(whichTop, px, py, pz, e);
+    
+    //if (whichFunc == "getNonTopObject"){
+        
+    //}
+
+    (this->*funcMap[whichFunc])(whichTop, px, py, pz, e);
+    XYZTLorentzVector toreturn;
+    toreturn.SetPxPyPzE(px, py, pz, e);
+
+    return toreturn;
+
+}
+
+
+
 void topEventMinimizer::getTop(int whichTop, double& px, double& py, double& pz, double& e)
 {
   px=0;
@@ -1157,6 +1216,21 @@ void topEventMinimizer::getNonTopObject(int whichObject, double& px, double& py)
 
   px=nonTopObjects_.at(whichObject).Px()+nonTopObjects_PxDeltasBest_.at(whichObject);
   py=nonTopObjects_.at(whichObject).Py()+nonTopObjects_PyDeltasBest_.at(whichObject);
+}
+
+void topEventMinimizer::getNonTopObject4(int whichObject, double& px, double& py, double& pz, double& e)
+{
+  px=0;
+  py=0;
+  pz=0;
+  e=0;
+
+  if(whichObject>=(int)nonTopObjects_.size()) return;
+
+  px=nonTopObjects_.at(whichObject).Px()+nonTopObjects_PxDeltasBest_.at(whichObject);
+  py=nonTopObjects_.at(whichObject).Py()+nonTopObjects_PyDeltasBest_.at(whichObject);
+  pz=nonTopObjects_.at(whichObject).Pz();
+  e=sqrt( pow( nonTopObjects_.at(whichObject).M(), 2 ) + pow(px,2) + pow(py,2) + pow(pz,2) );
 }
 
 void topEventMinimizer::plotEllipses(TString plotName)
