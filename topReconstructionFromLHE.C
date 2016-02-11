@@ -29,15 +29,78 @@ int main(){
     topReconstructionFromLHE t;
     t.Loop("output_files",0,1);
 
+    //t.Plot("plots");
+
     return 0;
 }
 
 vector <string> topReconstructionFromLHE::particleNames;
+vector <string> topReconstructionFromLHE::names;
+vector <string> topReconstructionFromLHE::chinames;
 
-void topReconstructionFromLHE::DeclareOutBranches(){
+/*void topReconstructionFromLHE::DeclareOutBranches(){
     outTree->Branch( "test", &top1SmearedPt);
     outTree->Branch( "testvec", &testvec);
     outTree->Branch( "stringtest", &(*evh_outside.smearedParticles["top"]) );
+}*/
+
+void topReconstructionFromLHE::DeclareOutBranches(handleEvent evh){
+    //outTree->Branch( "test", &top1SmearedPt);
+    //outTree->Branch( "testvec", &testvec);
+    for (vector<string>::const_iterator t = particleNames.begin(); t < particleNames.end(); t++){
+        outTree->Branch( (*t + "_smeared" ).c_str(), evh.smearedParticles[*t] );
+        outTree->Branch( (*t + "_true" ).c_str(), evh.trueParticles[*t] );
+        outTree->Branch( (*t + "_best" ).c_str(), evh.bestParticles[*t] );
+    }
+    outTree->Branch( "leptonFlag", &evh.leptonFlag );
+    for (vector<string>::const_iterator t = names.begin(); t < names.end(); t++){
+        outTree->Branch( ("LH_" + *t + "_smeared" ).c_str(), evh.smearedParticlesLH[*t] );
+        outTree->Branch( ("LH_" + *t + "_true" ).c_str(), evh.trueParticlesLH[*t] );
+        outTree->Branch( ("LH_" + *t + "_best" ).c_str(), evh.bestParticlesLH[*t] );
+    }
+    outTree->Branch( "eventNumber"  ,  &eventNumber  ) ;
+    outTree->Branch( "innerMinStatus"  ,  &innerMinStatus  ) ;
+    outTree->Branch( "outerMinStatus"  ,  &outerMinStatus  ) ;
+    outTree->Branch( "outerMinEdm"     ,  &outerMinEdm     );
+
+    outTree->Branch( "totalChi2"     ,  &totalChi2     ) ;
+    outTree->Branch( "topSystemChi2" ,  &topSystemChi2 ) ;
+    outTree->Branch( "topMassChi2"   ,  &topMassChi2   ) ;
+    outTree->Branch( "hadronicChi2"  ,  &hadronicChi2  );
+    outTree->Branch( "nonTopChi2"    ,  &nonTopChi2    ) ;
+    //outTree->Branch( "evh", &evh );
+    
+}
+
+void topReconstructionFromLHE::DeclareInBranchesForPlotting(handleEvent &evh){
+    for (vector<string>::const_iterator t = particleNames.begin(); t < particleNames.end(); t++){
+        inTreePlot->SetBranchAddress( (*t + "_smeared" ).c_str(), &(evh.smearedParticles[*t]) );
+        inTreePlot->SetBranchAddress( (*t + "_true" ).c_str(), &(evh.trueParticles[*t]) );
+        inTreePlot->SetBranchAddress( (*t + "_best" ).c_str(), &(evh.bestParticles[*t]) );
+    }
+    inTreePlot->SetBranchAddress( "leptonFlag", &evh.leptonFlag );
+    for (vector<string>::const_iterator t = names.begin(); t < names.end(); t++){
+        inTreePlot->SetBranchAddress( ("LH_" + *t + "_smeared" ).c_str(), &(evh.smearedParticlesLH[*t]) );
+        inTreePlot->SetBranchAddress( ("LH_" + *t + "_true" ).c_str(), &(evh.trueParticlesLH[*t]) );
+        inTreePlot->SetBranchAddress( ("LH_" + *t + "_best" ).c_str(), &(evh.bestParticlesLH[*t]) );
+    }
+    inTreePlot->SetBranchAddress( "eventNumber"  ,  &eventNumber  ) ;
+    inTreePlot->SetBranchAddress( "innerMinStatus"  ,  &innerMinStatus  ) ;
+    inTreePlot->SetBranchAddress( "outerMinStatus"  ,  &outerMinStatus  ) ;
+    inTreePlot->SetBranchAddress( "outerMinEdm"     ,  &outerMinEdm     );
+
+/*    inTreePlot->SetBranchAddress( "totalChi2"     ,  &totalChi2     ) ;
+    inTreePlot->SetBranchAddress( "topSystemChi2" ,  &topSystemChi2 ) ;
+    inTreePlot->SetBranchAddress( "topMassChi2"   ,  &topMassChi2   ) ;
+    inTreePlot->SetBranchAddress( "hadronicChi2"  ,  &hadronicChi2  );
+    inTreePlot->SetBranchAddress( "nonTopChi2"    ,  &nonTopChi2    ) ;*/
+    
+    inTreePlot->SetBranchAddress( "totalChi2"     ,  &(evh.chiSquareds["total"]) ) ;
+    inTreePlot->SetBranchAddress( "topSystemChi2" ,  &(evh.chiSquareds["topSystem"]) ) ;
+    inTreePlot->SetBranchAddress( "topMassChi2"   ,  &(evh.chiSquareds["topMass"])   ) ;
+    inTreePlot->SetBranchAddress( "hadronicChi2"  ,  &(evh.chiSquareds["hadronic"])  );
+    inTreePlot->SetBranchAddress( "nonTopChi2"    ,  &(evh.chiSquareds["nonTop"])    ) ;
+    
 }
 
 void topReconstructionFromLHE::DeclareMaps(){
@@ -51,15 +114,20 @@ void topReconstructionFromLHE::DeclareHists(){
 
     for ( vector<string>::iterator name = names.begin(); name != names.end(); name++){
         for ( vector<string>::iterator vartype = varTypes.begin(); vartype != varTypes.end(); vartype++){
-            if (*vartype == "Pt") {lbound = -150; rbound = 150;}
+            if (*vartype == "Pt" or *vartype == "Px" or *vartype == "Py") {lbound = -150; rbound = 150;}
             if (*vartype == "Eta") {lbound = -5; rbound = 5;}
             if (*vartype == "Phi") {lbound = -5; rbound = 5;}
+            if (*vartype == "M") {lbound = 0; rbound = 230;}
 
             for ( vector<string>::iterator diftype = difTypes.begin(); diftype != difTypes.end(); diftype++){
                 histdif[*diftype][*vartype][*name] = new TH1D( (*name + "_" + *vartype + "_" + *diftype).c_str(),
                         (*name + "_" + *vartype + "_" + *diftype).c_str(), 100, lbound, rbound);
             }
         }
+    }
+
+    for ( vector<string>::iterator chiname = chinames.begin(); chiname != chinames.end(); chiname++){
+        histchi[*chiname] = new TH1D( ("ChiSquared_" + *chiname).c_str(), ("ChiSquared_" + *chiname).c_str(), 100, 0, 10);
     }
        
 }
@@ -70,51 +138,98 @@ void topReconstructionFromLHE::DeclareCanvases(){
             canvasdif[*vartype][*name] = new TCanvas( ("c_" + *name + "_" + *vartype).c_str(), ("c_" + *name + "_" + *vartype).c_str(), 700, 700);
         }
     }
+
+    for ( vector<string>::iterator chiname = chinames.begin(); chiname != chinames.end(); chiname++){
+        canvaschi[*chiname] = new TCanvas( ("c_ChiSquared_" + *chiname).c_str(), ("c_ChiSquared_" + *chiname).c_str(), 700, 700);
+    }
+
 }
 
-void topReconstructionFromLHE::FillHists(handleEvent evh, bool leptonFlag){
+void topReconstructionFromLHE::FillLH(handleEvent evh){
+    for( vector<string>::iterator name = names.begin(); name != names.end(); name++){
+        string leptonFlagStr = static_cast<ostringstream*>( &(ostringstream() << evh.leptonFlag) )->str();
+        string pname = "noname";
+        for ( vector< vector< string>>::iterator nameMapIt = nameMap.begin(); nameMapIt != nameMap.end(); nameMapIt++){
+            if (leptonFlagStr == nameMapIt->at(0) and *name == nameMapIt->at(1)){
+                pname = nameMapIt->at(2);
+            }
+        }
+        *evh.smearedParticlesLH[*name] = *evh.smearedParticles[pname];
+        *evh.bestParticlesLH[*name] = *evh.bestParticles[pname];
+        *evh.trueParticlesLH[*name] = *evh.trueParticles[pname];
+    }
+}
+
+void topReconstructionFromLHE::FillHists(handleEvent evh){
+    //cout<<"1"<<endl;
     for( hmap3::iterator h3 = histdif.begin(); h3 != histdif.end(); h3++){
         hmap2 histdif2 = h3->second;
         string diftype = h3->first;
+        //cout<<"2"<<endl;
             for( hmap2::iterator h2 = histdif2.begin(); h2 != histdif2.end(); h2++){
                 hmap1 histdif1 = h2->second;
                 string vartype = h2->first;
+                //cout<<"3"<<endl;
                 for( hmap1::iterator h1 = histdif1.begin(); h1 != histdif1.end(); h1++){
                     //TH1D* hist = h1->second;
                     string name = h1->first;
-                    string leptonFlagStr = static_cast<ostringstream*>( &(ostringstream() << leptonFlag) )->str();
+                    string leptonFlagStr = static_cast<ostringstream*>( &(ostringstream() << evh.leptonFlag) )->str();
                     string pname = "noname";
 
-                    cout<< name <<" "<< vartype<<endl;
+                    //cout<< name <<" "<< vartype<<endl;
 
                     for ( vector< vector< string>>::iterator nameMapIt = nameMap.begin(); nameMapIt != nameMap.end(); nameMapIt++){
                         if (leptonFlagStr == nameMapIt->at(0) and name == nameMapIt->at(1)){
                             pname = nameMapIt->at(2);
-                            cout<< pname <<endl;
+                            //cout<< pname <<endl;
                         }
                     }
 
                     if( diftype == "smearedTrue" ){
                         if( vartype == "Pt" ){
                             histdif[diftype][vartype][name]->Fill( evh.smearedParticles[pname]->Pt() - evh.trueParticles[pname]->Pt() );
+                        } else if( vartype == "Px" ){
+                            histdif[diftype][vartype][name]->Fill( evh.smearedParticles[pname]->Px() - evh.trueParticles[pname]->Px() );
+                        } else if( vartype == "Py" ){
+                            histdif[diftype][vartype][name]->Fill( evh.smearedParticles[pname]->Py() - evh.trueParticles[pname]->Py() );
+                        } else if( vartype == "M" ){
+                            histdif[diftype][vartype][name]->Fill( evh.smearedParticles[pname]->M() - evh.trueParticles[pname]->M() );
+                            //cout<<"4"<<endl;
                         } else if( vartype == "Eta" ){
                             histdif[diftype][vartype][name]->Fill( evh.smearedParticles[pname]->Eta() - evh.trueParticles[pname]->Eta() );
+                            //cout<<"4"<<endl;
                         } else if( vartype == "Phi" ){
                             histdif[diftype][vartype][name]->Fill( evh.smearedParticles[pname]->Phi() - evh.trueParticles[pname]->Phi() );
+                            //cout<<"4"<<endl;
                         }
 
                     } else if( diftype == "bestTrue" ){
                         if( vartype == "Pt" ){
                             histdif[diftype][vartype][name]->Fill( evh.bestParticles[pname]->Pt() - evh.trueParticles[pname]->Pt() );
+                        } else if( vartype == "Px" ){
+                            histdif[diftype][vartype][name]->Fill( evh.bestParticles[pname]->Px() - evh.trueParticles[pname]->Px() );
+                        } else if( vartype == "Py" ){
+                            histdif[diftype][vartype][name]->Fill( evh.bestParticles[pname]->Py() - evh.trueParticles[pname]->Py() );
+                        } else if( vartype == "M" ){
+                            histdif[diftype][vartype][name]->Fill( evh.bestParticles[pname]->M() - evh.trueParticles[pname]->M() );
+                            //cout<<"4"<<endl;
                         } else if( vartype == "Eta" ){
                             histdif[diftype][vartype][name]->Fill( evh.bestParticles[pname]->Eta() - evh.trueParticles[pname]->Eta() );
+                            //cout<<"4"<<endl;
                         } else if( vartype == "Phi" ){
                             histdif[diftype][vartype][name]->Fill( evh.bestParticles[pname]->Phi() - evh.trueParticles[pname]->Phi() );
+                            //cout<<"4"<<endl;
                         }
                     }
                 }
             }
     }
+
+    for( hmap1::iterator h1 = histchi.begin(); h1 != histchi.end(); h1++){
+        string chiname = h1->first;
+        histchi[chiname]->Fill( evh.chiSquareds[chiname] );
+    }
+
 
 }
 
@@ -128,13 +243,13 @@ void topReconstructionFromLHE::PlotHists(){
 
     for ( vector<string>::iterator name = names.begin(); name != names.end(); name++){
         for ( vector<string>::iterator vartype = varTypes.begin(); vartype != varTypes.end(); vartype++){
-            if ( *vartype == "Pt" ) {unit = "(GeV)";}
+            if ( *vartype == "Pt" or *vartype == "Px" or *vartype == "Py" or *vartype == "M" ) {unit = "(GeV)";}
             else {unit = "";}
             histdif["smearedTrue"][*vartype][*name]->SetFillColor(mc1);
             histdif["smearedTrue"][*vartype][*name]->SetLineColor(mc1);
             histdif["bestTrue"][*vartype][*name]->SetLineColor(mc2);
 
-            histdif["smearedTrue"][*vartype][*name]->GetXaxis()->SetTitle( (*vartype + "Resolution " + unit).c_str() );
+            histdif["smearedTrue"][*vartype][*name]->GetXaxis()->SetTitle( (*vartype + " Resolution " + unit).c_str() );
             histdif["smearedTrue"][*vartype][*name]->GetYaxis()->SetTitle( "Events" );
             histdif["smearedTrue"][*vartype][*name]->SetTitle( (*name + "_" + *vartype).c_str());
             histdif["smearedTrue"][*vartype][*name]->SetMaximum( max( histdif["smearedTrue"][*vartype][*name]->GetMaximum(), histdif["bestTrue"][*vartype][*name]->GetMaximum() ) +1 );
@@ -152,7 +267,53 @@ void topReconstructionFromLHE::PlotHists(){
 
         }
     }
+
+    for ( vector<string>::iterator chiname = chinames.begin(); chiname != chinames.end(); chiname++){
+        histchi[*chiname]->SetTitle( ("chiSquared_" + *chiname).c_str());
+        canvaschi[*chiname]->cd();
+        histchi[*chiname]->Draw("HIST");
+        canvaschi[*chiname]->Write();
+        canvaschi[*chiname]->ls();
+    }
+
   
+}
+
+void topReconstructionFromLHE::Plot(TString dir)
+{
+
+    inFilePlot = new TFile("output_files/output_0.root");
+    inTreePlot = (TTree*)inFilePlot->Get("tree");
+
+    outFilePlot = new TFile( dir+"/output_0_plots.root", "RECREATE");
+
+    initPlotting(dir);
+
+    handleEvent evh;
+    DeclareInBranchesForPlotting(evh);
+    DeclareHists();
+
+    int numEvents = inTreePlot->GetEntries();
+
+    for (int i = 0; i < numEvents; i++){
+        cout<<"blah"<<endl;
+        inTreePlot->GetEntry(i);
+        cout<<"balh"<<endl;
+        if ( innerMinStatus == 0 and outerMinStatus == 0 ){
+            FillHists(evh);
+        }
+        cout<<"after fillhists"<<endl;
+    }
+    cout<<"Opening outFile"<<endl;
+    outFilePlot->cd();
+    DeclareCanvases();
+    PlotHists();
+    outFilePlot->Write();
+    outFilePlot->Close();
+
+    cout<<"Done!"<<endl;
+
+
 }
 
 void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
@@ -208,7 +369,7 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
 int jStart = 0;
    //int jFinish = jStart + (nentries+whichLoop)/maxLoops;
    std::cout<<"number of entries = "<<nentries<<std::endl;
-   int jFinish = 1000;
+   int jFinish = 1;
 
    std::cout<<jStart<<std::endl;
    std::cout<<"nentries = "<< nentries<<std::endl;
@@ -217,8 +378,10 @@ int jStart = 0;
     handleEvent evtemp;
     evh_outside = evtemp;
 
+    handleEvent evh;
+
    DeclareHists();
-   DeclareOutBranches();
+   DeclareOutBranches(evh);
 
 
    for (Long64_t jentry=jStart; jentry<jFinish; jentry++) {
@@ -232,13 +395,14 @@ int jStart = 0;
 
       XYZTLorentzVector smearedOtherLightParton;
       std::vector<XYZTLorentzVector> smearedOtherLightPartons;
-      bool leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar branch is the leptonic one), 0 otherwise.
+//      bool leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar branch is the leptonic one), 0 otherwise.
+      evh.leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar branch is the leptonic one), 0 otherwise.
 
       //double METx(0.), METy(0.);
       int iJet = 0;
 
         //Declare structure (used as a container) to store all the particles involved in this event
-        handleEvent evh;
+        //handleEvent evh;
 cout<<"bottompx before set = "<<evh.smearedParticles["bottom"]->Px();
 
 
@@ -267,6 +431,10 @@ cout<<"bottompx before set = "<<evh.smearedParticles["bottom"]->Px();
 
           std::cout<<"after set met"<<std::endl;
 cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
+cout<<"smeared bfromH Px = " << evh.smearedParticles["bFromH"]->Px();
+cout<<"smeared bfromH Py = " << evh.smearedParticles["bFromH"]->Py();
+cout<<"smeared bbarfromH Px = " << evh.smearedParticles["bbarFromH"]->Px();
+cout<<"smeared bbarfromH Py = " << evh.smearedParticles["bbarFromH"]->Py();
 
         cout<<"Setting light partons"<<endl;
         for ( int ii=0; ii < ( (int)PID->size() - 21 ); ii++){
@@ -291,7 +459,7 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
                 *(evh.smearedParticles["top"]) = *(evh.smearedParticles["Wplus"]) + *(evh.smearedParticles["bottom"]);
                 *(evh.smearedParticles["antiTop"]) = *(evh.smearedParticles["Wminus"]) + *(evh.smearedParticles["antiBottom"]);
 
-                  leptonFlag = 1;
+                  evh.leptonFlag = 1;
                   leptonToAdd = *evh.smearedParticles["lepton"];
                   leptonToAddGen = *evh.trueParticles["lepton"];
           } else if (PID->at(0) == -13){
@@ -305,7 +473,7 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
                 *(evh.smearedParticles["top"]) = *(evh.smearedParticles["Wplus"]) + *(evh.smearedParticles["bottom"]);
                 *(evh.smearedParticles["antiTop"]) = *(evh.smearedParticles["Wminus"]) + *(evh.smearedParticles["antiBottom"]);
 
-                  leptonFlag = 0;
+                  evh.leptonFlag = 0;
                   leptonToAdd = *evh.smearedParticles["antiLepton"];
                   leptonToAddGen = *evh.trueParticles["antiLepton"];
           }
@@ -358,7 +526,7 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
 			   );
 
       std::cout<<"before add tops"<<std::endl;
-      if (leptonFlag == 0){
+      if (evh.leptonFlag == 0){
             ev.addLeptonicTop(evh.smearedParticles["bottom"]->Px(), evh.smearedParticles["bottom"]->Py(), evh.smearedParticles["bottom"]->Pz(), evh.smearedParticles["bottom"]->E(),
                     sqrt(evh.smearedParticles["bottom"]->Pt()), sigmaEtaJet, sigmaPhiJet,
                     evh.smearedParticles["antiLepton"]->Px(), evh.smearedParticles["antiLepton"]->Py(), evh.smearedParticles["antiLepton"]->Pz(), evh.smearedParticles["antiLepton"]->E(),
@@ -377,7 +545,7 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
       }
 
 
-      if (leptonFlag == 1){
+      if (evh.leptonFlag == 1){
             ev.addHadronicTop(evh.smearedParticles["bottom"]->Px(), evh.smearedParticles["bottom"]->Py(), evh.smearedParticles["bottom"]->Pz(), evh.smearedParticles["bottom"]->E(),
                     sqrt(evh.smearedParticles["bottom"]->Pt()), sigmaEtaJet, sigmaPhiJet,
                     evh.smearedParticles["qFromW"]->Px(), evh.smearedParticles["qFromW"]->Py(), evh.smearedParticles["qFromW"]->Pz(), evh.smearedParticles["qFromW"]->E(),
@@ -441,7 +609,7 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
         *evh.bestParticles["top"] = ev.getConverter("getTop", 0);
         *evh.bestParticles["bottom"] = ev.getConverter("getBJet", 0);
         *evh.bestParticles["Wplus"] = ev.getConverter("getW", 0);
-        if (leptonFlag == 0){
+        if (evh.leptonFlag == 0){
             *evh.bestParticles["antiLepton"] = ev.getConverter("getWDaughter1", 0);
             *evh.bestParticles["neutrino"] = ev.getConverter("getWDaughter2", 0);
         } else {
@@ -453,7 +621,7 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
         *evh.bestParticles["antiTop"] = ev.getConverter("getTop", 1);
         *evh.bestParticles["antiBottom"] = ev.getConverter("getBJet", 1);
         *evh.bestParticles["Wminus"] = ev.getConverter("getW", 1);
-        if (leptonFlag == 0){
+        if (evh.leptonFlag == 0){
             *evh.bestParticles["qFromW"] = ev.getConverter("getWDaughter1", 1);
             *evh.bestParticles["qbarFromW"] = ev.getConverter("getWDaughter2", 1);
         } else {
@@ -472,8 +640,9 @@ cout<<"bottompx after set = "<<evh.smearedParticles["bottom"]->Px();
         //Fill Hists
         std::cout<<"Filling hists"<<endl;
         if( innerMinStatus == 0 and outerMinStatus == 0 ){
-            FillHists(evh, leptonFlag);
+            FillHists(evh);
         }
+        FillLH(evh);
 
     cout <<"Printing P's"<<endl;
     cout << evh.smearedParticles["top"]->Px()<<endl;

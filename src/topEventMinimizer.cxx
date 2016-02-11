@@ -449,7 +449,7 @@ void topEventMinimizer::printNonTopObjects()
 
 void topEventMinimizer::buildBestNonTopObjects()
 {
-  //nonTopChiSquare_.printResults();
+  nonTopChiSquare_.printResults();
 
   vector<double>* minJetDeltasX = nonTopChiSquare_.getMinDeltasX();
   vector<double>* minJetDeltasY = nonTopChiSquare_.getMinDeltasY();
@@ -605,13 +605,14 @@ void topEventMinimizer::findStartingValues(int nPoints)
   //cout<<"before calc hadchi"<<endl;
   calcHadronicChiSquare();
 
-  //cout << "Corrected non-top objects:" << endl;
-  //nonTopChiSquare_.printResults();
+  cout << "Corrected non-top objects:" << endl;
+  nonTopChiSquare_.printResults();
 }
 
 double topEventMinimizer::innerMinimizationOperator(const double* inputDeltas)
 {
-    //cout<<"at innermin operator"<<endl;
+    cout<<"at innermin operator"<<endl;
+    printTopConstituents();
   vector<double> ellipseAnglesCurrent;
   vector<double> topMassDeltasCurrent;
 
@@ -638,16 +639,16 @@ double topEventMinimizer::innerMinimizationOperator(const double* inputDeltas)
   calcTopMassChiSquare();
   double innerChi2=nonTopChi2_+hadChi2_+topMassChi2_;
 
-  //cout<< "Innermin"<<endl;
-  //cout<< "Innermin hadronic chi2 = " << hadChi2_ <<endl;
-  //cout<< "Innermin nontopchi2 = " << nonTopChi2_ <<endl;
+  cout<< "Innermin"<<endl;
+  cout<< "Innermin hadronic chi2 = " << hadChi2_ <<endl;
+  cout<< "Innermin nontopchi2 = " << nonTopChi2_ <<endl;
 
 
   
 
   if(innerChi2 < thisInnerChi2Best_)
     {
-      //cout << "I found a new inner chi^2 minimum: " << innerChi2 << endl;
+      cout << "I found a new inner chi^2 minimum: " << innerChi2 << endl;
 
       thisInnerChi2Best_=innerChi2;
       thisNonTopChi2Best_=nonTopChi2_;
@@ -666,7 +667,7 @@ double topEventMinimizer::innerMinimizationOperator(const double* inputDeltas)
 
 void topEventMinimizer::minimizeNonTopChiSquare()
 {
-  //cout << "Doing inner minimization" << endl;
+  cout << "Doing inner minimization" << endl;
 
   innerMin_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
   innerMin_->SetMaxFunctionCalls(1000000);
@@ -707,14 +708,14 @@ void topEventMinimizer::minimizeNonTopChiSquare()
       parName+=iTop;
       if(hasHighEdge)
 	{
-	  //cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
-	  //cout << "deltaMTop range is " << deltaMTopRangeLow << " to " << deltaMTopRangeHigh << endl;
+	  cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
+	  cout << "deltaMTop range is " << deltaMTopRangeLow << " to " << deltaMTopRangeHigh << endl;
 	  innerMin_->SetLimitedVariable(iPar,string(parName),topMassDeltas_.at(iTop),0.1,deltaMTopRangeLow,deltaMTopRangeHigh);
 	}
       else
 	{
-	  //cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
-          //cout << "deltaMTop lower edge is "<< deltaMTopRangeLow << endl;
+	  cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
+          cout << "deltaMTop lower edge is "<< deltaMTopRangeLow << endl;
 	  innerMin_->SetLowerLimitedVariable(iPar,string(parName),topMassDeltas_.at(iTop),0.1,deltaMTopRangeLow);
 	}
       iPar+=1;
@@ -723,12 +724,12 @@ void topEventMinimizer::minimizeNonTopChiSquare()
 
 
 
-  //cout << "Starting the inner minimization" << endl;
+  cout << "Starting the inner minimization" << endl;
   innerMin_->Minimize();
 
 
-  //cout << "Ending value inner chi^2 reported by Minuit is " << innerMin_->MinValue() << endl;
-  //cout << "Compare to best value I found: " << thisInnerChi2Best_ << endl;
+  cout << "Ending value inner chi^2 reported by Minuit is " << innerMin_->MinValue() << endl;
+  cout << "Compare to best value I found: " << thisInnerChi2Best_ << endl;
 
 
   //Set the best values corresponding to the minimum of the chi square
@@ -753,16 +754,17 @@ void topEventMinimizer::minimizeNonTopChiSquare()
   calcHadronicChiSquare();
   calcTopMassChiSquare();
 
-  //cout << "Inner chi^2 minimum is " << nonTopChi2_+hadChi2_+topMassChi2_ << endl;
-  //cout << "Non-top chi^2 is " << nonTopChi2_ << endl;
-  //cout << "Hadronic chi^2 is " << hadChi2_ << endl;
-  //cout << "Top mass chi^2 is " << topMassChi2_ << endl;
-  //cout << "Best inner chi^2 minimum is " << thisInnerChi2Best_ << endl;
+  cout << "Inner chi^2 minimum is " << nonTopChi2_+hadChi2_+topMassChi2_ << endl;
+  cout << "Non-top chi^2 is " << nonTopChi2_ << endl;
+  cout << "Hadronic chi^2 is " << hadChi2_ << endl;
+  cout << "Top mass chi^2 is " << topMassChi2_ << endl;
+  cout << "Best inner chi^2 minimum is " << thisInnerChi2Best_ << endl;
 }
 
 double topEventMinimizer::outerMinimizationOperator(const double* inputDeltas)
 {
-    //std::cout << "at outermin"<<std::endl;
+    std::cout << "at outermin"<<std::endl;
+    printTopConstituents();
   //reset the inner chi^2 minimum for this outer minimizer step
   thisInnerChi2Best_=1.e99;
   thisTopMassChi2Best_=0.;
@@ -807,12 +809,12 @@ double topEventMinimizer::outerMinimizationOperator(const double* inputDeltas)
   //Calculate the outer piece
   calcTopChiSquare();
   chi2_=topChi2_+nonTopChi2_+hadChi2_+topMassChi2_;
-  //cout<<"topChi2 = "<< topChi2_ <<endl;
+  cout<<"topChi2 = "<< topChi2_ <<endl;
   //std::cout<<"after calctopchi"<<std::endl;
 
   if(chi2_ < chi2Best_)
     {
-      //cout << "I found a new minimum total chi^2: " << chi2_ << endl;
+      cout << "I found a new minimum total chi^2: " << chi2_ << endl;
 
       //update the chi^2 and its components
       chi2Best_=chi2_;
@@ -839,7 +841,7 @@ double topEventMinimizer::outerMinimizationOperator(const double* inputDeltas)
 
 void topEventMinimizer::minimizeTotalChiSquare()
 {
-    //std::cout<<"at min"<<std::endl;
+    std::cout<<"at min"<<std::endl;
   outerMin_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
   outerMin_->SetMaxFunctionCalls(1000000);
   outerMin_->SetTolerance(0.001);
@@ -892,20 +894,20 @@ void topEventMinimizer::minimizeTotalChiSquare()
     }
 
   //std::cout<<"before minimize"<<std::endl;
-  //cout << "Starting outer minimization" << endl;
+  cout << "Starting outer minimization" << endl;
   outerMin_->Minimize();
 
   //std::cout<<"after minimise"<<std::endl;
 
-  //cout << "Minimum chi^2 values reported by Minuit:" << endl;
-  //cout << "Total chi^2 is " << outerMin_->MinValue() << endl;
-  //cout << "Inner chi^2 is " << innerMin_->MinValue() << endl;
+  cout << "Minimum chi^2 values reported by Minuit:" << endl;
+  cout << "Total chi^2 is " << outerMin_->MinValue() << endl;
+  cout << "Inner chi^2 is " << innerMin_->MinValue() << endl;
 
-  //cout << "Minimum values I found:" << endl;
+  cout << "Minimum values I found:" << endl;
   cout << "Best total chi^2 is " << chi2Best_ << endl;
-  //cout << "Best inner chi^2 is " << innerChi2Best_ << endl;
-  //cout << "Final outer chi^2 check: " << innerChi2Best_+topChi2Best_-chi2Best_ << endl;
-  //cout << "Final inner chi^2 check: " << hadChi2Best_+topMassChi2Best_+nonTopChi2Best_-innerChi2Best_ << endl;
+  cout << "Best inner chi^2 is " << innerChi2Best_ << endl;
+  cout << "Final outer chi^2 check: " << innerChi2Best_+topChi2Best_-chi2Best_ << endl;
+  cout << "Final inner chi^2 check: " << hadChi2Best_+topMassChi2Best_+nonTopChi2Best_-innerChi2Best_ << endl;
   cout << "Best hadronic W daughter chi^2 is " << hadChi2Best_ << endl;
   cout << "Best top mass chi^2 is " << topMassChi2Best_ << endl;
   cout << "Best non-top chi^2 is " << nonTopChi2Best_ << endl;
@@ -913,15 +915,15 @@ void topEventMinimizer::minimizeTotalChiSquare()
 
 
 
-  //cout << "Printing outer min results" << endl;
-  //outerMin_->SetPrintLevel(1);
-  //outerMin_->PrintResults();
-  //cout << "Outer min status is " << outerMin_->Status() << endl;
+  cout << "Printing outer min results" << endl;
+  outerMin_->SetPrintLevel(1);
+  outerMin_->PrintResults();
+  cout << "Outer min status is " << outerMin_->Status() << endl;
 
-  //cout << "Printing inner min results" << endl;
-  //innerMin_->SetPrintLevel(4);
-  //innerMin_->PrintResults();
-  //cout << "Inner min status is " << innerMin_->Status() << endl;
+  cout << "Printing inner min results" << endl;
+  innerMin_->SetPrintLevel(4);
+  innerMin_->PrintResults();
+  cout << "Inner min status is " << innerMin_->Status() << endl;
 
   outerMinStatus_=outerMin_->Status();
   innerMinStatus_=innerMin_->Status();

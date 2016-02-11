@@ -332,6 +332,7 @@ void lightJetChiSquareMinimumSolver::printResults()
     {
       cout << "delta px " << i+1 << " = " << minDeltasX_.at(i) << endl;
       cout << "delta py " << i+1 << " = " << minDeltasY_.at(i) << endl;
+      //cout<< "jetptwidths = "<< jetPtWidths<<endl;
       if( do3D_ )
 	{
 	  cout << "delta pz " << i+1 << " = " << minDeltasZ_.at(i) << endl;
@@ -353,7 +354,9 @@ double lightJetChiSquareMinimumSolver::getChiSquare()
 //    }
 //  cout << "delta x = " << dx_ << " and delta x check = " << deltaXCheck << endl;
 //  cout << "delta y = " << dy_ << " and delta y check = " << deltaYCheck << endl;
-  //printResults();
+  cout<<"light jet get chi square"<<endl;
+  printResults();
+  cout<< "light jet chi2 = " << chi2_<<endl;
   return chi2_;
 }
 
