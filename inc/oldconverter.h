@@ -23,78 +23,79 @@
 
 using namespace std;
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > XYZTLorentzVector;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>
+    XYZTLorentzVector;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
-class converter {
-public :
-//   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
-//   Int_t           fCurrent; //!current Tree number in a TChain
+class converter
+{
+  public:
+    //   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+    //   Int_t           fCurrent; //!current Tree number in a TChain
 
-   // Declaration of leaf types
-/*   Int_t           n_particles;
-   vector<int>     *PID;
-   vector<double>  *P_X;
-   vector<double>  *P_Y;
-   vector<double>  *P_Z;
-   vector<double>  *E;
-   vector<double>  *M;
-   vector<int>     *status;*/
-//   vector<int>     *particleID;
-//   vector<int>     *parent1ID;
-//   vector<int>     *parent2ID;
+    // Declaration of leaf types
+    /*   Int_t           n_particles;
+       vector<int>     *PID;
+       vector<double>  *P_X;
+       vector<double>  *P_Y;
+       vector<double>  *P_Z;
+       vector<double>  *E;
+       vector<double>  *M;
+       vector<int>     *status;*/
+    //   vector<int>     *particleID;
+    //   vector<int>     *parent1ID;
+    //   vector<int>     *parent2ID;
 
-   // List of branches
-/*   TBranch        *b_n_particles;   //!
-   TBranch        *b_PID;   //!
-   TBranch        *b_P_X;   //!
-   TBranch        *b_P_Y;   //!
-   TBranch        *b_P_Z;   //!
-   TBranch        *b_E;   //!
-   TBranch        *b_M;   //!
-   TBranch        *b_status;   //!*/
-//   TBranch        *b_particleID;   //!
-//   TBranch        *b_parent1ID;   //!
-//   TBranch        *b_parent2ID;   //!
+    // List of branches
+    /*   TBranch        *b_n_particles;   //!
+       TBranch        *b_PID;   //!
+       TBranch        *b_P_X;   //!
+       TBranch        *b_P_Y;   //!
+       TBranch        *b_P_Z;   //!
+       TBranch        *b_E;   //!
+       TBranch        *b_M;   //!
+       TBranch        *b_status;   //!*/
+    //   TBranch        *b_particleID;   //!
+    //   TBranch        *b_parent1ID;   //!
+    //   TBranch        *b_parent2ID;   //!
 
-/*   topReconstructionFromLHE(TTree *tree=0);
-   virtual ~topReconstructionFromLHE();
-   virtual Int_t    Cut(Long64_t entry);
-   virtual Int_t    GetEntry(Long64_t entry);
-   virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree);
-   virtual void     Loop(TString, int, int);
-   virtual Bool_t   Notify();
-   virtual void     Show(Long64_t entry = -1);
-   void printVector(XYZTLorentzVector&);
-    void moveStatsBox(TH1F*);*/
-/*
-   double deltaR(XYZTLorentzVector& , XYZTLorentzVector&  );
-   double deltaPhi(XYZTLorentzVector& , XYZTLorentzVector&  );
+    /*   topReconstructionFromLHE(TTree *tree=0);
+       virtual ~topReconstructionFromLHE();
+       virtual Int_t    Cut(Long64_t entry);
+       virtual Int_t    GetEntry(Long64_t entry);
+       virtual Long64_t LoadTree(Long64_t entry);
+       virtual void     Init(TTree *tree);
+       virtual void     Loop(TString, int, int);
+       virtual Bool_t   Notify();
+       virtual void     Show(Long64_t entry = -1);
+       void printVector(XYZTLorentzVector&);
+        void moveStatsBox(TH1F*);*/
+    /*
+       double deltaR(XYZTLorentzVector& , XYZTLorentzVector&  );
+       double deltaPhi(XYZTLorentzVector& , XYZTLorentzVector&  );
 
-   //store minimizer results in a tree;
-   //TFile* outFile;
-   //TTree* outTree;
-   void initOutput(TString, int);
-*/
-   //converter variables
-   vector<double> Px, Py, Pz, En, Ma;
-   vector<int> Pid, mother1, mother2;
-   //double_t  Px, Py, Pz, En, Ma;
-   //double_t  Pid, mother1, mother2;
-   int numpar;
-   vector<double> P_X, P_Y, P_Z, E, M;
-   vector<int> PID;
+       //store minimizer results in a tree;
+       //TFile* outFile;
+       //TTree* outTree;
+       void initOutput(TString, int);
+    */
+    // converter variables
+    vector<double> Px, Py, Pz, En, Ma;
+    vector<int> Pid, mother1, mother2;
+    // double_t  Px, Py, Pz, En, Ma;
+    // double_t  Pid, mother1, mother2;
+    int numpar;
+    vector<double> P_X, P_Y, P_Z, E, M;
+    vector<int> PID;
 
-   void Smearer( TLorentzVector& );
-   void Filler ( int, int);
-   void SmearedFiller( int, TLorentzVector&, int);
-   void Loop();
+    void Smearer(TLorentzVector &);
+    void Filler(int, int);
+    void SmearedFiller(int, TLorentzVector &, int);
+    void Loop();
 
-     TRandom3 rand;
-    //rand.SetSeed(10);
-
+    TRandom3 rand;
+    // rand.SetSeed(10);
 };
 
 /*   //TS and TC hists
@@ -212,93 +213,151 @@ public :
 
 
    //compare true and smeared
-   double top1DeltaPtTrueSmeared        , top1DeltaRTrueSmeared         , top1DeltaMTrueSmeared        ;
-   double W1DeltaPtTrueSmeared          , W1DeltaRTrueSmeared           , W1DeltaMTrueSmeared          ;
-   double bJet1DeltaPtTrueSmeared       , bJet1DeltaRTrueSmeared        , bJet1DeltaMTrueSmeared       ;
-   double W1Daughter1DeltaPtTrueSmeared , W1Daughter1DeltaRTrueSmeared  , W1Daughter1DeltaMTrueSmeared ;
-   double W1Daughter2DeltaPtTrueSmeared , W1Daughter2DeltaRTrueSmeared  , W1Daughter2DeltaMTrueSmeared ;
-   double lightJet1DeltaPxTrueSmeared   , lightJet1DeltaPyTrueSmeared   , lightJet1DeltaRTrueSmeared   ;
+   double top1DeltaPtTrueSmeared        , top1DeltaRTrueSmeared         ,
+top1DeltaMTrueSmeared        ;
+   double W1DeltaPtTrueSmeared          , W1DeltaRTrueSmeared           ,
+W1DeltaMTrueSmeared          ;
+   double bJet1DeltaPtTrueSmeared       , bJet1DeltaRTrueSmeared        ,
+bJet1DeltaMTrueSmeared       ;
+   double W1Daughter1DeltaPtTrueSmeared , W1Daughter1DeltaRTrueSmeared  ,
+W1Daughter1DeltaMTrueSmeared ;
+   double W1Daughter2DeltaPtTrueSmeared , W1Daughter2DeltaRTrueSmeared  ,
+W1Daughter2DeltaMTrueSmeared ;
+   double lightJet1DeltaPxTrueSmeared   , lightJet1DeltaPyTrueSmeared   ,
+lightJet1DeltaRTrueSmeared   ;
 
 
-   double top2DeltaPtTrueSmeared        , top2DeltaRTrueSmeared         , top2DeltaMTrueSmeared        ;
-   double W2DeltaPtTrueSmeared          , W2DeltaRTrueSmeared           , W2DeltaMTrueSmeared          ;
-   double bJet2DeltaPtTrueSmeared       , bJet2DeltaRTrueSmeared        , bJet2DeltaMTrueSmeared       ;
-   double W2Daughter1DeltaPtTrueSmeared , W2Daughter1DeltaRTrueSmeared  , W2Daughter1DeltaMTrueSmeared ;
-   double W2Daughter2DeltaPtTrueSmeared , W2Daughter2DeltaRTrueSmeared  , W2Daughter2DeltaMTrueSmeared ;
-   double lightJet2DeltaPxTrueSmeared   , lightJet2DeltaPyTrueSmeared   , lightJet2DeltaRTrueSmeared   ;
+   double top2DeltaPtTrueSmeared        , top2DeltaRTrueSmeared         ,
+top2DeltaMTrueSmeared        ;
+   double W2DeltaPtTrueSmeared          , W2DeltaRTrueSmeared           ,
+W2DeltaMTrueSmeared          ;
+   double bJet2DeltaPtTrueSmeared       , bJet2DeltaRTrueSmeared        ,
+bJet2DeltaMTrueSmeared       ;
+   double W2Daughter1DeltaPtTrueSmeared , W2Daughter1DeltaRTrueSmeared  ,
+W2Daughter1DeltaMTrueSmeared ;
+   double W2Daughter2DeltaPtTrueSmeared , W2Daughter2DeltaRTrueSmeared  ,
+W2Daughter2DeltaMTrueSmeared ;
+   double lightJet2DeltaPxTrueSmeared   , lightJet2DeltaPyTrueSmeared   ,
+lightJet2DeltaRTrueSmeared   ;
 
 
    //compare true and corrected
-   double top1DeltaPtTrueBest        , top1DeltaRTrueBest         , top1DeltaMTrueBest        ;
-   double W1DeltaPtTrueBest          , W1DeltaRTrueBest           , W1DeltaMTrueBest          ;
-   double bJet1DeltaPtTrueBest       , bJet1DeltaRTrueBest        , bJet1DeltaMTrueBest       ;
-   double W1Daughter1DeltaPtTrueBest , W1Daughter1DeltaRTrueBest  , W1Daughter1DeltaMTrueBest ;
-   double W1Daughter2DeltaPtTrueBest , W1Daughter2DeltaRTrueBest  , W1Daughter2DeltaMTrueBest ;
-   double lightJet1DeltaPxTrueBest   , lightJet1DeltaPyTrueBest   , lightJet1DeltaRTrueBest   ;
+   double top1DeltaPtTrueBest        , top1DeltaRTrueBest         ,
+top1DeltaMTrueBest        ;
+   double W1DeltaPtTrueBest          , W1DeltaRTrueBest           ,
+W1DeltaMTrueBest          ;
+   double bJet1DeltaPtTrueBest       , bJet1DeltaRTrueBest        ,
+bJet1DeltaMTrueBest       ;
+   double W1Daughter1DeltaPtTrueBest , W1Daughter1DeltaRTrueBest  ,
+W1Daughter1DeltaMTrueBest ;
+   double W1Daughter2DeltaPtTrueBest , W1Daughter2DeltaRTrueBest  ,
+W1Daughter2DeltaMTrueBest ;
+   double lightJet1DeltaPxTrueBest   , lightJet1DeltaPyTrueBest   ,
+lightJet1DeltaRTrueBest   ;
 
 
-   double top2DeltaPtTrueBest        , top2DeltaRTrueBest         , top2DeltaMTrueBest        ;
-   double W2DeltaPtTrueBest          , W2DeltaRTrueBest           , W2DeltaMTrueBest          ;
-   double bJet2DeltaPtTrueBest       , bJet2DeltaRTrueBest        , bJet2DeltaMTrueBest       ;
-   double W2Daughter1DeltaPtTrueBest , W2Daughter1DeltaRTrueBest  , W2Daughter1DeltaMTrueBest ;
-   double W2Daughter2DeltaPtTrueBest , W2Daughter2DeltaRTrueBest  , W2Daughter2DeltaMTrueBest ;
-   double lightJet2DeltaPxTrueBest   , lightJet2DeltaPyTrueBest   , lightJet2DeltaRTrueBest   ;
+   double top2DeltaPtTrueBest        , top2DeltaRTrueBest         ,
+top2DeltaMTrueBest        ;
+   double W2DeltaPtTrueBest          , W2DeltaRTrueBest           ,
+W2DeltaMTrueBest          ;
+   double bJet2DeltaPtTrueBest       , bJet2DeltaRTrueBest        ,
+bJet2DeltaMTrueBest       ;
+   double W2Daughter1DeltaPtTrueBest , W2Daughter1DeltaRTrueBest  ,
+W2Daughter1DeltaMTrueBest ;
+   double W2Daughter2DeltaPtTrueBest , W2Daughter2DeltaRTrueBest  ,
+W2Daughter2DeltaMTrueBest ;
+   double lightJet2DeltaPxTrueBest   , lightJet2DeltaPyTrueBest   ,
+lightJet2DeltaRTrueBest   ;
 
 
    //compare smeared and corrected
-   double top1DeltaPtSmearedBest        , top1DeltaRSmearedBest         , top1DeltaMSmearedBest        ;
-   double W1DeltaPtSmearedBest          , W1DeltaRSmearedBest           , W1DeltaMSmearedBest          ;
-   double bJet1DeltaPtSmearedBest       , bJet1DeltaRSmearedBest        , bJet1DeltaMSmearedBest       ;
-   double W1Daughter1DeltaPtSmearedBest , W1Daughter1DeltaRSmearedBest  , W1Daughter1DeltaMSmearedBest ;
-   double W1Daughter2DeltaPtSmearedBest , W1Daughter2DeltaRSmearedBest  , W1Daughter2DeltaMSmearedBest ;
-   double lightJet1DeltaPxSmearedBest   , lightJet1DeltaPySmearedBest   , lightJet1DeltaRSmearedBest   ;
+   double top1DeltaPtSmearedBest        , top1DeltaRSmearedBest         ,
+top1DeltaMSmearedBest        ;
+   double W1DeltaPtSmearedBest          , W1DeltaRSmearedBest           ,
+W1DeltaMSmearedBest          ;
+   double bJet1DeltaPtSmearedBest       , bJet1DeltaRSmearedBest        ,
+bJet1DeltaMSmearedBest       ;
+   double W1Daughter1DeltaPtSmearedBest , W1Daughter1DeltaRSmearedBest  ,
+W1Daughter1DeltaMSmearedBest ;
+   double W1Daughter2DeltaPtSmearedBest , W1Daughter2DeltaRSmearedBest  ,
+W1Daughter2DeltaMSmearedBest ;
+   double lightJet1DeltaPxSmearedBest   , lightJet1DeltaPySmearedBest   ,
+lightJet1DeltaRSmearedBest   ;
 
 
-   double top2DeltaPtSmearedBest        , top2DeltaRSmearedBest         , top2DeltaMSmearedBest        ;
-   double W2DeltaPtSmearedBest          , W2DeltaRSmearedBest           , W2DeltaMSmearedBest          ;
-   double bJet2DeltaPtSmearedBest       , bJet2DeltaRSmearedBest        , bJet2DeltaMSmearedBest       ;
-   double W2Daughter1DeltaPtSmearedBest , W2Daughter1DeltaRSmearedBest  , W2Daughter1DeltaMSmearedBest ;
-   double W2Daughter2DeltaPtSmearedBest , W2Daughter2DeltaRSmearedBest  , W2Daughter2DeltaMSmearedBest ;
-   double lightJet2DeltaPxSmearedBest   , lightJet2DeltaPySmearedBest   , lightJet2DeltaRSmearedBest   ;
+   double top2DeltaPtSmearedBest        , top2DeltaRSmearedBest         ,
+top2DeltaMSmearedBest        ;
+   double W2DeltaPtSmearedBest          , W2DeltaRSmearedBest           ,
+W2DeltaMSmearedBest          ;
+   double bJet2DeltaPtSmearedBest       , bJet2DeltaRSmearedBest        ,
+bJet2DeltaMSmearedBest       ;
+   double W2Daughter1DeltaPtSmearedBest , W2Daughter1DeltaRSmearedBest  ,
+W2Daughter1DeltaMSmearedBest ;
+   double W2Daughter2DeltaPtSmearedBest , W2Daughter2DeltaRSmearedBest  ,
+W2Daughter2DeltaMSmearedBest ;
+   double lightJet2DeltaPxSmearedBest   , lightJet2DeltaPySmearedBest   ,
+lightJet2DeltaRSmearedBest   ;
 
 
 
    //true momenta
-   double top1TruePt        , top1TrueEta       , top1TruePhi       , top1TrueE        ;
-   double W1TruePt          , W1TrueEta         , W1TruePhi         , W1TrueE          ;
-   double bJet1TruePt       , bJet1TrueEta      , bJet1TruePhi      , bJet1TrueE       ;
-   double W1Daughter1TruePt , W1Daughter1TrueEta, W1Daughter1TruePhi, W1Daughter1TrueE ;
-   double W1Daughter2TruePt , W1Daughter2TrueEta, W1Daughter2TruePhi, W1Daughter2TrueE ;
-   double lightJet1TruePx   , lightJet1TruePy   , lightJet1TruePz   , lightJet1TrueE   ;
+   double top1TruePt        , top1TrueEta       , top1TruePhi       , top1TrueE
+;
+   double W1TruePt          , W1TrueEta         , W1TruePhi         , W1TrueE ;
+   double bJet1TruePt       , bJet1TrueEta      , bJet1TruePhi      , bJet1TrueE
+;
+   double W1Daughter1TruePt , W1Daughter1TrueEta, W1Daughter1TruePhi,
+W1Daughter1TrueE ;
+   double W1Daughter2TruePt , W1Daughter2TrueEta, W1Daughter2TruePhi,
+W1Daughter2TrueE ;
+   double lightJet1TruePx   , lightJet1TruePy   , lightJet1TruePz   ,
+lightJet1TrueE   ;
    double top1TrueMass      , W1TrueMass        ;
    double lightJet1TruePt   ;
 
-   double top2TruePt        , top2TrueEta       , top2TruePhi       , top2TrueE        ;
-   double W2TruePt          , W2TrueEta         , W2TruePhi         , W2TrueE          ;
-   double bJet2TruePt       , bJet2TrueEta      , bJet2TruePhi      , bJet2TrueE       ;
-   double W2Daughter1TruePt , W2Daughter1TrueEta, W2Daughter1TruePhi, W2Daughter1TrueE ;
-   double W2Daughter2TruePt , W2Daughter2TrueEta, W2Daughter2TruePhi, W2Daughter2TrueE ;
-   double lightJet2TruePx   , lightJet2TruePy   , lightJet2TruePz   , lightJet2TrueE   ;
+   double top2TruePt        , top2TrueEta       , top2TruePhi       , top2TrueE
+;
+   double W2TruePt          , W2TrueEta         , W2TruePhi         , W2TrueE ;
+   double bJet2TruePt       , bJet2TrueEta      , bJet2TruePhi      , bJet2TrueE
+;
+   double W2Daughter1TruePt , W2Daughter1TrueEta, W2Daughter1TruePhi,
+W2Daughter1TrueE ;
+   double W2Daughter2TruePt , W2Daughter2TrueEta, W2Daughter2TruePhi,
+W2Daughter2TrueE ;
+   double lightJet2TruePx   , lightJet2TruePy   , lightJet2TruePz   ,
+lightJet2TrueE   ;
    double top2TrueMass      , W2TrueMass        ;
    double lightJet2TruePt   ;
 
 
    //smeared momenta
-   double top1SmearedPt        , top1SmearedEta       , top1SmearedPhi       , top1SmearedE        ;
-   double W1SmearedPt          , W1SmearedEta         , W1SmearedPhi         , W1SmearedE          ;
-   double bJet1SmearedPt       , bJet1SmearedEta      , bJet1SmearedPhi      , bJet1SmearedE       ;
-   double W1Daughter1SmearedPt , W1Daughter1SmearedEta, W1Daughter1SmearedPhi, W1Daughter1SmearedE ;
-   double W1Daughter2SmearedPt , W1Daughter2SmearedEta, W1Daughter2SmearedPhi, W1Daughter2SmearedE ;
-   double lightJet1SmearedPx   , lightJet1SmearedPy   , lightJet1SmearedPz   , lightJet1SmearedE   ;
+   double top1SmearedPt        , top1SmearedEta       , top1SmearedPhi       ,
+top1SmearedE        ;
+   double W1SmearedPt          , W1SmearedEta         , W1SmearedPhi         ,
+W1SmearedE          ;
+   double bJet1SmearedPt       , bJet1SmearedEta      , bJet1SmearedPhi      ,
+bJet1SmearedE       ;
+   double W1Daughter1SmearedPt , W1Daughter1SmearedEta, W1Daughter1SmearedPhi,
+W1Daughter1SmearedE ;
+   double W1Daughter2SmearedPt , W1Daughter2SmearedEta, W1Daughter2SmearedPhi,
+W1Daughter2SmearedE ;
+   double lightJet1SmearedPx   , lightJet1SmearedPy   , lightJet1SmearedPz   ,
+lightJet1SmearedE   ;
    double top1SmearedMass      , W1SmearedMass        ;
    double lightJet1SmearedPt   ;
 
-   double top2SmearedPt        , top2SmearedEta       , top2SmearedPhi       , top2SmearedE        ;
-   double W2SmearedPt          , W2SmearedEta         , W2SmearedPhi         , W2SmearedE          ;
-   double bJet2SmearedPt       , bJet2SmearedEta      , bJet2SmearedPhi      , bJet2SmearedE       ;
-   double W2Daughter1SmearedPt , W2Daughter1SmearedEta, W2Daughter1SmearedPhi, W2Daughter1SmearedE ;
-   double W2Daughter2SmearedPt , W2Daughter2SmearedEta, W2Daughter2SmearedPhi, W2Daughter2SmearedE ;
-   double lightJet2SmearedPx   , lightJet2SmearedPy   , lightJet2SmearedPz   , lightJet2SmearedE   ;
+   double top2SmearedPt        , top2SmearedEta       , top2SmearedPhi       ,
+top2SmearedE        ;
+   double W2SmearedPt          , W2SmearedEta         , W2SmearedPhi         ,
+W2SmearedE          ;
+   double bJet2SmearedPt       , bJet2SmearedEta      , bJet2SmearedPhi      ,
+bJet2SmearedE       ;
+   double W2Daughter1SmearedPt , W2Daughter1SmearedEta, W2Daughter1SmearedPhi,
+W2Daughter1SmearedE ;
+   double W2Daughter2SmearedPt , W2Daughter2SmearedEta, W2Daughter2SmearedPhi,
+W2Daughter2SmearedE ;
+   double lightJet2SmearedPx   , lightJet2SmearedPy   , lightJet2SmearedPz   ,
+lightJet2SmearedE   ;
    double top2SmearedMass      , W2SmearedMass        ;
    double lightJet2SmearedPt   ;
 
@@ -317,21 +376,31 @@ public :
    double W2Daughter1BestPx , W2Daughter1BestPy, W2Daughter1BestPz;
    double W2Daughter2BestPx , W2Daughter2BestPy, W2Daughter2BestPz;
 
-   double top1BestPt        , top1BestEta       , top1BestPhi       , top1BestE        ;
-   double W1BestPt          , W1BestEta         , W1BestPhi         , W1BestE          ;
-   double bJet1BestPt       , bJet1BestEta      , bJet1BestPhi      , bJet1BestE       ;
-   double W1Daughter1BestPt , W1Daughter1BestEta, W1Daughter1BestPhi, W1Daughter1BestE ;
-   double W1Daughter2BestPt , W1Daughter2BestEta, W1Daughter2BestPhi, W1Daughter2BestE ;
-   double lightJet1BestPx   , lightJet1BestPy   , lightJet1BestPz   , lightJet1BestE   ;
+   double top1BestPt        , top1BestEta       , top1BestPhi       , top1BestE
+;
+   double W1BestPt          , W1BestEta         , W1BestPhi         , W1BestE ;
+   double bJet1BestPt       , bJet1BestEta      , bJet1BestPhi      , bJet1BestE
+;
+   double W1Daughter1BestPt , W1Daughter1BestEta, W1Daughter1BestPhi,
+W1Daughter1BestE ;
+   double W1Daughter2BestPt , W1Daughter2BestEta, W1Daughter2BestPhi,
+W1Daughter2BestE ;
+   double lightJet1BestPx   , lightJet1BestPy   , lightJet1BestPz   ,
+lightJet1BestE   ;
    double top1BestMass      , W1BestMass        ;
    double lightJet1BestPt   ;
 
-   double top2BestPt        , top2BestEta       , top2BestPhi       , top2BestE        ;
-   double W2BestPt          , W2BestEta         , W2BestPhi         , W2BestE          ;
-   double bJet2BestPt       , bJet2BestEta      , bJet2BestPhi      , bJet2BestE       ;
-   double W2Daughter1BestPt , W2Daughter1BestEta, W2Daughter1BestPhi, W2Daughter1BestE ;
-   double W2Daughter2BestPt , W2Daughter2BestEta, W2Daughter2BestPhi, W2Daughter2BestE ;
-   double lightJet2BestPx   , lightJet2BestPy   , lightJet2BestPz   , lightJet2BestE   ;
+   double top2BestPt        , top2BestEta       , top2BestPhi       , top2BestE
+;
+   double W2BestPt          , W2BestEta         , W2BestPhi         , W2BestE ;
+   double bJet2BestPt       , bJet2BestEta      , bJet2BestPhi      , bJet2BestE
+;
+   double W2Daughter1BestPt , W2Daughter1BestEta, W2Daughter1BestPhi,
+W2Daughter1BestE ;
+   double W2Daughter2BestPt , W2Daughter2BestEta, W2Daughter2BestPhi,
+W2Daughter2BestE ;
+   double lightJet2BestPx   , lightJet2BestPy   , lightJet2BestPz   ,
+lightJet2BestE   ;
    double top2BestMass      , W2BestMass        ;
    double lightJet2BestPt   ;
 
@@ -343,12 +412,13 @@ public :
 #endif
 
 #ifdef topReconstructionFromLHE_cxx
-topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0) 
+topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
+      TFile *f =
+(TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
       if (!f || !f->IsOpen()) {
          f = new TFile("skimmedntuple.root");
       }
@@ -364,7 +434,8 @@ topReconstructionFromLHE::~topReconstructionFromLHE()
    delete fChain->GetCurrentFile();
 }
 
-double topReconstructionFromLHE::deltaR(XYZTLorentzVector& p2, XYZTLorentzVector& p1 )
+double topReconstructionFromLHE::deltaR(XYZTLorentzVector& p2,
+XYZTLorentzVector& p1 )
 {
   double thisDeltaEta = p1.Eta()-p2.Eta();
   double thisDeltaPhi = p1.Phi()-p2.Phi();
@@ -379,7 +450,8 @@ double topReconstructionFromLHE::deltaR(XYZTLorentzVector& p2, XYZTLorentzVector
   return sqrt(thisDeltaPhi*thisDeltaPhi+thisDeltaEta*thisDeltaEta);
 }
 
-double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVector& p1 )
+double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2,
+XYZTLorentzVector& p1 )
 {
   double thisDeltaPhi = p1.Phi()-p2.Phi();
   while(thisDeltaPhi> 3.14159265359)
@@ -395,7 +467,7 @@ double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVect
 */
 /*void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
 {
-  TString fileName=dir; 
+  TString fileName=dir;
   if(dir!="") fileName+="/";
   fileName+="output_";
   fileName+=whichLoop;
@@ -411,71 +483,123 @@ double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVect
   outTree = new TTree("tree","tree");
 
   //initialise TS, TC hists and canvases
-  leptonicBottomPtTS = new TH1F("leptonicBottomPtTS","leptonicBottomPtTS",numbins,leftbound,rightbound);
-  leptonicBottomPtTC = new TH1F("leptonicBottomPtTC","leptonicBottomPtTC",numbins,leftbound,rightbound);
-  cleptonicBottomPt = new TCanvas("leptonicBottomPt","leptonicBottomPt",canvsize1,canvsize2);
-  leptonicTopPtTS = new TH1F("leptonicTopPtTS","leptonicTopPtTS",numbins,leftbound,rightbound);
-  leptonicTopPtTC = new TH1F("leptonicTopPtTC","leptonicTopPtTC",numbins,leftbound,rightbound);
-  cleptonicTopPt = new TCanvas("leptonicTopPt","leptonicTopPt",canvsize1,canvsize2);
-  leptonicWPtTS = new TH1F("leptonicWPtTS","leptonicWPtTS",numbins,leftbound,rightbound);
-  leptonicWPtTC = new TH1F("leptonicWPtTC","leptonicWPtTC",numbins,leftbound,rightbound);
+  leptonicBottomPtTS = new
+TH1F("leptonicBottomPtTS","leptonicBottomPtTS",numbins,leftbound,rightbound);
+  leptonicBottomPtTC = new
+TH1F("leptonicBottomPtTC","leptonicBottomPtTC",numbins,leftbound,rightbound);
+  cleptonicBottomPt = new
+TCanvas("leptonicBottomPt","leptonicBottomPt",canvsize1,canvsize2);
+  leptonicTopPtTS = new
+TH1F("leptonicTopPtTS","leptonicTopPtTS",numbins,leftbound,rightbound);
+  leptonicTopPtTC = new
+TH1F("leptonicTopPtTC","leptonicTopPtTC",numbins,leftbound,rightbound);
+  cleptonicTopPt = new
+TCanvas("leptonicTopPt","leptonicTopPt",canvsize1,canvsize2);
+  leptonicWPtTS = new
+TH1F("leptonicWPtTS","leptonicWPtTS",numbins,leftbound,rightbound);
+  leptonicWPtTC = new
+TH1F("leptonicWPtTC","leptonicWPtTC",numbins,leftbound,rightbound);
   cleptonicWPt = new TCanvas("leptonicWPt","leptonicWPt",canvsize1,canvsize2);
   leptonPtTS = new TH1F("leptonPtTS","leptonPtTS",numbins,leftbound,rightbound);
   leptonPtTC = new TH1F("leptonPtTC","leptonPtTC",numbins,leftbound,rightbound);
   cleptonPt = new TCanvas("leptonPt","leptonPt",canvsize1,canvsize2);
-  neutrinoPtTS = new TH1F("neutrinoPtTS","neutrinoPtTS",numbins,leftbound,rightbound);
-  neutrinoPtTC = new TH1F("neutrinoPtTC","neutrinoPtTC",numbins,leftbound,rightbound);
+  neutrinoPtTS = new
+TH1F("neutrinoPtTS","neutrinoPtTS",numbins,leftbound,rightbound);
+  neutrinoPtTC = new
+TH1F("neutrinoPtTC","neutrinoPtTC",numbins,leftbound,rightbound);
   cneutrinoPt = new TCanvas("neutrinoPt","neutrinoPt",canvsize1,canvsize2);
-  hadronicBottomPtTS = new TH1F("hadronicBottomPtTS","hadronicBottomPtTS",numbins,leftbound,rightbound);
-  hadronicBottomPtTC = new TH1F("hadronicBottomPtTC","hadronicBottomPtTC",numbins,leftbound,rightbound);
-  chadronicBottomPt = new TCanvas("hadronicBottomPt","hadronicBottomPt",canvsize1,canvsize2);
-  hadronicTopPtTS = new TH1F("hadronicTopPtTS","hadronicTopPtTS",numbins,leftbound,rightbound);
-  hadronicTopPtTC = new TH1F("hadronicTopPtTC","hadronicTopPtTC",numbins,leftbound,rightbound);
-  chadronicTopPt = new TCanvas("hadronicTopPt","hadronicTopPt",canvsize1,canvsize2);
-  hadronicWPtTS = new TH1F("hadronicWPtTS","hadronicWPtTS",numbins,leftbound,rightbound);
-  hadronicWPtTC = new TH1F("hadronicWPtTC","hadronicWPtTC",numbins,leftbound,rightbound);
+  hadronicBottomPtTS = new
+TH1F("hadronicBottomPtTS","hadronicBottomPtTS",numbins,leftbound,rightbound);
+  hadronicBottomPtTC = new
+TH1F("hadronicBottomPtTC","hadronicBottomPtTC",numbins,leftbound,rightbound);
+  chadronicBottomPt = new
+TCanvas("hadronicBottomPt","hadronicBottomPt",canvsize1,canvsize2);
+  hadronicTopPtTS = new
+TH1F("hadronicTopPtTS","hadronicTopPtTS",numbins,leftbound,rightbound);
+  hadronicTopPtTC = new
+TH1F("hadronicTopPtTC","hadronicTopPtTC",numbins,leftbound,rightbound);
+  chadronicTopPt = new
+TCanvas("hadronicTopPt","hadronicTopPt",canvsize1,canvsize2);
+  hadronicWPtTS = new
+TH1F("hadronicWPtTS","hadronicWPtTS",numbins,leftbound,rightbound);
+  hadronicWPtTC = new
+TH1F("hadronicWPtTC","hadronicWPtTC",numbins,leftbound,rightbound);
   chadronicWPt = new TCanvas("hadronicWPt","hadronicWPt",canvsize1,canvsize2);
-  hadronicQuarkPtTS = new TH1F("hadronicQuarkPtTS","hadronicQuarkPtTS",numbins,leftbound,rightbound);
-  hadronicQuarkPtTC = new TH1F("hadronicQuarkPtTC","hadronicQuarkPtTC",numbins,leftbound,rightbound);
-  chadronicQuarkPt = new TCanvas("hadronicQuarkPt","hadronicQuarkPt",canvsize1,canvsize2);
-  hadronicAntiQuarkPtTS = new TH1F("hadronicAntiQuarkPtTS","hadronicAntiQuarkPtTS",numbins,leftbound,rightbound);
-  hadronicAntiQuarkPtTC = new TH1F("hadronicAntiQuarkPtTC","hadronicAntiQuarkPtTC",numbins,leftbound,rightbound);
-  chadronicAntiQuarkPt = new TCanvas("hadronicAntiQuarkPt","hadronicAntiQuarkPt",canvsize1,canvsize2);
-  lightBottomPxTS = new TH1F("lightBottomPxTS","lightBottomPxTS",numbins,leftbound,rightbound);
-  lightBottomPxTC = new TH1F("lightBottomPxTC","lightBottomPxTC",numbins,leftbound,rightbound);
-  clightBottomPx = new TCanvas("lightBottomPx","lightBottomPx",canvsize1,canvsize2);
-  lightAntiBottomPxTS = new TH1F("lightAntiBottomPxTS","lightAntiBottomPxTS",numbins,leftbound,rightbound);
-  lightAntiBottomPxTC = new TH1F("lightAntiBottomPxTC","lightAntiBottomPxTC",numbins,leftbound,rightbound);
-  clightAntiBottomPx = new TCanvas("lightAntiBottomPx","lightAntiBottomPx",canvsize1,canvsize2);
+  hadronicQuarkPtTS = new
+TH1F("hadronicQuarkPtTS","hadronicQuarkPtTS",numbins,leftbound,rightbound);
+  hadronicQuarkPtTC = new
+TH1F("hadronicQuarkPtTC","hadronicQuarkPtTC",numbins,leftbound,rightbound);
+  chadronicQuarkPt = new
+TCanvas("hadronicQuarkPt","hadronicQuarkPt",canvsize1,canvsize2);
+  hadronicAntiQuarkPtTS = new
+TH1F("hadronicAntiQuarkPtTS","hadronicAntiQuarkPtTS",numbins,leftbound,rightbound);
+  hadronicAntiQuarkPtTC = new
+TH1F("hadronicAntiQuarkPtTC","hadronicAntiQuarkPtTC",numbins,leftbound,rightbound);
+  chadronicAntiQuarkPt = new
+TCanvas("hadronicAntiQuarkPt","hadronicAntiQuarkPt",canvsize1,canvsize2);
+  lightBottomPxTS = new
+TH1F("lightBottomPxTS","lightBottomPxTS",numbins,leftbound,rightbound);
+  lightBottomPxTC = new
+TH1F("lightBottomPxTC","lightBottomPxTC",numbins,leftbound,rightbound);
+  clightBottomPx = new
+TCanvas("lightBottomPx","lightBottomPx",canvsize1,canvsize2);
+  lightAntiBottomPxTS = new
+TH1F("lightAntiBottomPxTS","lightAntiBottomPxTS",numbins,leftbound,rightbound);
+  lightAntiBottomPxTC = new
+TH1F("lightAntiBottomPxTC","lightAntiBottomPxTC",numbins,leftbound,rightbound);
+  clightAntiBottomPx = new
+TCanvas("lightAntiBottomPx","lightAntiBottomPx",canvsize1,canvsize2);
 //  higgsPtTS = new TH1F("higgsPtTS","higgsPtTS",numbins,leftbound,rightbound);
 //  higgsPtTC = new TH1F("higgsPtTC","higgsPtTC",numbins,leftbound,rightbound);
 //  chiggsPt = new TCanvas("higgsPt","higgsPt",canvsize1,canvsize2);
 
   //initialise SC hists and canvases
-  leptonicBottomPtSC = new TH1F("leptonicBottomPtSC","leptonicBottomPtSC",numbins,leftbound,rightbound);
-  cleptonicBottomPtSC = new TCanvas("leptonicBottomPtSC","leptonicBottomPtSC",canvsize1,canvsize2);
-  leptonicTopPtSC = new TH1F("leptonicTopPtSC","leptonicTopPtSC",numbins,leftbound,rightbound);
-  cleptonicTopPtSC = new TCanvas("leptonicTopPtSC","leptonicTopPtSC",canvsize1,canvsize2);
-  leptonicWPtSC = new TH1F("leptonicWPtSC","leptonicWPtSC",numbins,leftbound,rightbound);
-  cleptonicWPtSC = new TCanvas("leptonicWPtSC","leptonicWPtSC",canvsize1,canvsize2);
+  leptonicBottomPtSC = new
+TH1F("leptonicBottomPtSC","leptonicBottomPtSC",numbins,leftbound,rightbound);
+  cleptonicBottomPtSC = new
+TCanvas("leptonicBottomPtSC","leptonicBottomPtSC",canvsize1,canvsize2);
+  leptonicTopPtSC = new
+TH1F("leptonicTopPtSC","leptonicTopPtSC",numbins,leftbound,rightbound);
+  cleptonicTopPtSC = new
+TCanvas("leptonicTopPtSC","leptonicTopPtSC",canvsize1,canvsize2);
+  leptonicWPtSC = new
+TH1F("leptonicWPtSC","leptonicWPtSC",numbins,leftbound,rightbound);
+  cleptonicWPtSC = new
+TCanvas("leptonicWPtSC","leptonicWPtSC",canvsize1,canvsize2);
   leptonPtSC = new TH1F("leptonPtSC","leptonPtSC",numbins,leftbound,rightbound);
   cleptonPtSC = new TCanvas("leptonPtSC","leptonPtSC",canvsize1,canvsize2);
-  neutrinoPtSC = new TH1F("neutrinoPtSC","neutrinoPtSC",numbins,leftbound,rightbound);
-  cneutrinoPtSC = new TCanvas("neutrinoPtSC","neutrinoPtSC",canvsize1,canvsize2);
-  hadronicBottomPtSC = new TH1F("hadronicBottomPtSC","hadronicBottomPtSC",numbins,leftbound,rightbound);
-  chadronicBottomPtSC = new TCanvas("hadronicBottomPtSC","hadronicBottomPtSC",canvsize1,canvsize2);
-  hadronicTopPtSC = new TH1F("hadronicTopPtSC","hadronicTopPtSC",numbins,leftbound,rightbound);
-  chadronicTopPtSC = new TCanvas("hadronicTopPtSC","hadronicTopPtSC",canvsize1,canvsize2);
-  hadronicWPtSC = new TH1F("hadronicWPtSC","hadronicWPtSC",numbins,leftbound,rightbound);
-  chadronicWPtSC = new TCanvas("hadronicWPtSC","hadronicWPtSC",canvsize1,canvsize2);
-  hadronicQuarkPtSC = new TH1F("hadronicQuarkPtSC","hadronicQuarkPtSC",numbins,leftbound,rightbound);
-  chadronicQuarkPtSC = new TCanvas("hadronicQuarkPtSC","hadronicQuarkPtSC",canvsize1,canvsize2);
-  hadronicAntiQuarkPtSC = new TH1F("hadronicAntiQuarkPtSC","hadronicAntiQuarkPtSC",numbins,leftbound,rightbound);
-  chadronicAntiQuarkPtSC = new TCanvas("hadronicAntiQuarkPtSC","hadronicAntiQuarkPtSC",canvsize1,canvsize2);
-  lightBottomPxSC = new TH1F("lightBottomPxSC","lightBottomPxSC",numbins,leftbound,rightbound);
-  clightBottomPxSC = new TCanvas("lightBottomPxSC","lightBottomPxSC",canvsize1,canvsize2);
-  lightAntiBottomPxSC = new TH1F("lightAntiBottomPxSC","lightAntiBottomPxSC",numbins,leftbound,rightbound);
-  clightAntiBottomPxSC = new TCanvas("lightAntiBottomPxSC","lightAntiBottomPxSC",canvsize1,canvsize2);
+  neutrinoPtSC = new
+TH1F("neutrinoPtSC","neutrinoPtSC",numbins,leftbound,rightbound);
+  cneutrinoPtSC = new
+TCanvas("neutrinoPtSC","neutrinoPtSC",canvsize1,canvsize2);
+  hadronicBottomPtSC = new
+TH1F("hadronicBottomPtSC","hadronicBottomPtSC",numbins,leftbound,rightbound);
+  chadronicBottomPtSC = new
+TCanvas("hadronicBottomPtSC","hadronicBottomPtSC",canvsize1,canvsize2);
+  hadronicTopPtSC = new
+TH1F("hadronicTopPtSC","hadronicTopPtSC",numbins,leftbound,rightbound);
+  chadronicTopPtSC = new
+TCanvas("hadronicTopPtSC","hadronicTopPtSC",canvsize1,canvsize2);
+  hadronicWPtSC = new
+TH1F("hadronicWPtSC","hadronicWPtSC",numbins,leftbound,rightbound);
+  chadronicWPtSC = new
+TCanvas("hadronicWPtSC","hadronicWPtSC",canvsize1,canvsize2);
+  hadronicQuarkPtSC = new
+TH1F("hadronicQuarkPtSC","hadronicQuarkPtSC",numbins,leftbound,rightbound);
+  chadronicQuarkPtSC = new
+TCanvas("hadronicQuarkPtSC","hadronicQuarkPtSC",canvsize1,canvsize2);
+  hadronicAntiQuarkPtSC = new
+TH1F("hadronicAntiQuarkPtSC","hadronicAntiQuarkPtSC",numbins,leftbound,rightbound);
+  chadronicAntiQuarkPtSC = new
+TCanvas("hadronicAntiQuarkPtSC","hadronicAntiQuarkPtSC",canvsize1,canvsize2);
+  lightBottomPxSC = new
+TH1F("lightBottomPxSC","lightBottomPxSC",numbins,leftbound,rightbound);
+  clightBottomPxSC = new
+TCanvas("lightBottomPxSC","lightBottomPxSC",canvsize1,canvsize2);
+  lightAntiBottomPxSC = new
+TH1F("lightAntiBottomPxSC","lightAntiBottomPxSC",numbins,leftbound,rightbound);
+  clightAntiBottomPxSC = new
+TCanvas("lightAntiBottomPxSC","lightAntiBottomPxSC",canvsize1,canvsize2);
 //  higgsPtSC = new TH1F("higgsPtSC","higgsPtSC",numbins,leftbound,rightbound);
 //  chiggsPtSC = new TCanvas("higgsPtSC","higgsPtSC",canvsize1,canvsize2);
 
@@ -522,11 +646,11 @@ double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVect
   outTree->Branch( "lightJet2PxDelta"  ,  &lightJet2PxDelta  ) ;
   outTree->Branch( "lightJet2PyDelta"  ,  &lightJet2PyDelta  ) ;
 
-  outTree->Branch( "top1TruePt"          ,  &top1TruePt         ) ;  
-  outTree->Branch( "top1TrueEta"         ,  &top1TrueEta        ) ; 
-  outTree->Branch( "top1TruePhi"         ,  &top1TruePhi        ) ; 
+  outTree->Branch( "top1TruePt"          ,  &top1TruePt         ) ;
+  outTree->Branch( "top1TrueEta"         ,  &top1TrueEta        ) ;
+  outTree->Branch( "top1TruePhi"         ,  &top1TruePhi        ) ;
   outTree->Branch( "top1TrueE"           ,  &top1TrueE          ) ;
-  outTree->Branch( "top1TrueMass"        ,  &top1TrueMass       ) ; 
+  outTree->Branch( "top1TrueMass"        ,  &top1TrueMass       ) ;
   outTree->Branch( "W1TruePt"            ,  &W1TruePt           ) ;
   outTree->Branch( "W1TrueEta"           ,  &W1TrueEta          ) ;
   outTree->Branch( "W1TruePhi"           ,  &W1TruePhi          ) ;
@@ -540,7 +664,7 @@ double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVect
   outTree->Branch( "W1Daughter1TrueEta"  ,  &W1Daughter1TrueEta ) ;
   outTree->Branch( "W1Daughter1TruePhi"  ,  &W1Daughter1TruePhi ) ;
   outTree->Branch( "W1Daughter1TrueE"    ,  &W1Daughter1TrueE   ) ;
-  outTree->Branch( "W1Daughter2TruePt"   ,  &W1Daughter2TruePt  ) ; 
+  outTree->Branch( "W1Daughter2TruePt"   ,  &W1Daughter2TruePt  ) ;
   outTree->Branch( "W1Daughter2TrueEta"  ,  &W1Daughter2TrueEta ) ;
   outTree->Branch( "W1Daughter2TruePhi"  ,  &W1Daughter2TruePhi ) ;
   outTree->Branch( "W1Daughter2TrueE"    ,  &W1Daughter2TrueE   ) ;
@@ -694,123 +818,200 @@ double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector& p2, XYZTLorentzVect
 
 
 
-  outTree->Branch( "top1DeltaPtTrueSmeared"         ,  &top1DeltaPtTrueSmeared        ) ;
-  outTree->Branch( "top1DeltaRTrueSmeared"          ,  &top1DeltaRTrueSmeared         ) ;
-  outTree->Branch( "top1DeltaMTrueSmeared"          ,  &top1DeltaMTrueSmeared         ) ;
-  outTree->Branch( "W1DeltaPtTrueSmeared"           ,  &W1DeltaPtTrueSmeared          ) ;
-  outTree->Branch( "W1DeltaRTrueSmeared"            ,  &W1DeltaRTrueSmeared           ) ;
-  outTree->Branch( "W1DeltaMTrueSmeared"            ,  &W1DeltaMTrueSmeared           ) ;
-  outTree->Branch( "bJet1DeltaPtTrueSmeared"        ,  &bJet1DeltaPtTrueSmeared       ) ;
-  outTree->Branch( "bJet1DeltaRTrueSmeared"         ,  &bJet1DeltaRTrueSmeared        ) ;
-  //outTree->Branch( "bJet1DeltaMTrueSmeared"         ,  &bJet1DeltaMTrueSmeared        ) ;
-  outTree->Branch( "W1Daughter1DeltaPtTrueSmeared"  ,  &W1Daughter1DeltaPtTrueSmeared ) ;
-  outTree->Branch( "W1Daughter1DeltaRTrueSmeared"   ,  &W1Daughter1DeltaRTrueSmeared  ) ;
-  //outTree->Branch( "W1Daughter1DeltaMTrueSmeared"   ,  &W1Daughter1DeltaMTrueSmeared  ) ;
-  outTree->Branch( "W1Daughter2DeltaPtTrueSmeared"  ,  &W1Daughter2DeltaPtTrueSmeared ) ;
-  outTree->Branch( "W1Daughter2DeltaRTrueSmeared"   ,  &W1Daughter2DeltaRTrueSmeared  ) ;
-  //outTree->Branch( "W1Daughter2DeltaMTrueSmeared"   ,  &W1Daughter2DeltaMTrueSmeared  ) ;
-  outTree->Branch( "lightJet1DeltaPxTrueSmeared"    ,  &lightJet1DeltaPxTrueSmeared   ) ;
-  outTree->Branch( "lightJet1DeltaPyTrueSmeared"    ,  &lightJet1DeltaPyTrueSmeared   ) ;
-  outTree->Branch( "lightJet1DeltaRTrueSmeared"     ,  &lightJet1DeltaRTrueSmeared    ) ;
+  outTree->Branch( "top1DeltaPtTrueSmeared"         ,  &top1DeltaPtTrueSmeared
+) ;
+  outTree->Branch( "top1DeltaRTrueSmeared"          ,  &top1DeltaRTrueSmeared
+) ;
+  outTree->Branch( "top1DeltaMTrueSmeared"          ,  &top1DeltaMTrueSmeared
+) ;
+  outTree->Branch( "W1DeltaPtTrueSmeared"           ,  &W1DeltaPtTrueSmeared ) ;
+  outTree->Branch( "W1DeltaRTrueSmeared"            ,  &W1DeltaRTrueSmeared ) ;
+  outTree->Branch( "W1DeltaMTrueSmeared"            ,  &W1DeltaMTrueSmeared ) ;
+  outTree->Branch( "bJet1DeltaPtTrueSmeared"        ,  &bJet1DeltaPtTrueSmeared
+) ;
+  outTree->Branch( "bJet1DeltaRTrueSmeared"         ,  &bJet1DeltaRTrueSmeared
+) ;
+  //outTree->Branch( "bJet1DeltaMTrueSmeared"         ,  &bJet1DeltaMTrueSmeared
+) ;
+  outTree->Branch( "W1Daughter1DeltaPtTrueSmeared"  ,
+&W1Daughter1DeltaPtTrueSmeared ) ;
+  outTree->Branch( "W1Daughter1DeltaRTrueSmeared"   ,
+&W1Daughter1DeltaRTrueSmeared  ) ;
+  //outTree->Branch( "W1Daughter1DeltaMTrueSmeared"   ,
+&W1Daughter1DeltaMTrueSmeared  ) ;
+  outTree->Branch( "W1Daughter2DeltaPtTrueSmeared"  ,
+&W1Daughter2DeltaPtTrueSmeared ) ;
+  outTree->Branch( "W1Daughter2DeltaRTrueSmeared"   ,
+&W1Daughter2DeltaRTrueSmeared  ) ;
+  //outTree->Branch( "W1Daughter2DeltaMTrueSmeared"   ,
+&W1Daughter2DeltaMTrueSmeared  ) ;
+  outTree->Branch( "lightJet1DeltaPxTrueSmeared"    ,
+&lightJet1DeltaPxTrueSmeared   ) ;
+  outTree->Branch( "lightJet1DeltaPyTrueSmeared"    ,
+&lightJet1DeltaPyTrueSmeared   ) ;
+  outTree->Branch( "lightJet1DeltaRTrueSmeared"     ,
+&lightJet1DeltaRTrueSmeared    ) ;
 
-  outTree->Branch( "top2DeltaPtTrueSmeared"         ,  &top2DeltaPtTrueSmeared        ) ;
-  outTree->Branch( "top2DeltaRTrueSmeared"          ,  &top2DeltaRTrueSmeared         ) ;
-  outTree->Branch( "top2DeltaMTrueSmeared"          ,  &top2DeltaMTrueSmeared         ) ;
-  outTree->Branch( "W2DeltaPtTrueSmeared"           ,  &W2DeltaPtTrueSmeared          ) ;
-  outTree->Branch( "W2DeltaRTrueSmeared"            ,  &W2DeltaRTrueSmeared           ) ;
-  outTree->Branch( "W2DeltaMTrueSmeared"            ,  &W2DeltaMTrueSmeared           ) ;
-  outTree->Branch( "bJet2DeltaPtTrueSmeared"        ,  &bJet2DeltaPtTrueSmeared       ) ;
-  outTree->Branch( "bJet2DeltaRTrueSmeared"         ,  &bJet2DeltaRTrueSmeared        ) ;
-  //outTree->Branch( "bJet2DeltaMTrueSmeared"         ,  &bJet2DeltaMTrueSmeared        ) ;
-  outTree->Branch( "W2Daughter1DeltaPtTrueSmeared"  ,  &W2Daughter1DeltaPtTrueSmeared ) ;
-  outTree->Branch( "W2Daughter1DeltaRTrueSmeared"   ,  &W2Daughter1DeltaRTrueSmeared  ) ;
-  //outTree->Branch( "W2Daughter1DeltaMTrueSmeared"   ,  &W2Daughter1DeltaMTrueSmeared  ) ;
-  outTree->Branch( "W2Daughter2DeltaPtTrueSmeared"  ,  &W2Daughter2DeltaPtTrueSmeared ) ;
-  outTree->Branch( "W2Daughter2DeltaRTrueSmeared"   ,  &W2Daughter2DeltaRTrueSmeared  ) ;
-  //outTree->Branch( "W2Daughter2DeltaMTrueSmeared"   ,  &W2Daughter2DeltaMTrueSmeared  ) ;
-  outTree->Branch( "lightJet2DeltaPxTrueSmeared"    ,  &lightJet2DeltaPxTrueSmeared   ) ;
-  outTree->Branch( "lightJet2DeltaPyTrueSmeared"    ,  &lightJet2DeltaPyTrueSmeared   ) ;
-  outTree->Branch( "lightJet2DeltaRTrueSmeared"     ,  &lightJet2DeltaRTrueSmeared    ) ;
-
-
-  outTree->Branch( "top1DeltaPtTrueBest"         ,  &top1DeltaPtTrueBest        ) ;
-  outTree->Branch( "top1DeltaRTrueBest"          ,  &top1DeltaRTrueBest         ) ;
-  outTree->Branch( "top1DeltaMTrueBest"          ,  &top1DeltaMTrueBest         ) ;
-  outTree->Branch( "W1DeltaPtTrueBest"           ,  &W1DeltaPtTrueBest          ) ;
-  outTree->Branch( "W1DeltaRTrueBest"            ,  &W1DeltaRTrueBest           ) ;
-  outTree->Branch( "W1DeltaMTrueBest"            ,  &W1DeltaMTrueBest           ) ;
-  outTree->Branch( "bJet1DeltaPtTrueBest"        ,  &bJet1DeltaPtTrueBest       ) ;
-  outTree->Branch( "bJet1DeltaRTrueBest"         ,  &bJet1DeltaRTrueBest        ) ;
-  //outTree->Branch( "bJet1DeltaMTrueBest"         ,  &bJet1DeltaMTrueBest        ) ;
-  outTree->Branch( "W1Daughter1DeltaPtTrueBest"  ,  &W1Daughter1DeltaPtTrueBest ) ;
-  outTree->Branch( "W1Daughter1DeltaRTrueBest"   ,  &W1Daughter1DeltaRTrueBest  ) ;
-  //outTree->Branch( "W1Daughter1DeltaMTrueBest"   ,  &W1Daughter1DeltaMTrueBest  ) ;
-  outTree->Branch( "W1Daughter2DeltaPtTrueBest"  ,  &W1Daughter2DeltaPtTrueBest ) ;
-  outTree->Branch( "W1Daughter2DeltaRTrueBest"   ,  &W1Daughter2DeltaRTrueBest  ) ;
-  //outTree->Branch( "W1Daughter2DeltaMTrueBest"   ,  &W1Daughter2DeltaMTrueBest  ) ;
-  outTree->Branch( "lightJet1DeltaPxTrueBest"    ,  &lightJet1DeltaPxTrueBest   ) ;
-  outTree->Branch( "lightJet1DeltaPyTrueBest"    ,  &lightJet1DeltaPyTrueBest   ) ;
-  outTree->Branch( "lightJet1DeltaRTrueBest"     ,  &lightJet1DeltaRTrueBest    ) ;
-
-  outTree->Branch( "top2DeltaPtTrueBest"         ,  &top2DeltaPtTrueBest        ) ;
-  outTree->Branch( "top2DeltaRTrueBest"          ,  &top2DeltaRTrueBest         ) ;
-  outTree->Branch( "top2DeltaMTrueBest"          ,  &top2DeltaMTrueBest         ) ;
-  outTree->Branch( "W2DeltaPtTrueBest"           ,  &W2DeltaPtTrueBest          ) ;
-  outTree->Branch( "W2DeltaRTrueBest"            ,  &W2DeltaRTrueBest           ) ;
-  outTree->Branch( "W2DeltaMTrueBest"            ,  &W2DeltaMTrueBest           ) ;
-  outTree->Branch( "bJet2DeltaPtTrueBest"        ,  &bJet2DeltaPtTrueBest       ) ;
-  outTree->Branch( "bJet2DeltaRTrueBest"         ,  &bJet2DeltaRTrueBest        ) ;
-  //outTree->Branch( "bJet2DeltaMTrueBest"         ,  &bJet2DeltaMTrueBest        ) ;
-  outTree->Branch( "W2Daughter1DeltaPtTrueBest"  ,  &W2Daughter1DeltaPtTrueBest ) ;
-  outTree->Branch( "W2Daughter1DeltaRTrueBest"   ,  &W2Daughter1DeltaRTrueBest  ) ;
-  //outTree->Branch( "W2Daughter1DeltaMTrueBest"   ,  &W2Daughter1DeltaMTrueBest  ) ;
-  outTree->Branch( "W2Daughter2DeltaPtTrueBest"  ,  &W2Daughter2DeltaPtTrueBest ) ;
-  outTree->Branch( "W2Daughter2DeltaRTrueBest"   ,  &W2Daughter2DeltaRTrueBest  ) ;
-  //outTree->Branch( "W2Daughter2DeltaMTrueBest"   ,  &W2Daughter2DeltaMTrueBest  ) ;
-  outTree->Branch( "lightJet2DeltaPxTrueBest"    ,  &lightJet2DeltaPxTrueBest   ) ;
-  outTree->Branch( "lightJet2DeltaPyTrueBest"    ,  &lightJet2DeltaPyTrueBest   ) ;
-  outTree->Branch( "lightJet2DeltaRTrueBest"     ,  &lightJet2DeltaRTrueBest    ) ;
+  outTree->Branch( "top2DeltaPtTrueSmeared"         ,  &top2DeltaPtTrueSmeared
+) ;
+  outTree->Branch( "top2DeltaRTrueSmeared"          ,  &top2DeltaRTrueSmeared
+) ;
+  outTree->Branch( "top2DeltaMTrueSmeared"          ,  &top2DeltaMTrueSmeared
+) ;
+  outTree->Branch( "W2DeltaPtTrueSmeared"           ,  &W2DeltaPtTrueSmeared ) ;
+  outTree->Branch( "W2DeltaRTrueSmeared"            ,  &W2DeltaRTrueSmeared ) ;
+  outTree->Branch( "W2DeltaMTrueSmeared"            ,  &W2DeltaMTrueSmeared ) ;
+  outTree->Branch( "bJet2DeltaPtTrueSmeared"        ,  &bJet2DeltaPtTrueSmeared
+) ;
+  outTree->Branch( "bJet2DeltaRTrueSmeared"         ,  &bJet2DeltaRTrueSmeared
+) ;
+  //outTree->Branch( "bJet2DeltaMTrueSmeared"         ,  &bJet2DeltaMTrueSmeared
+) ;
+  outTree->Branch( "W2Daughter1DeltaPtTrueSmeared"  ,
+&W2Daughter1DeltaPtTrueSmeared ) ;
+  outTree->Branch( "W2Daughter1DeltaRTrueSmeared"   ,
+&W2Daughter1DeltaRTrueSmeared  ) ;
+  //outTree->Branch( "W2Daughter1DeltaMTrueSmeared"   ,
+&W2Daughter1DeltaMTrueSmeared  ) ;
+  outTree->Branch( "W2Daughter2DeltaPtTrueSmeared"  ,
+&W2Daughter2DeltaPtTrueSmeared ) ;
+  outTree->Branch( "W2Daughter2DeltaRTrueSmeared"   ,
+&W2Daughter2DeltaRTrueSmeared  ) ;
+  //outTree->Branch( "W2Daughter2DeltaMTrueSmeared"   ,
+&W2Daughter2DeltaMTrueSmeared  ) ;
+  outTree->Branch( "lightJet2DeltaPxTrueSmeared"    ,
+&lightJet2DeltaPxTrueSmeared   ) ;
+  outTree->Branch( "lightJet2DeltaPyTrueSmeared"    ,
+&lightJet2DeltaPyTrueSmeared   ) ;
+  outTree->Branch( "lightJet2DeltaRTrueSmeared"     ,
+&lightJet2DeltaRTrueSmeared    ) ;
 
 
-  outTree->Branch( "top1DeltaPtSmearedBest"         ,  &top1DeltaPtSmearedBest        ) ;
-  outTree->Branch( "top1DeltaRSmearedBest"          ,  &top1DeltaRSmearedBest         ) ;
-  outTree->Branch( "top1DeltaMSmearedBest"          ,  &top1DeltaMSmearedBest         ) ;
-  outTree->Branch( "W1DeltaPtSmearedBest"           ,  &W1DeltaPtSmearedBest          ) ;
-  outTree->Branch( "W1DeltaRSmearedBest"            ,  &W1DeltaRSmearedBest           ) ;
-  outTree->Branch( "W1DeltaMSmearedBest"            ,  &W1DeltaMSmearedBest           ) ;
-  outTree->Branch( "bJet1DeltaPtSmearedBest"        ,  &bJet1DeltaPtSmearedBest       ) ;
-  outTree->Branch( "bJet1DeltaRSmearedBest"         ,  &bJet1DeltaRSmearedBest        ) ;
-  outTree->Branch( "bJet1DeltaMSmearedBest"         ,  &bJet1DeltaMSmearedBest        ) ;
-  outTree->Branch( "W1Daughter1DeltaPtSmearedBest"  ,  &W1Daughter1DeltaPtSmearedBest ) ;
-  outTree->Branch( "W1Daughter1DeltaRSmearedBest"   ,  &W1Daughter1DeltaRSmearedBest  ) ;
-  outTree->Branch( "W1Daughter1DeltaMSmearedBest"   ,  &W1Daughter1DeltaMSmearedBest  ) ;
-  outTree->Branch( "W1Daughter2DeltaPtSmearedBest"  ,  &W1Daughter2DeltaPtSmearedBest ) ;
-  outTree->Branch( "W1Daughter2DeltaRSmearedBest"   ,  &W1Daughter2DeltaRSmearedBest  ) ;
-  outTree->Branch( "W1Daughter2DeltaMSmearedBest"   ,  &W1Daughter2DeltaMSmearedBest  ) ;
-  outTree->Branch( "lightJet1DeltaPxSmearedBest"    ,  &lightJet1DeltaPxSmearedBest   ) ;
-  outTree->Branch( "lightJet1DeltaPySmearedBest"    ,  &lightJet1DeltaPySmearedBest   ) ;
-  outTree->Branch( "lightJet1DeltaRSmearedBest"     ,  &lightJet1DeltaRSmearedBest    ) ;
+  outTree->Branch( "top1DeltaPtTrueBest"         ,  &top1DeltaPtTrueBest ) ;
+  outTree->Branch( "top1DeltaRTrueBest"          ,  &top1DeltaRTrueBest ) ;
+  outTree->Branch( "top1DeltaMTrueBest"          ,  &top1DeltaMTrueBest ) ;
+  outTree->Branch( "W1DeltaPtTrueBest"           ,  &W1DeltaPtTrueBest ) ;
+  outTree->Branch( "W1DeltaRTrueBest"            ,  &W1DeltaRTrueBest ) ;
+  outTree->Branch( "W1DeltaMTrueBest"            ,  &W1DeltaMTrueBest ) ;
+  outTree->Branch( "bJet1DeltaPtTrueBest"        ,  &bJet1DeltaPtTrueBest ) ;
+  outTree->Branch( "bJet1DeltaRTrueBest"         ,  &bJet1DeltaRTrueBest ) ;
+  //outTree->Branch( "bJet1DeltaMTrueBest"         ,  &bJet1DeltaMTrueBest ) ;
+  outTree->Branch( "W1Daughter1DeltaPtTrueBest"  ,  &W1Daughter1DeltaPtTrueBest
+) ;
+  outTree->Branch( "W1Daughter1DeltaRTrueBest"   ,  &W1Daughter1DeltaRTrueBest
+) ;
+  //outTree->Branch( "W1Daughter1DeltaMTrueBest"   ,  &W1Daughter1DeltaMTrueBest
+) ;
+  outTree->Branch( "W1Daughter2DeltaPtTrueBest"  ,  &W1Daughter2DeltaPtTrueBest
+) ;
+  outTree->Branch( "W1Daughter2DeltaRTrueBest"   ,  &W1Daughter2DeltaRTrueBest
+) ;
+  //outTree->Branch( "W1Daughter2DeltaMTrueBest"   ,  &W1Daughter2DeltaMTrueBest
+) ;
+  outTree->Branch( "lightJet1DeltaPxTrueBest"    ,  &lightJet1DeltaPxTrueBest
+) ;
+  outTree->Branch( "lightJet1DeltaPyTrueBest"    ,  &lightJet1DeltaPyTrueBest
+) ;
+  outTree->Branch( "lightJet1DeltaRTrueBest"     ,  &lightJet1DeltaRTrueBest ) ;
 
-  outTree->Branch( "top2DeltaPtSmearedBest"         ,  &top2DeltaPtSmearedBest        ) ;
-  outTree->Branch( "top2DeltaRSmearedBest"          ,  &top2DeltaRSmearedBest         ) ;
-  outTree->Branch( "top2DeltaMSmearedBest"          ,  &top2DeltaMSmearedBest         ) ;
-  outTree->Branch( "W2DeltaPtSmearedBest"           ,  &W2DeltaPtSmearedBest          ) ;
-  outTree->Branch( "W2DeltaRSmearedBest"            ,  &W2DeltaRSmearedBest           ) ;
-  outTree->Branch( "W2DeltaMSmearedBest"            ,  &W2DeltaMSmearedBest           ) ;
-  outTree->Branch( "bJet2DeltaPtSmearedBest"        ,  &bJet2DeltaPtSmearedBest       ) ;
-  outTree->Branch( "bJet2DeltaRSmearedBest"         ,  &bJet2DeltaRSmearedBest        ) ;
-  outTree->Branch( "bJet2DeltaMSmearedBest"         ,  &bJet2DeltaMSmearedBest        ) ;
-  outTree->Branch( "W2Daughter1DeltaPtSmearedBest"  ,  &W2Daughter1DeltaPtSmearedBest ) ;
-  outTree->Branch( "W2Daughter1DeltaRSmearedBest"   ,  &W2Daughter1DeltaRSmearedBest  ) ;
-  outTree->Branch( "W2Daughter1DeltaMSmearedBest"   ,  &W2Daughter1DeltaMSmearedBest  ) ;
-  outTree->Branch( "W2Daughter2DeltaPtSmearedBest"  ,  &W2Daughter2DeltaPtSmearedBest ) ;
-  outTree->Branch( "W2Daughter2DeltaRSmearedBest"   ,  &W2Daughter2DeltaRSmearedBest  ) ;
-  outTree->Branch( "W2Daughter2DeltaMSmearedBest"   ,  &W2Daughter2DeltaMSmearedBest  ) ;
-  outTree->Branch( "lightJet2DeltaPxSmearedBest"    ,  &lightJet2DeltaPxSmearedBest   ) ;
-  outTree->Branch( "lightJet2DeltaPySmearedBest"    ,  &lightJet2DeltaPySmearedBest   ) ;
-  outTree->Branch( "lightJet2DeltaRSmearedBest"     ,  &lightJet2DeltaRSmearedBest    ) ;
+  outTree->Branch( "top2DeltaPtTrueBest"         ,  &top2DeltaPtTrueBest ) ;
+  outTree->Branch( "top2DeltaRTrueBest"          ,  &top2DeltaRTrueBest ) ;
+  outTree->Branch( "top2DeltaMTrueBest"          ,  &top2DeltaMTrueBest ) ;
+  outTree->Branch( "W2DeltaPtTrueBest"           ,  &W2DeltaPtTrueBest ) ;
+  outTree->Branch( "W2DeltaRTrueBest"            ,  &W2DeltaRTrueBest ) ;
+  outTree->Branch( "W2DeltaMTrueBest"            ,  &W2DeltaMTrueBest ) ;
+  outTree->Branch( "bJet2DeltaPtTrueBest"        ,  &bJet2DeltaPtTrueBest ) ;
+  outTree->Branch( "bJet2DeltaRTrueBest"         ,  &bJet2DeltaRTrueBest ) ;
+  //outTree->Branch( "bJet2DeltaMTrueBest"         ,  &bJet2DeltaMTrueBest ) ;
+  outTree->Branch( "W2Daughter1DeltaPtTrueBest"  ,  &W2Daughter1DeltaPtTrueBest
+) ;
+  outTree->Branch( "W2Daughter1DeltaRTrueBest"   ,  &W2Daughter1DeltaRTrueBest
+) ;
+  //outTree->Branch( "W2Daughter1DeltaMTrueBest"   ,  &W2Daughter1DeltaMTrueBest
+) ;
+  outTree->Branch( "W2Daughter2DeltaPtTrueBest"  ,  &W2Daughter2DeltaPtTrueBest
+) ;
+  outTree->Branch( "W2Daughter2DeltaRTrueBest"   ,  &W2Daughter2DeltaRTrueBest
+) ;
+  //outTree->Branch( "W2Daughter2DeltaMTrueBest"   ,  &W2Daughter2DeltaMTrueBest
+) ;
+  outTree->Branch( "lightJet2DeltaPxTrueBest"    ,  &lightJet2DeltaPxTrueBest
+) ;
+  outTree->Branch( "lightJet2DeltaPyTrueBest"    ,  &lightJet2DeltaPyTrueBest
+) ;
+  outTree->Branch( "lightJet2DeltaRTrueBest"     ,  &lightJet2DeltaRTrueBest ) ;
 
-  //outTree->Branch( "smearingSwitchedLightJetOrdering" ,  &smearingSwitchedLightJetOrdering ) ;
+
+  outTree->Branch( "top1DeltaPtSmearedBest"         ,  &top1DeltaPtSmearedBest
+) ;
+  outTree->Branch( "top1DeltaRSmearedBest"          ,  &top1DeltaRSmearedBest
+) ;
+  outTree->Branch( "top1DeltaMSmearedBest"          ,  &top1DeltaMSmearedBest
+) ;
+  outTree->Branch( "W1DeltaPtSmearedBest"           ,  &W1DeltaPtSmearedBest ) ;
+  outTree->Branch( "W1DeltaRSmearedBest"            ,  &W1DeltaRSmearedBest ) ;
+  outTree->Branch( "W1DeltaMSmearedBest"            ,  &W1DeltaMSmearedBest ) ;
+  outTree->Branch( "bJet1DeltaPtSmearedBest"        ,  &bJet1DeltaPtSmearedBest
+) ;
+  outTree->Branch( "bJet1DeltaRSmearedBest"         ,  &bJet1DeltaRSmearedBest
+) ;
+  outTree->Branch( "bJet1DeltaMSmearedBest"         ,  &bJet1DeltaMSmearedBest
+) ;
+  outTree->Branch( "W1Daughter1DeltaPtSmearedBest"  ,
+&W1Daughter1DeltaPtSmearedBest ) ;
+  outTree->Branch( "W1Daughter1DeltaRSmearedBest"   ,
+&W1Daughter1DeltaRSmearedBest  ) ;
+  outTree->Branch( "W1Daughter1DeltaMSmearedBest"   ,
+&W1Daughter1DeltaMSmearedBest  ) ;
+  outTree->Branch( "W1Daughter2DeltaPtSmearedBest"  ,
+&W1Daughter2DeltaPtSmearedBest ) ;
+  outTree->Branch( "W1Daughter2DeltaRSmearedBest"   ,
+&W1Daughter2DeltaRSmearedBest  ) ;
+  outTree->Branch( "W1Daughter2DeltaMSmearedBest"   ,
+&W1Daughter2DeltaMSmearedBest  ) ;
+  outTree->Branch( "lightJet1DeltaPxSmearedBest"    ,
+&lightJet1DeltaPxSmearedBest   ) ;
+  outTree->Branch( "lightJet1DeltaPySmearedBest"    ,
+&lightJet1DeltaPySmearedBest   ) ;
+  outTree->Branch( "lightJet1DeltaRSmearedBest"     ,
+&lightJet1DeltaRSmearedBest    ) ;
+
+  outTree->Branch( "top2DeltaPtSmearedBest"         ,  &top2DeltaPtSmearedBest
+) ;
+  outTree->Branch( "top2DeltaRSmearedBest"          ,  &top2DeltaRSmearedBest
+) ;
+  outTree->Branch( "top2DeltaMSmearedBest"          ,  &top2DeltaMSmearedBest
+) ;
+  outTree->Branch( "W2DeltaPtSmearedBest"           ,  &W2DeltaPtSmearedBest ) ;
+  outTree->Branch( "W2DeltaRSmearedBest"            ,  &W2DeltaRSmearedBest ) ;
+  outTree->Branch( "W2DeltaMSmearedBest"            ,  &W2DeltaMSmearedBest ) ;
+  outTree->Branch( "bJet2DeltaPtSmearedBest"        ,  &bJet2DeltaPtSmearedBest
+) ;
+  outTree->Branch( "bJet2DeltaRSmearedBest"         ,  &bJet2DeltaRSmearedBest
+) ;
+  outTree->Branch( "bJet2DeltaMSmearedBest"         ,  &bJet2DeltaMSmearedBest
+) ;
+  outTree->Branch( "W2Daughter1DeltaPtSmearedBest"  ,
+&W2Daughter1DeltaPtSmearedBest ) ;
+  outTree->Branch( "W2Daughter1DeltaRSmearedBest"   ,
+&W2Daughter1DeltaRSmearedBest  ) ;
+  outTree->Branch( "W2Daughter1DeltaMSmearedBest"   ,
+&W2Daughter1DeltaMSmearedBest  ) ;
+  outTree->Branch( "W2Daughter2DeltaPtSmearedBest"  ,
+&W2Daughter2DeltaPtSmearedBest ) ;
+  outTree->Branch( "W2Daughter2DeltaRSmearedBest"   ,
+&W2Daughter2DeltaRSmearedBest  ) ;
+  outTree->Branch( "W2Daughter2DeltaMSmearedBest"   ,
+&W2Daughter2DeltaMSmearedBest  ) ;
+  outTree->Branch( "lightJet2DeltaPxSmearedBest"    ,
+&lightJet2DeltaPxSmearedBest   ) ;
+  outTree->Branch( "lightJet2DeltaPySmearedBest"    ,
+&lightJet2DeltaPySmearedBest   ) ;
+  outTree->Branch( "lightJet2DeltaRSmearedBest"     ,
+&lightJet2DeltaRSmearedBest    ) ;
+
+  //outTree->Branch( "smearingSwitchedLightJetOrdering" ,
+&smearingSwitchedLightJetOrdering ) ;
 }*/
 /*
 Int_t topReconstructionFromLHE::GetEntry(Long64_t entry)
