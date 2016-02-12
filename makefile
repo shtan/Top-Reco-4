@@ -1,52 +1,40 @@
 CXX = $(shell root-config --cxx)
-CPPFLAGS = -isystem$(shell root-config --incdir) -I inc
-CXXFLAGS = -Wall -Wextra -pedantic -O2 -Wshadow -fPIC $(shell root-config --cflags)
+CXXFLAGS = $(shell root-config --cflags) -std=c++11 -Wall -Wextra -pedantic -O2 \
+-Wshadow -Wunused-variable -Werror=sign-compare \
+-Wunused-but-set-variable -Werror=return-type -Werror=missing-braces \
+-Werror=delete-non-virtual-dtor  -fPIC \
+$(INCLUDE_RULES)
+# needs to be added: -Werror=maybe-uninitialized
+INCLUDE_RULES = $(shell root-config --incdir) -I . -I inc/
 LD = $(shell root-config --ld)
-LDFLAGS = $(shell root-config --ldflags) -lGenVector
-LDLIBS =  $(shell root-config --glibs) -lMinuit2 -lMathMore
+LDFLAGS = $(shell root-config --ldflags)
+LDLIBS =  $(shell root-config --glibs) -lMinuit2 -lMathMore -l GenVector
 
-VPATH = inc:src:obj
+OBJECTS = src/WDaughterEllipseCalculator.o src/hadronicTopSystemChiSquare.o \
+	  src/leptonicTopSystemChiSquare.o src/lightJetChiSquareMinimumSolver.o \
+	  src/topEventMinimizer.o src/topSystemChiSquare.o
 
-OBJECTS = obj/WDaughterEllipseCalculator.o obj/hadronicTopSystemChiSquare.o \
-	  obj/leptonicTopSystemChiSquare.o obj/lightJetChiSquareMinimumSolver.o \
-	  obj/topEventMinimizer.o obj/topSystemChiSquare.o
-
-COMPILE = $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c
+COMPILE = $(CXX) $(CXXFLAGS) -c
 LINK = $(LD) $(LDFLAGS)
 LINKEND = $(OBJECTS) $(LDLIBS)
 
+
 # add your executable name here
-all : topReconstructionFromLHE converter
+all: topReconstructionFromLHE converter
 
-topReconstructionFromLHE : topReconstructionFromLHE.o $(OBJECTS)
+topReconstructionFromLHE: $(OBJECTS) topReconstructionFromLHE.o
 	$(LINK) -o topReconstructionFromLHE topReconstructionFromLHE.o $(LINKEND)
-topReconstructionFromLHE.o: topReconstructionFromLHE.C topReconstructionFromLHE.h topEventMinimizer.h
-	$(COMPILE) topReconstructionFromLHE.C
 
-converter : converter.o $(OBJECTS)
+converter: $(OBJECTS) converter.o
 	$(LINK) -o converter converter.o $(LINKEND)
-converter.o: converter.C converter.h 
-	$(COMPILE) converter.C
 
 clean:
-	-rm -f topReconstructionFromLHE converter obj/*.o *.o
+	rm -f topReconstructionFromLHE.o converter.o; \
+	rm -f $(OBJECTS)
 
-obj/WDaughterEllipseCalculator.o : WDaughterEllipseCalculator.cxx WDaughterEllipseCalculator.h
-	$(COMPILE) src/WDaughterEllipseCalculator.cxx -o obj/WDaughterEllipseCalculator.o
+.PHONY: clean
 
-obj/hadronicTopSystemChiSquare.o : hadronicTopSystemChiSquare.cxx hadronicTopSystemChiSquare.h
-	$(COMPILE) src/hadronicTopSystemChiSquare.cxx -o obj/hadronicTopSystemChiSquare.o
+.SUFFIXES: .cpp .cc .cxx .c
 
-obj/leptonicTopSystemChiSquare.o : leptonicTopSystemChiSquare.cxx leptonicTopSystemChiSquare.h
-	$(COMPILE) src/leptonicTopSystemChiSquare.cxx -o obj/leptonicTopSystemChiSquare.o
-
-obj/lightJetChiSquareMinimumSolver.o : lightJetChiSquareMinimumSolver.cxx lightJetChiSquareMinimumSolver.h
-	$(COMPILE) src/lightJetChiSquareMinimumSolver.cxx -o obj/lightJetChiSquareMinimumSolver.o
-
-obj/topEventMinimizer.o : topEventMinimizer.cxx topEventMinimizer.h
-	$(COMPILE) src/topEventMinimizer.cxx -o obj/topEventMinimizer.o
-
-obj/topSystemChiSquare.o : topSystemChiSquare.cxx topSystemChiSquare.h
-	$(COMPILE) src/topSystemChiSquare.cxx -o obj/topSystemChiSquare.o
-
-.PHONY : clean
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
