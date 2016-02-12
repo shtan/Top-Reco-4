@@ -38,15 +38,8 @@ vector <string> topReconstructionFromLHE::particleNames;
 vector <string> topReconstructionFromLHE::names;
 vector <string> topReconstructionFromLHE::chinames;
 
-/*void topReconstructionFromLHE::DeclareOutBranches(){
-    outTree->Branch( "test", &top1SmearedPt);
-    outTree->Branch( "testvec", &testvec);
-    outTree->Branch( "stringtest", &(*evh_outside.smearedParticles["top"]) );
-}*/
 
 void topReconstructionFromLHE::DeclareOutBranches(handleEvent evh){
-    //outTree->Branch( "test", &top1SmearedPt);
-    //outTree->Branch( "testvec", &testvec);
     for (vector<string>::const_iterator t = particleNames.begin(); t < particleNames.end(); t++){
         outTree->Branch( (*t + "_smeared" ).c_str(), evh.smearedParticles[*t] );
         outTree->Branch( (*t + "_true" ).c_str(), evh.trueParticles[*t] );
@@ -63,11 +56,16 @@ void topReconstructionFromLHE::DeclareOutBranches(handleEvent evh){
     outTree->Branch( "outerMinStatus"  ,  &outerMinStatus  ) ;
     outTree->Branch( "outerMinEdm"     ,  &outerMinEdm     );
 
-    outTree->Branch( "totalChi2"     ,  &totalChi2     ) ;
+    for (vector<string>::const_iterator t = chinames.begin(); t < chinames.end(); t++){
+        outTree->Branch( ( "chiSquared_" + *t ).c_str(), evh.chiSquareds[*t] );
+    }
+
+
+/*    outTree->Branch( "totalChi2"     ,  &totalChi2     ) ;
     outTree->Branch( "topSystemChi2" ,  &topSystemChi2 ) ;
     outTree->Branch( "topMassChi2"   ,  &topMassChi2   ) ;
     outTree->Branch( "hadronicChi2"  ,  &hadronicChi2  );
-    outTree->Branch( "nonTopChi2"    ,  &nonTopChi2    ) ;
+    outTree->Branch( "nonTopChi2"    ,  &nonTopChi2    ) ;*/
     //outTree->Branch( "evh", &evh );
     
 }
@@ -95,11 +93,15 @@ void topReconstructionFromLHE::DeclareInBranchesForPlotting(handleEvent &evh){
     inTreePlot->SetBranchAddress( "hadronicChi2"  ,  &hadronicChi2  );
     inTreePlot->SetBranchAddress( "nonTopChi2"    ,  &nonTopChi2    ) ;*/
     
-    inTreePlot->SetBranchAddress( "totalChi2"     ,  &(evh.chiSquareds["total"]) ) ;
+/*    inTreePlot->SetBranchAddress( "totalChi2"     ,  &(evh.chiSquareds["total"]) ) ;
     inTreePlot->SetBranchAddress( "topSystemChi2" ,  &(evh.chiSquareds["topSystem"]) ) ;
     inTreePlot->SetBranchAddress( "topMassChi2"   ,  &(evh.chiSquareds["topMass"])   ) ;
     inTreePlot->SetBranchAddress( "hadronicChi2"  ,  &(evh.chiSquareds["hadronic"])  );
-    inTreePlot->SetBranchAddress( "nonTopChi2"    ,  &(evh.chiSquareds["nonTop"])    ) ;
+    inTreePlot->SetBranchAddress( "nonTopChi2"    ,  &(evh.chiSquareds["nonTop"])    ) ;*/
+
+    for (vector<string>::const_iterator t = chinames.begin(); t < chinames.end(); t++){
+        inTreePlot->SetBranchAddress( ( "chiSquared_" + *t ).c_str(), evh.chiSquareds[*t] );
+    }
     
 }
 
@@ -227,7 +229,7 @@ void topReconstructionFromLHE::FillHists(handleEvent evh){
 
     for( hmap1::iterator h1 = histchi.begin(); h1 != histchi.end(); h1++){
         string chiname = h1->first;
-        histchi[chiname]->Fill( evh.chiSquareds[chiname] );
+        histchi[chiname]->Fill( *(evh.chiSquareds[chiname]) );
     }
 
 
@@ -369,14 +371,14 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
 int jStart = 0;
    //int jFinish = jStart + (nentries+whichLoop)/maxLoops;
    std::cout<<"number of entries = "<<nentries<<std::endl;
-   int jFinish = 200;
+   int jFinish = 5;
 
    std::cout<<jStart<<std::endl;
    std::cout<<"nentries = "<< nentries<<std::endl;
    std::cout<<jFinish<<std::endl;
 
-    handleEvent evtemp;
-    evh_outside = evtemp;
+    //handleEvent evtemp;
+    //evh_outside = evtemp;
 
     handleEvent evh;
 
@@ -587,6 +589,13 @@ cout<<"smeared bbarfromH Py = " << evh.smearedParticles["bbarFromH"]->Py();
       eventNumber=jentry;
 
       //Minimizer stuff
+       *(evh.chiSquareds["nonTop"])=ev.getNonTopChiSquare();
+       *(evh.chiSquareds["hadronic"])=ev.getHadronicChiSquare();
+       *(evh.chiSquareds["topMass"])=ev.getTopMassChiSquare();
+       *(evh.chiSquareds["topSystem"])=ev.getTopChiSquare();
+       *(evh.chiSquareds["total"])=ev.getChiSquare();
+
+       //old stuff: can delete later
        nonTopChi2=ev.getNonTopChiSquare();
        hadronicChi2=ev.getHadronicChiSquare();
        topMassChi2=ev.getTopMassChiSquare();
@@ -646,11 +655,6 @@ cout<<"smeared bbarfromH Py = " << evh.smearedParticles["bbarFromH"]->Py();
 
     cout <<"Printing P's"<<endl;
     cout << evh.smearedParticles["top"]->Px()<<endl;
-    //cout << evh.smearedParticles["top"]->Pt()<<endl;
-
-    evh_outside = evh;
-    cout << "outside "<< evh_outside.smearedParticles["top"]->Px()<<endl;
-    testvec.SetPxPyPzE(11.4, 2,3,4);
 
     outTree->Fill();
 
