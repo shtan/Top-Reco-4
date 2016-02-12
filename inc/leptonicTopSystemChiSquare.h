@@ -29,6 +29,9 @@ class leptonicTopSystemChiSquare : public topSystemChiSquare
 
   void calcChiSquare();
   double getChiSquare();
+  double getWDaughter1ChiSquare();
+  double getWMassChiSquare();
+  double getBChiSquare();
 
   virtual double getHadronicChiSquare() {return 0;};
 

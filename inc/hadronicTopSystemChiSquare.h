@@ -68,6 +68,9 @@ class hadronicTopSystemChiSquare : public topSystemChiSquare
   void calcChiSquare();
   double getChiSquare();
   virtual double getHadronicChiSquare();
+  double getWMassChiSquare();
+  double getWDaughter1ChiSquare();
+  double getBChiSquare();
 
 };
 

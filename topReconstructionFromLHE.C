@@ -27,9 +27,9 @@ void topReconstructionFromLHE::printVector(XYZTLorentzVector& v)
 int main(){
 
     topReconstructionFromLHE t;
-    t.Loop("output_files",0,1);
+    //t.Loop("output_files",0,1);
 
-    //t.Plot("plots");
+    t.Plot("plots");
 
     return 0;
 }
@@ -117,7 +117,7 @@ void topReconstructionFromLHE::DeclareHists(){
             if (*vartype == "Pt" or *vartype == "Px" or *vartype == "Py") {lbound = -150; rbound = 150;}
             if (*vartype == "Eta") {lbound = -5; rbound = 5;}
             if (*vartype == "Phi") {lbound = -5; rbound = 5;}
-            if (*vartype == "M") {lbound = 0; rbound = 230;}
+            if (*vartype == "M") {lbound = -150; rbound = 150;}
 
             for ( vector<string>::iterator diftype = difTypes.begin(); diftype != difTypes.end(); diftype++){
                 histdif[*diftype][*vartype][*name] = new TH1D( (*name + "_" + *vartype + "_" + *diftype).c_str(),
@@ -296,13 +296,13 @@ void topReconstructionFromLHE::Plot(TString dir)
     int numEvents = inTreePlot->GetEntries();
 
     for (int i = 0; i < numEvents; i++){
-        cout<<"blah"<<endl;
+        //cout<<"blah"<<endl;
         inTreePlot->GetEntry(i);
-        cout<<"balh"<<endl;
-        if ( innerMinStatus == 0 and outerMinStatus == 0 ){
+        //cout<<"balh"<<endl;
+        if ( (innerMinStatus == 0 or innerMinStatus == 1) and (outerMinStatus == 0 or outerMinStatus == 1) ){
             FillHists(evh);
         }
-        cout<<"after fillhists"<<endl;
+        //cout<<"after fillhists"<<endl;
     }
     cout<<"Opening outFile"<<endl;
     outFilePlot->cd();
@@ -369,7 +369,7 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
 int jStart = 0;
    //int jFinish = jStart + (nentries+whichLoop)/maxLoops;
    std::cout<<"number of entries = "<<nentries<<std::endl;
-   int jFinish = 1;
+   int jFinish = 200;
 
    std::cout<<jStart<<std::endl;
    std::cout<<"nentries = "<< nentries<<std::endl;
@@ -639,7 +639,7 @@ cout<<"smeared bbarfromH Py = " << evh.smearedParticles["bbarFromH"]->Py();
 
         //Fill Hists
         std::cout<<"Filling hists"<<endl;
-        if( innerMinStatus == 0 and outerMinStatus == 0 ){
+        if( (innerMinStatus == 0 or innerMinStatus == 1) and (outerMinStatus == 0 or outerMinStatus == 1) ){
             FillHists(evh);
         }
         FillLH(evh);

@@ -256,6 +256,28 @@ void hadronicTopSystemChiSquare::printWDaughter2()
   //a->Print();
 }
 
+double hadronicTopSystemChiSquare::getBChiSquare()
+{
+    double bchi2 = bJetPtDelta_*bJetPtDelta_
+        +bJetPhiDelta_*bJetPhiDelta_
+        +bJetEtaDelta_*bJetEtaDelta_;
+    return bchi2;
+}
+
+double hadronicTopSystemChiSquare::getWDaughter1ChiSquare()
+{
+    double wdaughter1chi2 = WDaughter1PtDelta_*WDaughter1PtDelta_
+        +WDaughter1PhiDelta_*WDaughter1PhiDelta_
+        +WDaughter1EtaDelta_*WDaughter1EtaDelta_;
+    return wdaughter1chi2;
+}
+
+double hadronicTopSystemChiSquare::getWMassChiSquare()
+{
+    double wmasschi2 = breitWignerError(mW_,sigmaMW_,deltaMW_);
+    return wmasschi2;
+} 
+
 void hadronicTopSystemChiSquare::calcChiSquare()
 {
   //calcWDaughter2Deltas();

@@ -470,7 +470,8 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
         names.push_back(namesArray[i]);
     }
 
-    string chinamesArray [5] = {"total", "topSystem", "topMass", "hadronic", "nonTop"};
+//    string chinamesArray [12] = {"total", "topSystem", "topMass", "hadronic", "nonTop", "leptonicBottom", "leptonicWMass", "hadronicWMass", "hadronicBottom", "lepton", "qFromW", "qbarFromW" };
+    string chinamesArray [5] = {"total", "topSystem", "topMass", "hadronic", "nonTop" };
     chinames.clear();
     for (int i = 0; i<5; i++){
         chinames.push_back(chinamesArray[i]);

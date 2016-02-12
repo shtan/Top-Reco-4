@@ -153,9 +153,14 @@ void lightJetChiSquareMinimumSolver::setCartesianWidths(vector<XYZTLorentzVector
 {
   for( unsigned int i = 0 ; i < nJets_;  i++)
     {
+        cout<<"setting cartesian widths"<<endl;
+        cout<<"jetPtWidth = "<<jetPtWidths.at(i)<<endl;
+        cout<<"jetPhiWidth = "<<jetPhiWidths.at(i)<<endl;
+        cout<<"jetEtaWidth = "<<jetEtaWidths.at(i)<<endl;
 
-      double halfPt2 = 0.5*jets.at(i).Pt()*jets.at(i).Pt();
-      double sigmaPt2 = log(1+jetPtWidths.at(i));
+/*      double halfPt2 = 0.5*jets.at(i).Pt()*jets.at(i).Pt();
+//      double sigmaPt2 = log(1+jetPtWidths.at(i));//WHY?
+      double sigmaPt2 = jetPtWidths.at(i);//try just setting it exactly equal to what we put in
       sigmaPt2*=sigmaPt2;
       double sigmaPhi2 = jetPhiWidths.at(i)*jetPhiWidths.at(i);
       double sigmaEta = jetEtaWidths.at(i);
@@ -168,7 +173,7 @@ void lightJetChiSquareMinimumSolver::setCartesianWidths(vector<XYZTLorentzVector
       double expMinusSigmaPhi2Over2 = exp(-0.5*sigmaPhi2);
       double expSigmaEta2 = exp(sigmaEta2);
       double expTwoSigmaEta2 = expSigmaEta2*expSigmaEta2;
-      double expSigmaEta2OverTwo = exp(-0.5*sigmaEta2);
+     double expSigmaEta2OverTwo = exp(-0.5*sigmaEta2);//Should really have a minus in the name
       double cosPhi = cos(jets.at(i).Phi());
       double sinPhi = sin(jets.at(i).Phi());
       double cosTwoPhi = cos(2.*jets.at(i).Phi());
@@ -187,12 +192,35 @@ void lightJetChiSquareMinimumSolver::setCartesianWidths(vector<XYZTLorentzVector
       jetPxPzWidths_.at(i) = 2.*halfPt2*cosPhi*sinhEta*expSigmaEta2OverTwo*expMinusSigmaPhi2Over2 * ( expTwoSigmaPt2 - expSigmaPt2 );
       jetPyPzWidths_.at(i) = 2.*halfPt2*sinPhi*sinhEta*expSigmaEta2OverTwo*expMinusSigmaPhi2Over2 * ( expTwoSigmaPt2 - expSigmaPt2 );
 
-//      cout << "calculating widths:\n"
-//           << "pt  is " << jets.at(i).Pt()  << " with width of " << log(1+jetPtWidths .at(i)) << "\n"
-//           << "phi is " << jets.at(i).Phi() << " with width of " << log(1+jetPhiWidths .at(i)) << "\n"
-//           << "px  is " << jets.at(i).Pt()*cos(jets.at(i).Phi()) << " with width of " << sqrt(jetPxWidths2_.at(i)) << "\n"
-//           << "py  is " << jets.at(i).Pt()*sin(jets.at(i).Phi()) << " with width of " << sqrt(jetPyWidths2_.at(i)) << "\n"
-//           << "correlation coefficient is " << jetPxPyWidths_.at(i)/(sqrt(jetPxWidths2_.at(i))*sqrt(jetPyWidths2_.at(i))) << endl;
+      //Temp quick "fix" to try setting PxPy to square roots (or something like that) of the Px and Py
+    double px_temp = jets.at(i).Pt()*cos(jets.at(i).Phi());
+    double py_temp = jets.at(i).Pt()*sin(jets.at(i).Phi());
+    jetPxWidths2_.at(i) = abs(px_temp);
+    jetPyWidths2_.at(i) = abs(py_temp);
+    jetPxPyWidths_.at(i) = sqrt(abs(px_temp*py_temp));
+    cout<< "jetPxPyWidths is "<< jetPxPyWidths_.at(i);
+    //jetPyPxWidths_.at(i) = jetPxPyWidths_.at(i);*/
+
+    double Pt2 = pow( jets.at(i).Pt(), 2 );
+    double sigmaPt2 = pow( jetPtWidths.at(i), 2 );
+    double sigmaPhi2 = pow( jetPhiWidths.at(i), 2);
+    double cosPhi = cos( jets.at(i).Phi() );
+    double sinPhi = sin( jets.at(i).Phi() );
+    double cosPhi2 = pow( cosPhi, 2);
+    double sinPhi2 = pow( sinPhi, 2);
+    jetPxWidths2_.at(i) = sigmaPt2*cosPhi2 + sigmaPhi2*Pt2*sinPhi2;
+    jetPyWidths2_.at(i) = sigmaPt2*sinPhi2 + sigmaPhi2*Pt2*cosPhi2;
+    jetPxPyWidths_.at(i) = sigmaPt2*sinPhi*cosPhi - sigmaPhi2*Pt2*sinPhi*cosPhi;
+    jetPzWidths2_.at(i) = 0;
+    jetPxPzWidths_.at(i) = 0;
+    jetPyPzWidths_.at(i) = 0;
+
+      cout << "calculating widths:\n"
+           << "pt  is " << jets.at(i).Pt()  << " with width of " << log(1+jetPtWidths .at(i)) << "\n"
+           << "phi is " << jets.at(i).Phi() << " with width of " << log(1+jetPhiWidths .at(i)) << "\n"
+           << "px  is " << jets.at(i).Pt()*cos(jets.at(i).Phi()) << " with width of " << sqrt(jetPxWidths2_.at(i)) << "\n"
+           << "py  is " << jets.at(i).Pt()*sin(jets.at(i).Phi()) << " with width of " << sqrt(jetPyWidths2_.at(i)) << "\n"
+           << "correlation coefficient is " << jetPxPyWidths_.at(i)/(sqrt(jetPxWidths2_.at(i))*sqrt(jetPyWidths2_.at(i))) << endl;
     }
 }
 
@@ -354,9 +382,9 @@ double lightJetChiSquareMinimumSolver::getChiSquare()
 //    }
 //  cout << "delta x = " << dx_ << " and delta x check = " << deltaXCheck << endl;
 //  cout << "delta y = " << dy_ << " and delta y check = " << deltaYCheck << endl;
-  cout<<"light jet get chi square"<<endl;
-  printResults();
-  cout<< "light jet chi2 = " << chi2_<<endl;
+  //cout<<"light jet get chi square"<<endl;
+  //printResults();
+  //cout<< "light jet chi2 = " << chi2_<<endl;
   return chi2_;
 }
 
