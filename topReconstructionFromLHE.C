@@ -323,8 +323,8 @@ void topReconstructionFromLHE::PlotHists()
     std::cout << "Drawing histograms..." << std::endl;
     int mc1 = 5;
     int mc2 = 4;
-    int mc3 = 3;
-    int mc0 = 0;
+//     int mc3 = 3;
+//     int mc0 = 0;
     string unit;
 
     for (vector<string>::iterator name = names.begin(); name != names.end();
@@ -497,7 +497,7 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
                             // the leptonic one), 0 otherwise.
 
         // double METx(0.), METy(0.);
-        int iJet = 0;
+//         int iJet = 0;
 
         // Declare structure (used as a container) to store all the particles
         // involved in this event
@@ -666,7 +666,8 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
         double sigmaMTop = 2.0, sigmaMW = 2.085;
         //      double sigmaPtJet=0.1, sigmaPhiJet=0., sigmaEtaJet=0.;
         double sigmaPtLep = 0., sigmaPhiLep = 0., sigmaEtaLep = 0.;
-        double sigmaPtJet = 0.1, sigmaPhiJet = 0.01, sigmaEtaJet = 0.01;
+//         double sigmaPtJet = 0.1;
+        double sigmaPhiJet = 0.01, sigmaEtaJet = 0.01;
         //      double sigmaPtLep=0.1 , sigmaPhiLep=0.01  , sigmaEtaLep=0.01  ;
 
         topEventMinimizer ev(nonTopObjects, nonTopObjectPtWidths,

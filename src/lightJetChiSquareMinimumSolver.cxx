@@ -247,17 +247,17 @@ void lightJetChiSquareMinimumSolver::calcSigmas()
         }
     }
 
-    bool checkDecomp = false;
+//     bool checkDecomp = false;
     if (do3D_) {
         dynamic_cast<TDecompLU *>(inverter3D_)
             ->SetMatrix(TMatrixD(inverseSumSigmas3D_));
-        checkDecomp = inverter3D_->Decompose();
+//         checkDecomp = inverter3D_->Decompose();
         dynamic_cast<TDecompLU *>(inverter3D_)->Invert(inverseSumSigmas3D_);
         // inverseSumSigmas3D_.Print();
     } else {
         dynamic_cast<TDecompLU *>(inverter2D_)
             ->SetMatrix(TMatrixD(inverseSumSigmas2D_));
-        checkDecomp = inverter2D_->Decompose();
+//         checkDecomp = inverter2D_->Decompose();
         dynamic_cast<TDecompLU *>(inverter2D_)->Invert(inverseSumSigmas2D_);
         // inverseSumSigmas2D_.Print();
     }

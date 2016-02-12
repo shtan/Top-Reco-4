@@ -314,11 +314,11 @@ void topReconstructionFromLHE::initPlotting(TString dir)
     fileName += "output_";
     fileName += ".root";
 
-    float leftbound = -150.;
-    float rightbound = 150.;
-    float canvsize1 = 700;
-    float canvsize2 = 700;
-    int numbins = 100;
+//     float leftbound = -150.;
+//     float rightbound = 150.;
+//     float canvsize1 = 700;
+//     float canvsize2 = 700;
+//     int numbins = 100;
 
     outFile = new TFile(fileName, "RECREATE", "tree");
     // outTree = new TTree("tree","tree");
@@ -333,11 +333,11 @@ void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
     fileName += whichLoop;
     fileName += ".root";
 
-    float leftbound = -150.;
-    float rightbound = 150.;
-    float canvsize1 = 700;
-    float canvsize2 = 700;
-    int numbins = 100;
+//     float leftbound = -150.;
+//     float rightbound = 150.;
+//     float canvsize1 = 700;
+//     float canvsize2 = 700;
+//     int numbins = 100;
 
     outFile = new TFile(fileName, "RECREATE", "tree");
     outTree = new TTree("tree", "tree");
@@ -429,6 +429,7 @@ void topReconstructionFromLHE::Show(Long64_t entry)
         return;
     fChain->Show(entry);
 }
+
 Int_t topReconstructionFromLHE::Cut(Long64_t entry)
 {
     // This function may be called from Loop.
