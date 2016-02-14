@@ -5,8 +5,8 @@
 // found on file: lhe.root
 //////////////////////////////////////////////////////////
 
-#ifndef topReconstructionFromLHE_h
-#define topReconstructionFromLHE_h
+// #ifndef topReconstructionFromLHE_h
+// #define topReconstructionFromLHE_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -31,6 +31,37 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>
     TLorentzVector trueParticles [] = {
 }*/
 
+// Declaration and definition of structure
+struct handleEvent {
+    map<string, XYZTLorentzVector *> trueParticles, smearedParticles,
+        bestParticles, trueParticlesLH, smearedParticlesLH, bestParticlesLH;
+    map<string, double *> chiSquareds;
+    bool leptonFlag;
+
+    handleEvent(vector<string> &particleNames, vector<string> &names,
+                vector<string> &chinames)
+    {
+        for (auto t = particleNames.begin(); t < particleNames.end(); ++t) {
+            const string name = *t;
+            trueParticles[name] = new XYZTLorentzVector();
+            smearedParticles[name] = new XYZTLorentzVector();
+            bestParticles[name] = new XYZTLorentzVector();
+        }
+
+        for (auto t = names.begin(); t < names.end(); ++t) {
+            const string name = *t;
+            trueParticlesLH[name] = new XYZTLorentzVector();
+            smearedParticlesLH[name] = new XYZTLorentzVector();
+            bestParticlesLH[name] = new XYZTLorentzVector();
+        }
+
+        for (auto t = chinames.begin(); t < chinames.end(); ++t) {
+            const string name = *t;
+            chiSquareds[name] = new double;
+        }
+    }
+};
+
 class topReconstructionFromLHE
 {
   public:
@@ -41,44 +72,9 @@ class topReconstructionFromLHE
     TTree *inTreePlot;
 
     // Declaration of list of variables
-    static vector<string> particleNames;
-    static vector<string> names;
-    static vector<string> chinames;
-
-    // Declaration and definition of structure
-    struct handleEvent {
-
-        map<string, XYZTLorentzVector *> trueParticles, smearedParticles,
-            bestParticles, trueParticlesLH, smearedParticlesLH, bestParticlesLH;
-        map<string, double *> chiSquareds;
-        bool leptonFlag;
-
-        handleEvent()
-        {
-
-            for (vector<string>::const_iterator t = particleNames.begin();
-                 t < particleNames.end(); t++) {
-                string name = *t;
-                trueParticles[name] = new XYZTLorentzVector();
-                smearedParticles[name] = new XYZTLorentzVector();
-                bestParticles[name] = new XYZTLorentzVector();
-            }
-
-            for (vector<string>::const_iterator t = names.begin();
-                 t < names.end(); t++) {
-                string name = *t;
-                trueParticlesLH[name] = new XYZTLorentzVector();
-                smearedParticlesLH[name] = new XYZTLorentzVector();
-                bestParticlesLH[name] = new XYZTLorentzVector();
-            }
-
-            for (vector<string>::const_iterator t = chinames.begin();
-                 t < chinames.end(); t++) {
-                string name = *t;
-                chiSquareds[name] = new double;
-            }
-        }
-    };
+    vector<string> particleNames;
+    vector<string> names;
+    vector<string> chinames;
 
     // Declare maps to store histograms and canvases for plots of resolution and
     // plots of chi2
@@ -170,11 +166,11 @@ class topReconstructionFromLHE
 
     void DeclareMaps();
     void DeclareHists();
-    void FillHists(handleEvent);
-    void FillLH(handleEvent);
+    void FillHists(handleEvent &);
+    void FillLH(handleEvent &);
     void DeclareCanvases();
     void PlotHists();
-    void DeclareOutBranches(handleEvent);
+    void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
 
     XYZTLorentzVector testvec;
@@ -213,228 +209,4 @@ class topReconstructionFromLHE
         {"1", "Bbar_from_H", "bbarFromH"}};
 };
 
-#endif
-
-#ifdef topReconstructionFromLHE_cxx
-topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
-{
-    // if parameter tree is not specified (or zero), connect the file
-    // used to generate this class and read the Tree.
-    if (tree == 0) {
-        //      TFile *f =
-        //      (TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
-        TFile *f = (TFile *)gROOT->GetListOfFiles()->FindObject(
-            "fixedsinglemuntuple.root");
-        if (!f || !f->IsOpen()) {
-            //         f = new TFile("skimmedntuple.root");
-            f = new TFile("fixedsinglemuntuple.root");
-        }
-        f->GetObject("physics", tree);
-    }
-    Init(tree);
-
-    string particleNameArray[15] = {
-        "top",    "antiTop",   "bottom",       "antiBottom", "Wplus",
-        "Wminus", "lepton",    "antiNeutrino", "antiLepton", "neutrino",
-        "qFromW", "qbarFromW", "higgs",        "bFromH",     "bbarFromH"};
-    particleNames.clear();
-    for (int i = 0; i < 15; i++) {
-        particleNames.push_back(particleNameArray[i]);
-    }
-    // particleNames(particleNameArray, particleNameArray+13);
-
-    string namesArray[13] = {"Leptonic_Bottom",
-                             "Hadronic_Bottom",
-                             "Leptonic_Top",
-                             "Hadronic_Top",
-                             "Leptonic_W",
-                             "Hadronic_W",
-                             "Lepton_or_AntiLepton",
-                             "Neutrino_or_AntiNeutrino",
-                             "Quark_from_W",
-                             "Antiquark_from_W",
-                             "Higgs",
-                             "B_from_H",
-                             "Bbar_from_H"};
-    names.clear();
-    for (int i = 0; i < 13; i++) {
-        names.push_back(namesArray[i]);
-    }
-
-    //    string chinamesArray [12] = {"total", "topSystem", "topMass",
-    //    "hadronic", "nonTop", "leptonicBottom", "leptonicWMass",
-    //    "hadronicWMass", "hadronicBottom", "lepton", "qFromW", "qbarFromW" };
-    string chinamesArray[5] = {"total", "topSystem", "topMass", "hadronic",
-                               "nonTop"};
-    chinames.clear();
-    for (int i = 0; i < 5; i++) {
-        chinames.push_back(chinamesArray[i]);
-    }
-}
-
-topReconstructionFromLHE::~topReconstructionFromLHE()
-{
-    if (!fChain)
-        return;
-    delete fChain->GetCurrentFile();
-}
-
-double topReconstructionFromLHE::deltaR(XYZTLorentzVector &p2,
-                                        XYZTLorentzVector &p1)
-{
-    double thisDeltaEta = p1.Eta() - p2.Eta();
-    double thisDeltaPhi = p1.Phi() - p2.Phi();
-    while (thisDeltaPhi > 3.14159265359) {
-        thisDeltaPhi -= 2 * 3.14159265359;
-    }
-    while (thisDeltaPhi < -3.14159265359) {
-        thisDeltaPhi += 2 * 3.14159265359;
-    }
-    return sqrt(thisDeltaPhi * thisDeltaPhi + thisDeltaEta * thisDeltaEta);
-}
-
-double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector &p2,
-                                          XYZTLorentzVector &p1)
-{
-    double thisDeltaPhi = p1.Phi() - p2.Phi();
-    while (thisDeltaPhi > 3.14159265359) {
-        thisDeltaPhi -= 2 * 3.14159265359;
-    }
-    while (thisDeltaPhi < -3.14159265359) {
-        thisDeltaPhi += 2 * 3.14159265359;
-    }
-    return thisDeltaPhi;
-}
-
-void topReconstructionFromLHE::initPlotting(TString dir)
-{
-    TString fileName = dir;
-    if (dir != "")
-        fileName += "/";
-    fileName += "output_";
-    fileName += ".root";
-
-//     float leftbound = -150.;
-//     float rightbound = 150.;
-//     float canvsize1 = 700;
-//     float canvsize2 = 700;
-//     int numbins = 100;
-
-    outFile = new TFile(fileName, "RECREATE", "tree");
-    // outTree = new TTree("tree","tree");
-}
-
-void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
-{
-    TString fileName = dir;
-    if (dir != "")
-        fileName += "/";
-    fileName += "output_";
-    fileName += whichLoop;
-    fileName += ".root";
-
-//     float leftbound = -150.;
-//     float rightbound = 150.;
-//     float canvsize1 = 700;
-//     float canvsize2 = 700;
-//     int numbins = 100;
-
-    outFile = new TFile(fileName, "RECREATE", "tree");
-    outTree = new TTree("tree", "tree");
-
-    // outTree->Branch( "smearingSwitchedLightJetOrdering" ,
-    // &smearingSwitchedLightJetOrdering ) ;
-}
-
-Int_t topReconstructionFromLHE::GetEntry(Long64_t entry)
-{
-    // Read contents of entry.
-    if (!fChain)
-        return 0;
-    return fChain->GetEntry(entry);
-}
-Long64_t topReconstructionFromLHE::LoadTree(Long64_t entry)
-{
-    // Set the environment to read one entry
-    if (!fChain)
-        return -5;
-    Long64_t centry = fChain->LoadTree(entry);
-    if (centry < 0)
-        return centry;
-    if (fChain->GetTreeNumber() != fCurrent) {
-        fCurrent = fChain->GetTreeNumber();
-        Notify();
-    }
-    return centry;
-}
-
-void topReconstructionFromLHE::Init(TTree *tree)
-{
-    // The Init() function is called when the selector needs to initialize
-    // a new tree or chain. Typically here the branch addresses and branch
-    // pointers of the tree will be set.
-    // It is normally not necessary to make changes to the generated
-    // code, but the routine can be extended by the user if needed.
-    // Init() will be called many times when running on PROOF
-    // (once per file to be processed).
-
-    // Set object pointer
-    PID = 0;
-    P_X = 0;
-    P_Y = 0;
-    P_Z = 0;
-    E = 0;
-    M = 0;
-    status = 0;
-    //   particleID = 0;
-    //   parent1ID = 0;
-    //   parent2ID = 0;
-    // Set branch addresses and branch pointers
-    if (!tree)
-        return;
-    fChain = tree;
-    fCurrent = -1;
-    fChain->SetMakeClass(1);
-
-    fChain->SetBranchAddress("n_particles", &n_particles, &b_n_particles);
-    fChain->SetBranchAddress("PID", &PID, &b_PID);
-    fChain->SetBranchAddress("P_X", &P_X, &b_P_X);
-    fChain->SetBranchAddress("P_Y", &P_Y, &b_P_Y);
-    fChain->SetBranchAddress("P_Z", &P_Z, &b_P_Z);
-    fChain->SetBranchAddress("E", &E, &b_E);
-    fChain->SetBranchAddress("M", &M, &b_M);
-    fChain->SetBranchAddress("status", &status, &b_status);
-    //   fChain->SetBranchAddress("particleID", &particleID, &b_particleID);
-    //   fChain->SetBranchAddress("parent1ID", &parent1ID, &b_parent1ID);
-    //   fChain->SetBranchAddress("parent2ID", &parent2ID, &b_parent2ID);
-    Notify();
-}
-
-Bool_t topReconstructionFromLHE::Notify()
-{
-    // The Notify() function is called when a new file is opened. This
-    // can be either for a new TTree in a TChain or when when a new TTree
-    // is started when using PROOF. It is normally not necessary to make changes
-    // to the generated code, but the routine can be extended by the
-    // user if needed. The return value is currently not used.
-
-    return kTRUE;
-}
-
-void topReconstructionFromLHE::Show(Long64_t entry)
-{
-    // Print contents of entry.
-    // If entry is not specified, print current entry
-    if (!fChain)
-        return;
-    fChain->Show(entry);
-}
-
-Int_t topReconstructionFromLHE::Cut(Long64_t entry)
-{
-    // This function may be called from Loop.
-    // returns  1 if entry is accepted.
-    // returns -1 otherwise.
-    return 1;
-}
-#endif // #ifdef topReconstructionFromLHE_cxx
+// #endif
