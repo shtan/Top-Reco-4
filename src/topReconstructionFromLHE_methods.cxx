@@ -7,7 +7,7 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 {
     // if parameter tree is not specified (or zero), connect the file
     // used to generate this class and read the Tree.
-    if (tree == 0) {
+    if (tree == NULL) {
         //      TFile *f =
         //      (TFile*)gROOT->GetListOfFiles()->FindObject("skimmedntuple.root");
         TFile *f = (TFile *)gROOT->GetListOfFiles()->FindObject(
@@ -20,41 +20,44 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
     }
     Init(tree);
 
-    string particleNameArray[15] = {
+    const int part_name_size = 15;
+    string particleNameArray[part_name_size] = {
         "top",    "antiTop",   "bottom",       "antiBottom", "Wplus",
         "Wminus", "lepton",    "antiNeutrino", "antiLepton", "neutrino",
         "qFromW", "qbarFromW", "higgs",        "bFromH",     "bbarFromH"};
-    particleNames.clear();
-    for (int i = 0; i < 15; i++) {
+    particleNames.reserve(part_name_size);
+    for (int i = 0; i < part_name_size; ++i) {
         particleNames.push_back(particleNameArray[i]);
     }
     // particleNames(particleNameArray, particleNameArray+13);
 
-    string namesArray[13] = {"Leptonic_Bottom",
-                             "Hadronic_Bottom",
-                             "Leptonic_Top",
-                             "Hadronic_Top",
-                             "Leptonic_W",
-                             "Hadronic_W",
-                             "Lepton_or_AntiLepton",
-                             "Neutrino_or_AntiNeutrino",
-                             "Quark_from_W",
-                             "Antiquark_from_W",
-                             "Higgs",
-                             "B_from_H",
-                             "Bbar_from_H"};
-    names.clear();
-    for (int i = 0; i < 13; i++) {
+    const int name_size = 13;
+    string namesArray[name_size] = {"Leptonic_Bottom",
+                                    "Hadronic_Bottom",
+                                    "Leptonic_Top",
+                                    "Hadronic_Top",
+                                    "Leptonic_W",
+                                    "Hadronic_W",
+                                    "Lepton_or_AntiLepton",
+                                    "Neutrino_or_AntiNeutrino",
+                                    "Quark_from_W",
+                                    "Antiquark_from_W",
+                                    "Higgs",
+                                    "B_from_H",
+                                    "Bbar_from_H"};
+    names.reserve(name_size);
+    for (int i = 0; i < name_size; ++i) {
         names.push_back(namesArray[i]);
     }
 
     //    string chinamesArray [12] = {"total", "topSystem", "topMass",
     //    "hadronic", "nonTop", "leptonicBottom", "leptonicWMass",
     //    "hadronicWMass", "hadronicBottom", "lepton", "qFromW", "qbarFromW" };
-    string chinamesArray[5] = {"total", "topSystem", "topMass", "hadronic",
-                               "nonTop"};
-    chinames.clear();
-    for (int i = 0; i < 5; i++) {
+    const int chi_size = 5;
+    string chinamesArray[chi_size] = {"total", "topSystem", "topMass",
+                                      "hadronic", "nonTop"};
+    chinames.reserve(chi_size);
+    for (int i = 0; i < chi_size; ++i) {
         chinames.push_back(chinamesArray[i]);
     }
 }
@@ -77,6 +80,7 @@ double topReconstructionFromLHE::deltaR(XYZTLorentzVector &p2,
     while (thisDeltaPhi < -3.14159265359) {
         thisDeltaPhi += 2 * 3.14159265359;
     }
+    
     return sqrt(thisDeltaPhi * thisDeltaPhi + thisDeltaEta * thisDeltaEta);
 }
 
@@ -140,6 +144,7 @@ Int_t topReconstructionFromLHE::GetEntry(Long64_t entry)
         return 0;
     return fChain->GetEntry(entry);
 }
+
 Long64_t topReconstructionFromLHE::LoadTree(Long64_t entry)
 {
     // Set the environment to read one entry
@@ -183,6 +188,7 @@ void topReconstructionFromLHE::Init(TTree *tree)
     fCurrent = -1;
     fChain->SetMakeClass(1);
 
+    // specific tree structure implemented by Shao Min
     fChain->SetBranchAddress("n_particles", &n_particles, &b_n_particles);
     fChain->SetBranchAddress("PID", &PID, &b_PID);
     fChain->SetBranchAddress("P_X", &P_X, &b_P_X);

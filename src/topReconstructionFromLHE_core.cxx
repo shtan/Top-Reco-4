@@ -492,44 +492,8 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
         cout << "bottompx before set = "
              << evh.smearedParticles["bottom"]->Px();
 
-        evh.smearedParticles["qFromW"]->SetPxPyPzE(P_X->at(3), P_Y->at(3),
-                                                   P_Z->at(3), E->at(3));
-        evh.smearedParticles["qbarFromW"]->SetPxPyPzE(P_X->at(4), P_Y->at(4),
-                                                      P_Z->at(4), E->at(4));
-        evh.smearedParticles["bottom"]->SetPxPyPzE(P_X->at(1), P_Y->at(1),
-                                                   P_Z->at(1), E->at(1));
-        evh.smearedParticles["antiBottom"]->SetPxPyPzE(P_X->at(2), P_Y->at(2),
-                                                       P_Z->at(2), E->at(2));
-        evh.smearedParticles["bFromH"]->SetPxPyPzE(P_X->at(5), P_Y->at(5),
-                                                   P_Z->at(5), E->at(5));
-        evh.smearedParticles["bbarFromH"]->SetPxPyPzE(P_X->at(6), P_Y->at(6),
-                                                      P_Z->at(6), E->at(6));
-        // smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
-
-        evh.trueParticles["top"]->SetPxPyPzE(P_X->at(14), P_Y->at(14),
-                                             P_Z->at(14), E->at(14));
-        evh.trueParticles["antiTop"]->SetPxPyPzE(P_X->at(15), P_Y->at(15),
-                                                 P_Z->at(15), E->at(15));
-        evh.trueParticles["Wplus"]->SetPxPyPzE(P_X->at(16), P_Y->at(16),
-                                               P_Z->at(16), E->at(16));
-        evh.trueParticles["Wminus"]->SetPxPyPzE(P_X->at(17), P_Y->at(17),
-                                                P_Z->at(17), E->at(17));
-        // lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
-        // neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
-        evh.trueParticles["bottom"]->SetPxPyPzE(P_X->at(8), P_Y->at(8),
-                                                P_Z->at(8), E->at(8));
-        evh.trueParticles["antiBottom"]->SetPxPyPzE(P_X->at(9), P_Y->at(9),
-                                                    P_Z->at(9), E->at(9));
-        evh.trueParticles["qFromW"]->SetPxPyPzE(P_X->at(10), P_Y->at(10),
-                                                P_Z->at(10), E->at(10));
-        evh.trueParticles["qbarFromW"]->SetPxPyPzE(P_X->at(11), P_Y->at(11),
-                                                   P_Z->at(11), E->at(11));
-        evh.trueParticles["bFromH"]->SetPxPyPzE(P_X->at(12), P_Y->at(12),
-                                                P_Z->at(12), E->at(12));
-        evh.trueParticles["bbarFromH"]->SetPxPyPzE(P_X->at(13), P_Y->at(13),
-                                                   P_Z->at(13), E->at(13));
-        evh.trueParticles["higgs"]->SetPxPyPzE(P_X->at(19), P_Y->at(19),
-                                               P_Z->at(19), E->at(19));
+        // Load evh, follows Shao Min's tree definitions
+        Loop_load_event_SM(evh);
 
         std::cout << "after set met" << std::endl;
         cout << "bottompx after set = " << evh.smearedParticles["bottom"]->Px();
@@ -842,6 +806,48 @@ void topReconstructionFromLHE::Loop(TString dir, int whichLoop, int maxLoops)
     outFile->Close();
 
     cout << "Done!" << endl;
+}
+
+void topReconstructionFromLHE::Loop_load_event_SM(handleEvent &evh)
+{
+    evh.smearedParticles["qFromW"]->SetPxPyPzE(P_X->at(3), P_Y->at(3),
+                                               P_Z->at(3), E->at(3));
+    evh.smearedParticles["qbarFromW"]->SetPxPyPzE(P_X->at(4), P_Y->at(4),
+                                                  P_Z->at(4), E->at(4));
+    evh.smearedParticles["bottom"]->SetPxPyPzE(P_X->at(1), P_Y->at(1),
+                                                   P_Z->at(1), E->at(1));
+    evh.smearedParticles["antiBottom"]->SetPxPyPzE(P_X->at(2), P_Y->at(2),
+                                                   P_Z->at(2), E->at(2));
+    evh.smearedParticles["bFromH"]->SetPxPyPzE(P_X->at(5), P_Y->at(5),
+                                                   P_Z->at(5), E->at(5));
+    evh.smearedParticles["bbarFromH"]->SetPxPyPzE(P_X->at(6), P_Y->at(6),
+                                                  P_Z->at(6), E->at(6));
+    // smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+
+    evh.trueParticles["top"]->SetPxPyPzE(P_X->at(14), P_Y->at(14),
+                                         P_Z->at(14), E->at(14));
+    evh.trueParticles["antiTop"]->SetPxPyPzE(P_X->at(15), P_Y->at(15),
+                                             P_Z->at(15), E->at(15));
+    evh.trueParticles["Wplus"]->SetPxPyPzE(P_X->at(16), P_Y->at(16),
+                                           P_Z->at(16), E->at(16));
+    evh.trueParticles["Wminus"]->SetPxPyPzE(P_X->at(17), P_Y->at(17),
+                                            P_Z->at(17), E->at(17));
+    // lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
+    // neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+    evh.trueParticles["bottom"]->SetPxPyPzE(P_X->at(8), P_Y->at(8),
+                                            P_Z->at(8), E->at(8));
+    evh.trueParticles["antiBottom"]->SetPxPyPzE(P_X->at(9), P_Y->at(9),
+                                                P_Z->at(9), E->at(9));
+    evh.trueParticles["qFromW"]->SetPxPyPzE(P_X->at(10), P_Y->at(10),
+                                            P_Z->at(10), E->at(10));
+    evh.trueParticles["qbarFromW"]->SetPxPyPzE(P_X->at(11), P_Y->at(11),
+                                               P_Z->at(11), E->at(11));
+    evh.trueParticles["bFromH"]->SetPxPyPzE(P_X->at(12), P_Y->at(12),
+                                            P_Z->at(12), E->at(12));
+    evh.trueParticles["bbarFromH"]->SetPxPyPzE(P_X->at(13), P_Y->at(13),
+                                               P_Z->at(13), E->at(13));
+    evh.trueParticles["higgs"]->SetPxPyPzE(P_X->at(19), P_Y->at(19),
+                                           P_Z->at(19), E->at(19));
 }
 
 // void topReconstructionFromLHE::getBestObjects(){}

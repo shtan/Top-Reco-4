@@ -116,7 +116,7 @@ class topReconstructionFromLHE
                             //   TBranch        *b_parent1ID;   //!
                             //   TBranch        *b_parent2ID;   //!
 
-    topReconstructionFromLHE(TTree *tree = 0);
+    topReconstructionFromLHE(TTree *tree = NULL);
     virtual ~topReconstructionFromLHE();
     virtual Int_t Cut(Long64_t entry);
     virtual Int_t GetEntry(Long64_t entry);
@@ -172,6 +172,7 @@ class topReconstructionFromLHE
     void PlotHists();
     void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
+    void Loop_load_event_SM(handleEvent &);
 
     XYZTLorentzVector testvec;
 
