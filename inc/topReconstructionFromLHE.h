@@ -19,6 +19,7 @@
 #include <vector>
 #include "Math/GenVector/LorentzVector.h"
 #include "TLorentzVector.h"
+#include "topEventMinimizer.h"
 
 using namespace std;
 
@@ -33,9 +34,9 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>
 
 // Declaration and definition of structure
 struct handleEvent {
-    map<string, XYZTLorentzVector *> trueParticles, smearedParticles,
+    map<string, XYZTLorentzVector> trueParticles, smearedParticles,
         bestParticles, trueParticlesLH, smearedParticlesLH, bestParticlesLH;
-    map<string, double *> chiSquareds;
+    map<string, double> chiSquareds;
     bool leptonFlag;
 
     handleEvent(vector<string> &particleNames, vector<string> &names,
@@ -43,21 +44,21 @@ struct handleEvent {
     {
         for (auto t = particleNames.begin(); t < particleNames.end(); ++t) {
             const string name = *t;
-            trueParticles[name] = new XYZTLorentzVector();
-            smearedParticles[name] = new XYZTLorentzVector();
-            bestParticles[name] = new XYZTLorentzVector();
+            trueParticles[name] = XYZTLorentzVector();
+            smearedParticles[name] = XYZTLorentzVector();
+            bestParticles[name] = XYZTLorentzVector();
         }
 
         for (auto t = names.begin(); t < names.end(); ++t) {
             const string name = *t;
-            trueParticlesLH[name] = new XYZTLorentzVector();
-            smearedParticlesLH[name] = new XYZTLorentzVector();
-            bestParticlesLH[name] = new XYZTLorentzVector();
+            trueParticlesLH[name] = XYZTLorentzVector();
+            smearedParticlesLH[name] = XYZTLorentzVector();
+            bestParticlesLH[name] = XYZTLorentzVector();
         }
 
         for (auto t = chinames.begin(); t < chinames.end(); ++t) {
             const string name = *t;
-            chiSquareds[name] = new double;
+            chiSquareds[name] = double();
         }
     }
 };
@@ -67,6 +68,11 @@ class topReconstructionFromLHE
   public:
     // flags
     bool debug;
+    
+    // parameters
+    double mTop, mW;
+    double sigmaMTop, sigmaMW, sigmaPtLep, sigmaPhiLep, sigmaEtaLep,
+           sigmaPhiJet, sigmaEtaJet;
     
     TTree *fChain; //! pointer to the analyzed TTree or TChain
     Int_t fCurrent; //! current Tree number in a TChain
@@ -121,6 +127,7 @@ class topReconstructionFromLHE
 
     topReconstructionFromLHE(TTree *tree = NULL);
     ~topReconstructionFromLHE();
+    void Set_def_parameters();
     Int_t Cut(Long64_t entry);
     Int_t GetEntry(Long64_t entry);
     Long64_t LoadTree(Long64_t entry);
@@ -169,8 +176,12 @@ class topReconstructionFromLHE
     void PlotHists();
     void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
-    void Loop_load_event_SM(handleEvent &);
-    void Print_SM(handleEvent &);
+    void Loop_load_eventh_SM(handleEvent &);
+    void Loop_load_eventh_enu_SM(handleEvent &);
+    void Loop_load_event_tt_SM(handleEvent &, topEventMinimizer &);
+    void Loop_fill_results_SM(topEventMinimizer &, handleEvent &);
+    void Print_smear_bs_SM(handleEvent &);
+    void Print_smear_tt_SM(handleEvent &);
 
     XYZTLorentzVector testvec;
 

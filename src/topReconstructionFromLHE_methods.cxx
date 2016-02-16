@@ -62,6 +62,28 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
     for (int i = 0; i < chi_size; ++i) {
         chinames.push_back(chinamesArray[i]);
     }
+    
+    Set_def_parameters();
+}
+
+void topReconstructionFromLHE::Set_def_parameters()
+{
+    mTop = 173.;
+    mW = 80.4;
+    sigmaMTop = 2.0;
+    sigmaMW = 2.085;
+    sigmaPtLep = 0;
+    sigmaPhiLep = 0;
+    sigmaEtaLep = 0;
+    sigmaPhiJet = 0.01;
+    sigmaEtaJet = 0.01;
+//         sigmaPtJet = 0.1;
+//         sigmaPhiJet = 0.;
+//         sigmaEtaJet = 0.;
+//         sigmaPtJet = 0.1;
+//         sigmaPtLep = 0.1;
+//         sigmaPhiLep = 0.01;
+//         sigmaEtaLep = 0.01;
 }
 
 topReconstructionFromLHE::~topReconstructionFromLHE()
