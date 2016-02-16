@@ -65,6 +65,9 @@ struct handleEvent {
 class topReconstructionFromLHE
 {
   public:
+    // flags
+    bool debug;
+    
     TTree *fChain; //! pointer to the analyzed TTree or TChain
     Int_t fCurrent; //! current Tree number in a TChain
 
@@ -117,14 +120,14 @@ class topReconstructionFromLHE
                             //   TBranch        *b_parent2ID;   //!
 
     topReconstructionFromLHE(TTree *tree = NULL);
-    virtual ~topReconstructionFromLHE();
-    virtual Int_t Cut(Long64_t entry);
-    virtual Int_t GetEntry(Long64_t entry);
-    virtual Long64_t LoadTree(Long64_t entry);
-    virtual void Init(TTree *tree);
-    virtual void Loop(TString, int, int);
-    virtual Bool_t Notify();
-    virtual void Show(Long64_t entry = -1);
+    ~topReconstructionFromLHE();
+    Int_t Cut(Long64_t entry);
+    Int_t GetEntry(Long64_t entry);
+    Long64_t LoadTree(Long64_t entry);
+    void Init(TTree *tree);
+    void Loop(TString, const int, const int, const int);
+    Bool_t Notify();
+    void Show(Long64_t entry = -1);
     void printVector(XYZTLorentzVector &);
     void moveStatsBox(TH1D *);
 
@@ -150,12 +153,6 @@ class topReconstructionFromLHE
     int innerMinStatus;
     int outerMinStatus;
 
-    double totalChi2;
-    double topSystemChi2;
-    double topMassChi2;
-    double hadronicChi2;
-    double nonTopChi2;
-
     double outerMinEdm;
 
     bool smearingSwitchedLightJetOrdering;
@@ -173,6 +170,7 @@ class topReconstructionFromLHE
     void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
     void Loop_load_event_SM(handleEvent &);
+    void Print_SM(handleEvent &);
 
     XYZTLorentzVector testvec;
 
