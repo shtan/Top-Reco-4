@@ -33,8 +33,10 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>
 }*/
 
 // Declaration and definition of structure
-struct handleEvent {
-    map<string, XYZTLorentzVector> trueParticles, smearedParticles,
+class handleEvent {
+  public:
+    // ROOT needs double pointer (**) to update containers, i.e., vectors
+    map<string, XYZTLorentzVector *> trueParticles, smearedParticles,
         bestParticles, trueParticlesLH, smearedParticlesLH, bestParticlesLH;
     map<string, double> chiSquareds;
     bool leptonFlag;
@@ -42,24 +44,43 @@ struct handleEvent {
     handleEvent(vector<string> &particleNames, vector<string> &names,
                 vector<string> &chinames)
     {
-        for (auto t = particleNames.begin(); t < particleNames.end(); ++t) {
+        for (auto t = particleNames.begin(); t != particleNames.end(); ++t) {
             const string name = *t;
-            trueParticles[name] = XYZTLorentzVector();
-            smearedParticles[name] = XYZTLorentzVector();
-            bestParticles[name] = XYZTLorentzVector();
+            trueParticles[name] = new XYZTLorentzVector;
+            smearedParticles[name] = new XYZTLorentzVector;
+            bestParticles[name] = new XYZTLorentzVector;
         }
 
         for (auto t = names.begin(); t < names.end(); ++t) {
             const string name = *t;
-            trueParticlesLH[name] = XYZTLorentzVector();
-            smearedParticlesLH[name] = XYZTLorentzVector();
-            bestParticlesLH[name] = XYZTLorentzVector();
+            trueParticlesLH[name] = new XYZTLorentzVector;
+            smearedParticlesLH[name] = new XYZTLorentzVector;
+            bestParticlesLH[name] = new XYZTLorentzVector;
         }
 
         for (auto t = chinames.begin(); t < chinames.end(); ++t) {
             const string name = *t;
             chiSquareds[name] = double();
         }
+    }
+    
+    // clears a map of pointers
+    template<class LV_pointer_map>
+    void Clear_map(LV_pointer_map &m)
+    {
+        for (auto it = m.begin(); it != m.end(); ++it)
+            delete (*it).second;
+    }
+    
+    ~handleEvent()
+    {
+        // clears maps of pointers
+        Clear_map(trueParticles);
+        Clear_map(smearedParticles);
+        Clear_map(bestParticles);
+        Clear_map(trueParticlesLH);
+        Clear_map(smearedParticlesLH);
+        Clear_map(bestParticlesLH);
     }
 };
 
