@@ -92,65 +92,56 @@ void topReconstructionFromLHE::DeclareMaps()
 
 void topReconstructionFromLHE::DeclareHists()
 {
-    double lbound = -1;
-    double rbound = 1;
-
-    for (vector<string>::iterator name = names.begin(); name != names.end();
-         name++) {
-        for (vector<string>::iterator vartype = varTypes.begin();
-             vartype != varTypes.end(); vartype++) {
-            if (*vartype == "Pt" or *vartype == "Px" or *vartype == "Py") {
+    for (auto name : names) {
+        for (auto vtype : varTypes) {
+            double lbound = -1;
+            double rbound = 1;
+            if (vtype == "Pt" or vtype == "Px" or vtype == "Py") {
                 lbound = -150;
                 rbound = 150;
             }
-            if (*vartype == "Eta") {
+            if (vtype == "Eta") {
                 lbound = -5;
                 rbound = 5;
             }
-            if (*vartype == "Phi") {
+            if (vtype == "Phi") {
                 lbound = -5;
                 rbound = 5;
             }
-            if (*vartype == "M") {
+            if (vtype == "M") {
                 lbound = -150;
                 rbound = 150;
             }
 
-            for (vector<string>::iterator diftype = difTypes.begin();
-                 diftype != difTypes.end(); diftype++) {
-                histdif[*diftype][*vartype][*name] =
-                    new TH1D((*name + "_" + *vartype + "_" + *diftype).c_str(),
-                             (*name + "_" + *vartype + "_" + *diftype).c_str(),
-                             100, lbound, rbound);
+            for (auto diff : difTypes) {
+                const string hname = name + "_" + vtype + "_" + diff;
+                histdif[diff][vtype][name] = new TH1D(hname.c_str(),
+                                                      hname.c_str(), 100,
+                                                      lbound, rbound);
             }
         }
     }
 
-    for (vector<string>::iterator chiname = chinames.begin();
-         chiname != chinames.end(); chiname++) {
-        histchi[*chiname] =
-            new TH1D(("ChiSquared_" + *chiname).c_str(),
-                     ("ChiSquared_" + *chiname).c_str(), 100, 0, 10);
+    for (auto name : chinames) {
+        const string hname = "ChiSquared_" + name;
+        histchi[name] = new TH1D(hname.c_str(), hname.c_str(), 100, 0, 10);
     }
 }
 
 void topReconstructionFromLHE::DeclareCanvases()
 {
-    for (vector<string>::iterator name = names.begin(); name != names.end();
-         name++) {
-        for (vector<string>::iterator vartype = varTypes.begin();
-             vartype != varTypes.end(); vartype++) {
-            canvasdif[*vartype][*name] =
-                new TCanvas(("c_" + *name + "_" + *vartype).c_str(),
-                            ("c_" + *name + "_" + *vartype).c_str(), 700, 700);
+    for (auto name : names) {
+        for (auto vtype : varTypes) {
+            const string cname = "c_" + name + "_" + vtype;
+            canvasdif[vtype][name] = new TCanvas(cname.c_str(), cname.c_str(),
+                                                 700, 700);
         }
     }
 
-    for (vector<string>::iterator chiname = chinames.begin();
-         chiname != chinames.end(); chiname++) {
-        canvaschi[*chiname] =
-            new TCanvas(("c_ChiSquared_" + *chiname).c_str(),
-                        ("c_ChiSquared_" + *chiname).c_str(), 700, 700);
+    for (auto chiname : chinames) {
+        const string cname = "c_ChiSquared_" + chiname;
+        canvaschi[chiname] = new TCanvas(cname.c_str(), cname.c_str(),
+                                         700, 700);
     }
 }
 
@@ -175,17 +166,17 @@ void topReconstructionFromLHE::FillLH(handleEvent &evh)
 void topReconstructionFromLHE::FillHists(handleEvent &evh)
 {
     // cout<<"1"<<endl;
-    for (hmap3::iterator h3 = histdif.begin(); h3 != histdif.end(); h3++) {
+    for (auto h3 = histdif.begin(); h3 != histdif.end(); ++h3) {
         hmap2 histdif2 = h3->second;
         string diftype = h3->first;
         // cout<<"2"<<endl;
-        for (hmap2::iterator h2 = histdif2.begin(); h2 != histdif2.end();
-             h2++) {
+        
+        for (auto h2 = histdif2.begin(); h2 != histdif2.end(); ++h2) {
             hmap1 histdif1 = h2->second;
             string vartype = h2->first;
             // cout<<"3"<<endl;
-            for (hmap1::iterator h1 = histdif1.begin(); h1 != histdif1.end();
-                 h1++) {
+            
+            for (auto h1 = histdif1.begin(); h1 != histdif1.end(); ++h1) {
                 // TH1D* hist = h1->second;
                 string name = h1->first;
                 string leptonFlagStr = static_cast<ostringstream *>(
@@ -195,12 +186,10 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
 
                 // cout<< name <<" "<< vartype<<endl;
 
-                for (vector<vector<string>>::iterator nameMapIt =
-                         nameMap.begin();
-                     nameMapIt != nameMap.end(); nameMapIt++) {
-                    if (leptonFlagStr == nameMapIt->at(0) and
-                        name == nameMapIt->at(1)) {
-                        pname = nameMapIt->at(2);
+                for (auto it = nameMap.begin(); it != nameMap.end(); ++it) {
+                    if (leptonFlagStr == it->at(0) and
+                        name == it->at(1)) {
+                        pname = it->at(2);
                         // cout<< pname <<endl;
                     }
                 }
