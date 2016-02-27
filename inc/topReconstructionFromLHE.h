@@ -203,6 +203,8 @@ class topReconstructionFromLHE
     void Loop_fill_results_SM(topEventMinimizer &, handleEvent &);
     void Print_smear_bs_SM(handleEvent &);
     void Print_smear_tt_SM(handleEvent &);
+    
+    string Get_pname(const string &, const string &);
 
     XYZTLorentzVector testvec;
 

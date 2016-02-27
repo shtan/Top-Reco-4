@@ -26,14 +26,14 @@ void topReconstructionFromLHE::printVector(XYZTLorentzVector &v)
 
 void topReconstructionFromLHE::DeclareOutBranches(handleEvent &evh)
 {
-    for (auto t = particleNames.begin(); t < particleNames.end(); ++t) {
+    for (auto t = particleNames.begin(); t != particleNames.end(); ++t) {
         outTree->Branch((*t + "_smeared").c_str(), evh.smearedParticles[*t]);
         outTree->Branch((*t + "_true").c_str(), evh.trueParticles[*t]);
         outTree->Branch((*t + "_best").c_str(), evh.bestParticles[*t]);
     }
     outTree->Branch("leptonFlag", &evh.leptonFlag);
 
-    for (auto t = names.begin(); t < names.end(); ++t) {
+    for (auto t = names.begin(); t != names.end(); ++t) {
         outTree->Branch(("LH_" + *t + "_smeared").c_str(),
                         evh.smearedParticlesLH[*t]);
         outTree->Branch(("LH_" + *t + "_true").c_str(),
@@ -46,7 +46,7 @@ void topReconstructionFromLHE::DeclareOutBranches(handleEvent &evh)
     outTree->Branch("outerMinStatus", &outerMinStatus);
     outTree->Branch("outerMinEdm", &outerMinEdm);
 
-    for (auto t = chinames.begin(); t < chinames.end(); ++t) {
+    for (auto t = chinames.begin(); t != chinames.end(); ++t) {
         outTree->Branch(("chiSquared_" + *t).c_str(), &(evh.chiSquareds[*t]));
     }
 
@@ -55,7 +55,7 @@ void topReconstructionFromLHE::DeclareOutBranches(handleEvent &evh)
 
 void topReconstructionFromLHE::DeclareInBranchesForPlotting(handleEvent &evh)
 {
-    for (auto t = particleNames.begin(); t < particleNames.end(); ++t) {
+    for (auto t = particleNames.begin(); t != particleNames.end(); ++t) {
         inTreePlot->SetBranchAddress((*t + "_smeared").c_str(),
                                      &(evh.smearedParticles[*t]));
         inTreePlot->SetBranchAddress((*t + "_true").c_str(),
@@ -65,7 +65,7 @@ void topReconstructionFromLHE::DeclareInBranchesForPlotting(handleEvent &evh)
     }
     inTreePlot->SetBranchAddress("leptonFlag", &evh.leptonFlag);
 
-    for (auto t = names.begin(); t < names.end(); ++t) {
+    for (auto t = names.begin(); t != names.end(); ++t) {
         inTreePlot->SetBranchAddress(("LH_" + *t + "_smeared").c_str(),
                                      &(evh.smearedParticlesLH[*t]));
         inTreePlot->SetBranchAddress(("LH_" + *t + "_true").c_str(),
@@ -78,7 +78,7 @@ void topReconstructionFromLHE::DeclareInBranchesForPlotting(handleEvent &evh)
     inTreePlot->SetBranchAddress("outerMinStatus", &outerMinStatus);
     inTreePlot->SetBranchAddress("outerMinEdm", &outerMinEdm);
 
-    for (auto t = chinames.begin(); t < chinames.end(); ++t) {
+    for (auto t = chinames.begin(); t != chinames.end(); ++t) {
         inTreePlot->SetBranchAddress(("chiSquared_" + *t).c_str(),
                                      &(evh.chiSquareds[*t]));
     }
@@ -145,23 +145,29 @@ void topReconstructionFromLHE::DeclareCanvases()
     }
 }
 
+string topReconstructionFromLHE::Get_pname(const string &lep_flag,
+                                           const string &name)
+{
+    string pname = "noname";
+    for (auto it = nameMap.begin(); it != nameMap.end(); ++it) {
+        if (lep_flag == it->at(0) and name == it->at(1))
+            pname = it->at(2);
+    }
+    
+    return pname;
+}
+
 void topReconstructionFromLHE::FillLH(handleEvent &evh)
 {
     string leptonFlagStr = "0";
     if (evh.leptonFlag)
         leptonFlagStr = "1";
     
-    for (auto name = names.begin(); name != names.end(); ++name) {
-        
-        string pname = "noname";
-        for (auto itm = nameMap.begin(); itm != nameMap.end(); ++itm) {
-            if (leptonFlagStr == itm->at(0) and *name == itm->at(1)) {
-                pname = itm->at(2);
-            }
-        }
-        *evh.smearedParticlesLH[*name] = *evh.smearedParticles[pname];
-        *evh.bestParticlesLH[*name] = *evh.bestParticles[pname];
-        *evh.trueParticlesLH[*name] = *evh.trueParticles[pname];
+    for (auto name : names) {
+        const string pname = Get_pname(leptonFlagStr, name);
+        *evh.smearedParticlesLH[name] = *evh.smearedParticles[pname];
+        *evh.bestParticlesLH[name] = *evh.bestParticles[pname];
+        *evh.trueParticlesLH[name] = *evh.trueParticles[pname];
     }
 }
 
@@ -171,91 +177,30 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
     if (evh.leptonFlag)
         leptonFlagStr = "1";
     
-    // cout<<"1"<<endl;
-    for (auto h3 = histdif.begin(); h3 != histdif.end(); ++h3) {
-        hmap2 histdif2 = h3->second;
-        string diftype = h3->first;
-        // cout<<"2"<<endl;
+    for (auto name : names) {
+        const string pname = Get_pname(leptonFlagStr, name);
         
-        for (auto h2 = histdif2.begin(); h2 != histdif2.end(); ++h2) {
-            hmap1 histdif1 = h2->second;
-            string vartype = h2->first;
-            // cout<<"3"<<endl;
-            
-            for (auto h1 = histdif1.begin(); h1 != histdif1.end(); ++h1) {
-                // TH1D* hist = h1->second;
-                string name = h1->first;
-
-                // cout<< name <<" "<< vartype<<endl;
-                string pname = "noname";
-                for (auto it = nameMap.begin(); it != nameMap.end(); ++it) {
-                    if (leptonFlagStr == it->at(0) and name == it->at(1)) {
-                        pname = it->at(2);
-                        // cout<< pname <<endl;
-                    }
-                }
-
-                if (diftype == "smearedTrue") {
-                    if (vartype == "Pt") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.smearedParticles[pname]->Pt() -
-                            evh.trueParticles[pname]->Pt());
-                    } else if (vartype == "Px") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.smearedParticles[pname]->Px() -
-                            evh.trueParticles[pname]->Px());
-                    } else if (vartype == "Py") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.smearedParticles[pname]->Py() -
-                            evh.trueParticles[pname]->Py());
-                    } else if (vartype == "M") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.smearedParticles[pname]->M() -
-                            evh.trueParticles[pname]->M());
-                        // cout<<"4"<<endl;
-                    } else if (vartype == "Eta") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.smearedParticles[pname]->Eta() -
-                            evh.trueParticles[pname]->Eta());
-                        // cout<<"4"<<endl;
-                    } else if (vartype == "Phi") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.smearedParticles[pname]->Phi() -
-                            evh.trueParticles[pname]->Phi());
-                        // cout<<"4"<<endl;
-                    }
-
-                } else if (diftype == "bestTrue") {
-                    if (vartype == "Pt") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.bestParticles[pname]->Pt() -
-                            evh.trueParticles[pname]->Pt());
-                    } else if (vartype == "Px") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.bestParticles[pname]->Px() -
-                            evh.trueParticles[pname]->Px());
-                    } else if (vartype == "Py") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.bestParticles[pname]->Py() -
-                            evh.trueParticles[pname]->Py());
-                    } else if (vartype == "M") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.bestParticles[pname]->M() -
-                            evh.trueParticles[pname]->M());
-                        // cout<<"4"<<endl;
-                    } else if (vartype == "Eta") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.bestParticles[pname]->Eta() -
-                            evh.trueParticles[pname]->Eta());
-                        // cout<<"4"<<endl;
-                    } else if (vartype == "Phi") {
-                        histdif[diftype][vartype][name]->Fill(
-                            evh.bestParticles[pname]->Phi() -
-                            evh.trueParticles[pname]->Phi());
-                        // cout<<"4"<<endl;
-                    }
-                }
-            }
+        const auto TP = evh.trueParticles[pname];
+        {
+            const string DT = "smearedTrue";    // diff type
+            const auto SP = evh.smearedParticles[pname];
+            histdif[DT]["Pt"][name]->Fill(SP->Pt() - TP->Pt());
+            histdif[DT]["Px"][name]->Fill(SP->Px() - TP->Px());
+            histdif[DT]["Py"][name]->Fill(SP->Py() - TP->Py());
+            histdif[DT]["M"][name]->Fill(SP->M() - TP->M());
+            histdif[DT]["Eta"][name]->Fill(SP->Eta() - TP->Eta());
+            histdif[DT]["Phi"][name]->Fill(SP->Phi() - TP->Phi());
+        }
+        
+        {
+            const string DT = "bestTrue";   // diff type
+            const auto BP = evh.bestParticles[pname];
+            histdif[DT]["Pt"][name]->Fill(BP->Pt() - TP->Pt());
+            histdif[DT]["Px"][name]->Fill(BP->Px() - TP->Px());
+            histdif[DT]["Py"][name]->Fill(BP->Py() - TP->Py());
+            histdif[DT]["M"][name]->Fill(BP->M() - TP->M());
+            histdif[DT]["Eta"][name]->Fill(BP->Eta() - TP->Eta());
+            histdif[DT]["Phi"][name]->Fill(BP->Phi() - TP->Phi());
         }
     }
 
