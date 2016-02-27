@@ -5,8 +5,8 @@ using namespace std;
 int main()
 {
     topReconstructionFromLHE t;
-    t.debug = false;
-    t.Loop("output_files", 0, 1, 5);
+    t.debug_verbosity = 1;
+    t.Loop("output_files", 0, 1, 200);
 
 //     t.Plot("plots");
 

@@ -87,8 +87,8 @@ class handleEvent {
 class topReconstructionFromLHE
 {
   public:
-    // flags
-    bool debug;
+    // verbosity
+    int debug_verbosity;
     
     // parameters
     double mTop, mW;
@@ -175,15 +175,15 @@ class topReconstructionFromLHE
     TFile *outFilePlot;
 
     // Branches
-
     int eventNumber;
 
     int innerMinStatus;
     int outerMinStatus;
 
     double outerMinEdm;
+    double rel_error;
 
-    bool smearingSwitchedLightJetOrdering;
+//     bool smearingSwitchedLightJetOrdering;
 
   private:
     typedef void (*FnPtr)(int, double, double, double, double);
@@ -200,6 +200,7 @@ class topReconstructionFromLHE
     void PlotHists();
     void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
+    void Loop_diagnostics(handleEvent &);
     void Loop_load_eventh_SM(handleEvent &);
     void Loop_load_eventh_enu_SM(handleEvent &);
     void Loop_load_event_tt_SM(handleEvent &, topEventMinimizer &);
