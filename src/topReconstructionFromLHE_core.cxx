@@ -147,10 +147,12 @@ void topReconstructionFromLHE::DeclareCanvases()
 
 void topReconstructionFromLHE::FillLH(handleEvent &evh)
 {
+    string leptonFlagStr = "0";
+    if (evh.leptonFlag)
+        leptonFlagStr = "1";
+    
     for (auto name = names.begin(); name != names.end(); ++name) {
-        string leptonFlagStr =
-            static_cast<ostringstream *>(&(ostringstream() << evh.leptonFlag))
-                ->str();
+        
         string pname = "noname";
         for (auto itm = nameMap.begin(); itm != nameMap.end(); ++itm) {
             if (leptonFlagStr == itm->at(0) and *name == itm->at(1)) {
@@ -165,6 +167,10 @@ void topReconstructionFromLHE::FillLH(handleEvent &evh)
 
 void topReconstructionFromLHE::FillHists(handleEvent &evh)
 {
+    string leptonFlagStr = "0";
+    if (evh.leptonFlag)
+        leptonFlagStr = "1";
+    
     // cout<<"1"<<endl;
     for (auto h3 = histdif.begin(); h3 != histdif.end(); ++h3) {
         hmap2 histdif2 = h3->second;
@@ -179,16 +185,11 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
             for (auto h1 = histdif1.begin(); h1 != histdif1.end(); ++h1) {
                 // TH1D* hist = h1->second;
                 string name = h1->first;
-                string leptonFlagStr = static_cast<ostringstream *>(
-                                           &(ostringstream() << evh.leptonFlag))
-                                           ->str();
-                string pname = "noname";
 
                 // cout<< name <<" "<< vartype<<endl;
-
+                string pname = "noname";
                 for (auto it = nameMap.begin(); it != nameMap.end(); ++it) {
-                    if (leptonFlagStr == it->at(0) and
-                        name == it->at(1)) {
+                    if (leptonFlagStr == it->at(0) and name == it->at(1)) {
                         pname = it->at(2);
                         // cout<< pname <<endl;
                     }
@@ -258,10 +259,8 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
         }
     }
 
-    for (auto h1 = histchi.begin(); h1 != histchi.end(); ++h1) {
-        string chiname = h1->first;
-        histchi[chiname]->Fill(evh.chiSquareds[chiname]);
-    }
+    for (auto h : histchi)
+        h.second->Fill(evh.chiSquareds[h.first]);
 }
 
 void topReconstructionFromLHE::PlotHists()
@@ -272,55 +271,51 @@ void topReconstructionFromLHE::PlotHists()
     //     int mc3 = 3;
     //     int mc0 = 0;
 
-    for (auto name = names.begin(); name != names.end(); ++name) {
-        for (auto vartype = varTypes.begin(); vartype != varTypes.end();
-             ++vartype) {
-            string unit;
-            if (*vartype == "Pt" or *vartype == "Px" or *vartype == "Py" or
-                *vartype == "M") {
+    for (auto name : names) {
+        for (auto vtype : varTypes) {
+            string unit = "";
+            if (vtype == "Pt" or vtype == "Px" or vtype == "Py" or
+                vtype == "M") {
                 unit = "(GeV)";
-            } else {
-                unit = "";
             }
-            histdif["smearedTrue"][*vartype][*name]->SetFillColor(mc1);
-            histdif["smearedTrue"][*vartype][*name]->SetLineColor(mc1);
-            histdif["bestTrue"][*vartype][*name]->SetLineColor(mc2);
+            TH1D *h_smeared = histdif["smearedTrue"][vtype][name];
+            TH1D *h_true = histdif["bestTrue"][vtype][name];
+            TCanvas *canv = canvasdif[vtype][name];
+            
+            h_smeared->SetFillColor(mc1);
+            h_smeared->SetLineColor(mc1);
+            h_true->SetLineColor(mc2);
 
-            histdif["smearedTrue"][*vartype][*name]->GetXaxis()->SetTitle(
-                (*vartype + " Resolution " + unit).c_str());
-            histdif["smearedTrue"][*vartype][*name]->GetYaxis()->SetTitle(
-                "Events");
-            histdif["smearedTrue"][*vartype][*name]->SetTitle(
-                (*name + "_" + *vartype).c_str());
-            histdif["smearedTrue"][*vartype][*name]->SetMaximum(
-                max(histdif["smearedTrue"][*vartype][*name]->GetMaximum(),
-                    histdif["bestTrue"][*vartype][*name]->GetMaximum()) + 1);
+            h_smeared->GetXaxis()->SetTitle((vtype + " Resolution " +
+                                             unit).c_str());
+            h_smeared->GetYaxis()->SetTitle("Events");
+            h_smeared->SetTitle((name + "_" + vtype).c_str());
+            h_smeared->SetMaximum(max(h_smeared->GetMaximum(),
+                                      h_true->GetMaximum()) + 1);
 
-            canvasdif[*vartype][*name]->cd();
+            canv->cd();
 
-            histdif["smearedTrue"][*vartype][*name]->Draw("HIST");
-            histdif["bestTrue"][*vartype][*name]->Draw("SAMES");
+            h_smeared->Draw("HIST");
+            h_true->Draw("SAMES");
 
-            moveStatsBox(histdif["smearedTrue"][*vartype][*name]);
+            moveStatsBox(h_smeared);
 
-            canvasdif[*vartype][*name]->Write();
-            canvasdif[*vartype][*name]->ls();
+            canv->Write();
+            canv->ls();
         }
     }
 
-    for (vector<string>::iterator chiname = chinames.begin();
-         chiname != chinames.end(); chiname++) {
-        histchi[*chiname]->SetTitle(("chiSquared_" + *chiname).c_str());
-        canvaschi[*chiname]->cd();
-        histchi[*chiname]->Draw("HIST");
-        canvaschi[*chiname]->Write();
-        canvaschi[*chiname]->ls();
+    for (auto name : chinames) {
+        histchi[name]->SetTitle(("chiSquared_" + name).c_str());
+        canvaschi[name]->cd();
+        histchi[name]->Draw("HIST");
+        canvaschi[name]->Write();
+        canvaschi[name]->ls();
     }
 }
 
 void topReconstructionFromLHE::Plot(TString dir)
 {
-
     inFilePlot = new TFile("output_files/output_0.root");
     inTreePlot = (TTree *)inFilePlot->Get("tree");
 
@@ -334,7 +329,7 @@ void topReconstructionFromLHE::Plot(TString dir)
 
     int numEvents = inTreePlot->GetEntries();
 
-    for (int i = 0; i < numEvents; i++) {
+    for (int i = 0; i < numEvents; ++i) {
         // cout<<"blah"<<endl;
         inTreePlot->GetEntry(i);
         // cout<<"balh"<<endl;
