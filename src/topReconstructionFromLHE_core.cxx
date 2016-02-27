@@ -96,7 +96,8 @@ void topReconstructionFromLHE::DeclareHists()
         for (auto vtype : varTypes) {
             double lbound = -1;
             double rbound = 1;
-            if (vtype == "Pt" or vtype == "Px" or vtype == "Py") {
+            if (vtype == "Pt" ||
+                vtype == "Px" || vtype == "Py" || vtype == "Pz") {
                 lbound = -150;
                 rbound = 150;
             }
@@ -180,32 +181,41 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
     for (auto name : names) {
         const string pname = Get_pname(leptonFlagStr, name);
         
-        const auto TP = evh.trueParticles[pname];
-        {
-            const string DT = "smearedTrue";    // diff type
-            const auto SP = evh.smearedParticles[pname];
-            histdif[DT]["Pt"][name]->Fill(SP->Pt() - TP->Pt());
-            histdif[DT]["Px"][name]->Fill(SP->Px() - TP->Px());
-            histdif[DT]["Py"][name]->Fill(SP->Py() - TP->Py());
-            histdif[DT]["M"][name]->Fill(SP->M() - TP->M());
-            histdif[DT]["Eta"][name]->Fill(SP->Eta() - TP->Eta());
-            histdif[DT]["Phi"][name]->Fill(SP->Phi() - TP->Phi());
-        }
+        FillHists_(evh.trueParticles[pname], evh.smearedParticles[pname],
+                   "smearedTrue", name, histdif);
         
-        {
-            const string DT = "bestTrue";   // diff type
-            const auto BP = evh.bestParticles[pname];
-            histdif[DT]["Pt"][name]->Fill(BP->Pt() - TP->Pt());
-            histdif[DT]["Px"][name]->Fill(BP->Px() - TP->Px());
-            histdif[DT]["Py"][name]->Fill(BP->Py() - TP->Py());
-            histdif[DT]["M"][name]->Fill(BP->M() - TP->M());
-            histdif[DT]["Eta"][name]->Fill(BP->Eta() - TP->Eta());
-            histdif[DT]["Phi"][name]->Fill(BP->Phi() - TP->Phi());
-        }
+        FillHists_(evh.trueParticles[pname], evh.bestParticles[pname],
+                   "bestTrue", name, histdif);
     }
 
     for (auto h : histchi)
         h.second->Fill(evh.chiSquareds[h.first]);
+}
+
+// diff two loretz vectors for diff; first and third level of hmap3
+void topReconstructionFromLHE::FillHists_(const XYZTLorentzVector *v1,
+                                          const XYZTLorentzVector *v2,
+                                          const string &DT, const string &name,
+                                          hmap3 &hm)
+{
+    hm[DT]["Pt"][name]->Fill(v1->Pt() - v2->Pt());
+    hm[DT]["Pt_"][name]->Fill((v1->Pt() - v2->Pt()) / v1->Pt());
+    
+    hm[DT]["Px"][name]->Fill(v1->Px() - v2->Px());
+    hm[DT]["Px_"][name]->Fill((v1->Px() - v2->Px()) / v1->Px());
+    hm[DT]["Py"][name]->Fill(v1->Py() - v2->Py());
+    hm[DT]["Py_"][name]->Fill((v1->Py() - v2->Py()) / v1->Py());
+    hm[DT]["Pz"][name]->Fill(v1->Pz() - v2->Pz());
+    hm[DT]["Pz_"][name]->Fill((v1->Pz() - v2->Pz()) / v1->Pz());
+    
+    hm[DT]["M"][name]->Fill(v1->M() - v2->M());
+    hm[DT]["M_"][name]->Fill((v1->M() - v2->M()) / v1->M());
+    
+    hm[DT]["Eta"][name]->Fill(v1->Eta() - v2->Eta());
+    hm[DT]["Eta_"][name]->Fill((v1->Eta() - v2->Eta()) / v1->Eta());
+    hm[DT]["Phi"][name]->Fill(v1->Phi() - v2->Phi());
+    hm[DT]["Phi_"][name]->Fill((v1->Phi() - v2->Phi()) / v1->Phi());
+    
 }
 
 void topReconstructionFromLHE::PlotHists()
@@ -220,7 +230,7 @@ void topReconstructionFromLHE::PlotHists()
         for (auto vtype : varTypes) {
             string unit = "";
             if (vtype == "Pt" or vtype == "Px" or vtype == "Py" or
-                vtype == "M") {
+                vtype == "Pz" or vtype == "M") {
                 unit = "(GeV)";
             }
             TH1D *h_smeared = histdif["smearedTrue"][vtype][name];
