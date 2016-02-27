@@ -120,13 +120,9 @@ class topEventMinimizer
 
     double maxConsideredChiSquareRoot_;
 
-    int innerMinStatus_;
-    int outerMinStatus_;
-
     // ROOT::Math::Minimizer* ellipseAngleMin_;
     // ROOT::Math::Minimizer* topMassMin_;
     ROOT::Math::Minimizer *innerMin_;
-    ROOT::Math::Minimizer *outerMin_;
 
     bool checkInputSizes();
 
@@ -219,15 +215,6 @@ class topEventMinimizer
     void calcTotalChiSquare();
     double getChiSquare();
 
-    int getInnerMinimizerStatus() { return innerMinStatus_; };
-    int getOuterMinimizerStatus() { return outerMinStatus_; };
-    double getOuterMinimizerEdm()
-    {
-        if (outerMin_)
-            return outerMin_->Edm();
-        return -1.;
-    };
-
     double getBestTotalChiSquare() { return chi2Best_; };
     double getBestTopSystemChiSquare() { return topChi2Best_; };
     double getBestHadronicChiSquare() { return hadChi2Best_; };
@@ -258,6 +245,12 @@ class topEventMinimizer
     double getNonTopChiSquare();
 
     void initializeDeltas();
+    
+    // status observables
+    int innerMinStatus;
+    int outerMinStatus;
+    
+    double outerMin_Edm;
 };
 
 #endif

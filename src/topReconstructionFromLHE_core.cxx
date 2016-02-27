@@ -468,7 +468,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         // thisPlotName+=jentry;
         // ev.plotEllipses(thisPlotName);
 
-        // ev.minimizeNonTopChiSquare();
+//         ev.minimizeNonTopChiSquare();
 
         ev.minimizeTotalChiSquare();
         if (debug_verbosity >= 2)
@@ -480,9 +480,9 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         eventNumber = jentry;
 
         // old stuff: can delete later
-        innerMinStatus = ev.getInnerMinimizerStatus();
-        outerMinStatus = ev.getOuterMinimizerStatus();
-        outerMinEdm = ev.getOuterMinimizerEdm();
+        innerMinStatus = ev.innerMinStatus;
+        outerMinStatus = ev.outerMinStatus;
+        outerMinEdm = ev.outerMin_Edm;
 
         // NEW Get best values
         if (debug_verbosity >= 2)
