@@ -177,13 +177,13 @@ void lightJetChiSquareMinimumSolver::setCartesianWidths(
             cout<< "jetPxPyWidths is "<< jetPxPyWidths_.at(i);
             //jetPyPxWidths_.at(i) = jetPxPyWidths_.at(i);*/
 
-        double Pt2 = pow(jets.at(i).Pt(), 2);
-        double sigmaPt2 = pow(jetPtWidths.at(i), 2);
-        double sigmaPhi2 = pow(jetPhiWidths.at(i), 2);
-        double cosPhi = cos(jets.at(i).Phi());
-        double sinPhi = sin(jets.at(i).Phi());
-        double cosPhi2 = pow(cosPhi, 2);
-        double sinPhi2 = pow(sinPhi, 2);
+        const double Pt2 = pow(jets.at(i).Pt(), 2);
+        const double sigmaPt2 = pow(jetPtWidths.at(i), 2);
+        const double sigmaPhi2 = pow(jetPhiWidths.at(i), 2);
+        const double cosPhi = cos(jets.at(i).Phi());
+        const double sinPhi = sin(jets.at(i).Phi());
+        const double cosPhi2 = pow(cosPhi, 2);
+        const double sinPhi2 = pow(sinPhi, 2);
         jetPxWidths2_.at(i) = sigmaPt2 * cosPhi2 + sigmaPhi2 * Pt2 * sinPhi2;
         jetPyWidths2_.at(i) = sigmaPt2 * sinPhi2 + sigmaPhi2 * Pt2 * cosPhi2;
         jetPxPyWidths_.at(i) =
@@ -293,24 +293,24 @@ void lightJetChiSquareMinimumSolver::calcMin()
     // return;
     chi2_ = 0;
 
-    double dArray3D[3] = {dx_, dy_, dz_};
-    TVectorD dVec3D(3, dArray3D);
+    const double dArray3D[3] = {dx_, dy_, dz_};
+    const TVectorD dVec3D(3, dArray3D);
 
-    double dArray2D[2] = {dx_, dy_};
-    TVectorD dVec2D(2, dArray2D);
+    const double dArray2D[2] = {dx_, dy_};
+    const TVectorD dVec2D(2, dArray2D);
 
     for (unsigned int i = 0; i < nJets_; i++) {
         if (do3D_) {
             TMatrixD thisJetB(jetSigmas3D_.at(i));
             thisJetB *= inverseSumSigmas3D_;
-            TVectorD thisJetDelta = thisJetB * dVec3D;
+            const TVectorD thisJetDelta = thisJetB * dVec3D;
             minDeltasX_.at(i) = thisJetDelta[0];
             minDeltasY_.at(i) = thisJetDelta[1];
             minDeltasZ_.at(i) = thisJetDelta[2];
         } else {
             TMatrixD thisJetB(jetSigmas2D_.at(i));
             thisJetB *= inverseSumSigmas2D_;
-            TVectorD thisJetDelta = thisJetB * dVec2D;
+            const TVectorD thisJetDelta = thisJetB * dVec2D;
             minDeltasX_.at(i) = thisJetDelta[0];
             minDeltasY_.at(i) = thisJetDelta[1];
             // minDeltasZ_.at(i) = 0.;

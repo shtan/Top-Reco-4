@@ -225,29 +225,8 @@ void topEventMinimizer::setNonTopObjectCollections()
 
 void topEventMinimizer::initializeDeltas()
 {
-    bJets_PtDeltas_.clear();
-    bJets_PhiDeltas_.clear();
-    bJets_EtaDeltas_.clear();
-    firstWDaughters_PtDeltas_.clear();
-    firstWDaughters_PhiDeltas_.clear();
-    firstWDaughters_EtaDeltas_.clear();
-    topMassDeltas_.clear();
-    WMassDeltas_.clear();
-
-    bJets_PtDeltasBest_.clear();
-    bJets_PhiDeltasBest_.clear();
-    bJets_EtaDeltasBest_.clear();
-    firstWDaughters_PtDeltasBest_.clear();
-    firstWDaughters_PhiDeltasBest_.clear();
-    firstWDaughters_EtaDeltasBest_.clear();
-    secondWDaughters_PtDeltasBest_.clear();
-    secondWDaughters_PhiDeltasBest_.clear();
-    secondWDaughters_EtaDeltasBest_.clear();
-    topMassDeltasBest_.clear();
-    WMassDeltasBest_.clear();
-
     if (nTops_ == 0) {
-        cout << "No tops have been added yet!" << endl;
+        cerr << "No tops have been added yet!" << endl;
         return;
     }
 
@@ -274,14 +253,8 @@ void topEventMinimizer::initializeDeltas()
 
     ellipseAnglesBest_ = vector<double>(nTops_, 0.);
 
-    ellipseAnglesCurrent_.clear();
-    topMassDeltasCurrent_.clear();
-
     ellipseAnglesCurrent_ = vector<double>(nTops_, 0.);
     topMassDeltasCurrent_ = vector<double>(nTops_, 0.);
-
-    ellipseAnglesInnerBest_.clear();
-    topMassDeltasInnerBest_.clear();
 
     ellipseAnglesInnerBest_ = vector<double>(nTops_, 0.);
     topMassDeltasInnerBest_ = vector<double>(nTops_, 0.);
@@ -337,8 +310,9 @@ topSystemChiSquare *topEventMinimizer::makeLeptonicTop(
         sigmaMTop, mW, sigmaMW));
 }
 
-topSystemChiSquare *
-topEventMinimizer::makeHadronicTop(int ibJet, int iWDaughter1, int iWDaughter2)
+topSystemChiSquare *topEventMinimizer::makeHadronicTop(int ibJet,
+                                                       int iWDaughter1,
+                                                       int iWDaughter2)
 {
     return dynamic_cast<topSystemChiSquare *>(new hadronicTopSystemChiSquare(
         allObjects_.at(ibJet).Px(), allObjects_.at(ibJet).Py(),
@@ -432,25 +406,21 @@ void topEventMinimizer::addHadronicTop(
 void topEventMinimizer::printTopConstituents()
 {
     int iTop = 0;
-    for (vector<pair<topSystemChiSquare *, bool>>::const_iterator
-             thisTopChiSquare = topSystemChiSquares_.begin();
-         thisTopChiSquare != topSystemChiSquares_.end();
-         thisTopChiSquare++, iTop++) {
+    for (auto it = topSystemChiSquares_.begin();
+         it != topSystemChiSquares_.end(); ++it, ++iTop) {
         cout << "This is top number " << iTop + 1 << endl;
-        (*thisTopChiSquare).first->printTopConstituents();
+        (*it).first->printTopConstituents();
     }
 }
 
 void topEventMinimizer::calcTopMassRanges()
 {
     int iTop = 0;
-    for (vector<pair<topSystemChiSquare *, bool>>::const_iterator
-             thisTopChiSquare = topSystemChiSquares_.begin();
-         thisTopChiSquare != topSystemChiSquares_.end();
-         thisTopChiSquare++, iTop++) {
+    for (auto it = topSystemChiSquares_.begin();
+         it != topSystemChiSquares_.end(); ++it, ++iTop) {
         // cout << "This is top number " << iTop+1 << endl;
-        if (!((*thisTopChiSquare).first->hasTopMassRange()))
-            (*thisTopChiSquare).first->calcTopMassRange();
+        if (!((*it).first->hasTopMassRange()))
+            (*it).first->calcTopMassRange();
     }
 }
 
@@ -793,21 +763,18 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
     thisHadChi2Best_ = 0.;
 
     int i = 0, iTop = 0;
-    for (vector<pair<topSystemChiSquare *, bool>>::const_iterator
-             thisTopChiSquare = topSystemChiSquares_.begin();
-         thisTopChiSquare != topSystemChiSquares_.end();
-         thisTopChiSquare++, iTop++) {
+    for (auto it = topSystemChiSquares_.begin();
+         it != topSystemChiSquares_.end(); ++it, ++iTop) {
         // cout << "This is top " << iTop+1 << endl;
 
         // std::cout<<"inside itop loop"<<std::endl;
         // Set top object deltas and recalculate momenta
-        (*thisTopChiSquare)
-            .first->setDeltas(inputDeltas[i], inputDeltas[i + 1],
-                              inputDeltas[i + 2], // b-jet deltas
-                              inputDeltas[i + 3], inputDeltas[i + 4],
-                              inputDeltas[i + 5], // first W daughter deltas
-                              inputDeltas[i + 6] // W mass delta
-                              );
+        (*it).first->setDeltas(inputDeltas[i], inputDeltas[i + 1],
+                               inputDeltas[i + 2], // b-jet deltas
+                               inputDeltas[i + 3], inputDeltas[i + 4],
+                               inputDeltas[i + 5], // first W daughter deltas
+                               inputDeltas[i + 6] // W mass delta
+                               );
         bJets_PtDeltas_.at(iTop) = inputDeltas[i];
         bJets_PhiDeltas_.at(iTop) = inputDeltas[i + 1];
         bJets_EtaDeltas_.at(iTop) = inputDeltas[i + 2];
@@ -821,7 +788,7 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
         // done in getTopMassDeltaRange call in inner minimization routine
 
         // setup the new second W daughter ellipse
-        (*thisTopChiSquare).first->setupWDaughter2Ellipse();
+        (*it).first->setupWDaughter2Ellipse();
 
         // std::cout<<"after setupdaughter"<<std::endl;
         // increment i
@@ -839,7 +806,8 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
     // std::cout<<"after calctopchi"<<std::endl;
 
     if (chi2_ < chi2Best_) {
-        // cout << "I found a new minimum total chi^2: " << chi2_ << endl;
+        if (debug)
+            cout << "New minimum total chi^2: " << chi2_ << endl;
 
         // update the chi^2 and its components
         chi2Best_ = chi2_;
@@ -867,18 +835,19 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 void topEventMinimizer::minimizeTotalChiSquare()
 {
     // std::cout<<"at min"<<std::endl;
-    ROOT::Math::Minimizer *outerMin = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
+    ROOT::Math::Minimizer *outerMin =
+        ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
     outerMin->SetMaxFunctionCalls(1000000);
     outerMin->SetTolerance(0.001);
     outerMin->SetPrintLevel(5);
 
-    int nParameters = 7 * nTops_; // 3 per b-jet + 3 per W daughter 1 + 1 per W
-                                  // mass = 7 per top system
+    const int nParameters = 7 * nTops_; // 3 per b-jet + 3 per W daughter 1 + 1
+                                        // per W mass = 7 per top system
 
     // std::cout<<"before set functor"<<std::endl;
     // Set up the functor
-    ROOT::Math::Functor func(
-        this, &topEventMinimizer::outerMinimizationOperator, nParameters);
+    ROOT::Math::Functor func(this,
+                &topEventMinimizer::outerMinimizationOperator, nParameters);
 
     // std::cout<<"before setfunc"<<std::endl;
     // Set up the minimization piece:
@@ -888,52 +857,40 @@ void topEventMinimizer::minimizeTotalChiSquare()
     // Setup the minimizer parameters
 
     int iPar = 0, iTop = 0;
-    for (vector<pair<topSystemChiSquare *, bool>>::const_iterator
-             thisTopChiSquare = topSystemChiSquares_.begin();
-         thisTopChiSquare != topSystemChiSquares_.end();
-         thisTopChiSquare++, iTop++) {
-        TString parName = "bJetPtDelta_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), bJets_PtDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
-        parName = "bJetPhiDelta_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), bJets_PhiDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
-        parName = "bJetEtaDelta_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), bJets_EtaDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
-        parName = "WDaughter1PtDelta_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), firstWDaughters_PtDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
-        parName = "WDaughter1PhiDelta_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), firstWDaughters_PhiDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
-        parName = "WDaughter1EtaDelta_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), firstWDaughters_EtaDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
-        parName = "deltaMW_";
-        parName += iTop;
-        outerMin->SetLimitedVariable(
-            iPar, string(parName), WMassDeltas_.at(iTop), 0.1,
-            -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
-        iPar += 1;
+    const double max = maxConsideredChiSquareRoot_;
+    for (auto it = topSystemChiSquares_.begin();
+         it != topSystemChiSquares_.end(); ++it, ++iTop) {
+        ostringstream convert;   // stream used for the (int) conversion
+        convert << iTop;
+        const string iTop_str = convert.str();
+        const string par1 = "bJetPtDelta_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par1,
+                        bJets_PtDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
+        const string par2 = "bJetPhiDelta_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par2,
+                        bJets_PhiDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
+        const string par3 = "bJetEtaDelta_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par3,
+                        bJets_EtaDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
+        const string par4 = "WDaughter1PtDelta_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par4,
+                        firstWDaughters_PtDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
+        const string par5 = "WDaughter1PhiDelta_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par5,
+                        firstWDaughters_PhiDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
+        const string par6 = "WDaughter1EtaDelta_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par6,
+                        firstWDaughters_EtaDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
+        const string par7 = "deltaMW_" + iTop_str;
+        outerMin->SetLimitedVariable(iPar, par7,
+                        WMassDeltas_.at(iTop), 0.1, -max, max);
+        ++iPar;
     }
 
     // std::cout<<"before minimize"<<std::endl;
