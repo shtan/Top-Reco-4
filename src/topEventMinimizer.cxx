@@ -36,8 +36,9 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
 
     initializeChiSquares();
 
-    innerMinStatus_ = -1.;
-    outerMinStatus_ = -1.;
+    innerMinStatus = -1;
+    outerMinStatus = -1;
+    outerMin_Edm = -1;
 }
 
 topEventMinimizer::topEventMinimizer(
@@ -90,8 +91,9 @@ topEventMinimizer::topEventMinimizer(
     initializeChiSquares();
     initializeDeltas();
 
-    innerMinStatus_ = -1.;
-    outerMinStatus_ = -1.;
+    innerMinStatus = -1;
+    outerMinStatus = -1;
+    outerMin_Edm = -1;
 }
 
 topEventMinimizer::~topEventMinimizer()
@@ -99,7 +101,7 @@ topEventMinimizer::~topEventMinimizer()
     // cout << "destructor" << endl;
 
     // delete innerMin_;
-    // delete outerMin_;
+    // delete outerMin;
 }
 
 void topEventMinimizer::setupMap()
@@ -865,10 +867,10 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 void topEventMinimizer::minimizeTotalChiSquare()
 {
     // std::cout<<"at min"<<std::endl;
-    outerMin_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
-    outerMin_->SetMaxFunctionCalls(1000000);
-    outerMin_->SetTolerance(0.001);
-    outerMin_->SetPrintLevel(5);
+    ROOT::Math::Minimizer *outerMin = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
+    outerMin->SetMaxFunctionCalls(1000000);
+    outerMin->SetTolerance(0.001);
+    outerMin->SetPrintLevel(5);
 
     int nParameters = 7 * nTops_; // 3 per b-jet + 3 per W daughter 1 + 1 per W
                                   // mass = 7 per top system
@@ -880,7 +882,7 @@ void topEventMinimizer::minimizeTotalChiSquare()
 
     // std::cout<<"before setfunc"<<std::endl;
     // Set up the minimization piece:
-    outerMin_->SetFunction(func);
+    outerMin->SetFunction(func);
 
     // std::cout<<"before set min param"<<std::endl;
     // Setup the minimizer parameters
@@ -892,43 +894,43 @@ void topEventMinimizer::minimizeTotalChiSquare()
          thisTopChiSquare++, iTop++) {
         TString parName = "bJetPtDelta_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), bJets_PtDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
         parName = "bJetPhiDelta_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), bJets_PhiDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
         parName = "bJetEtaDelta_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), bJets_EtaDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
         parName = "WDaughter1PtDelta_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), firstWDaughters_PtDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
         parName = "WDaughter1PhiDelta_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), firstWDaughters_PhiDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
         parName = "WDaughter1EtaDelta_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), firstWDaughters_EtaDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
         parName = "deltaMW_";
         parName += iTop;
-        outerMin_->SetLimitedVariable(
+        outerMin->SetLimitedVariable(
             iPar, string(parName), WMassDeltas_.at(iTop), 0.1,
             -maxConsideredChiSquareRoot_, maxConsideredChiSquareRoot_);
         iPar += 1;
@@ -936,12 +938,12 @@ void topEventMinimizer::minimizeTotalChiSquare()
 
     // std::cout<<"before minimize"<<std::endl;
     // cout << "Starting outer minimization" << endl;
-    outerMin_->Minimize();
+    outerMin->Minimize();
 
     // std::cout<<"after minimise"<<std::endl;
 
     // cout << "Minimum chi^2 values reported by Minuit:" << endl;
-    // cout << "Total chi^2 is " << outerMin_->MinValue() << endl;
+    // cout << "Total chi^2 is " << outerMin->MinValue() << endl;
     // cout << "Inner chi^2 is " << innerMin_->MinValue() << endl;
 
     // cout << "Minimum values I found:" << endl;
@@ -957,19 +959,22 @@ void topEventMinimizer::minimizeTotalChiSquare()
     // cout << "Best top system chi^2 is " << topChi2Best_ << endl;
 
     // cout << "Printing outer min results" << endl;
-    outerMin_->SetPrintLevel(1);
-    outerMin_->PrintResults();
-    cout << "Outer min status is " << outerMin_->Status() << endl;
+    outerMin->SetPrintLevel(1);
+    outerMin->PrintResults();
+    cout << "Outer min status is " << outerMin->Status() << endl;
 
     // cout << "Printing inner min results" << endl;
     innerMin_->SetPrintLevel(4);
     innerMin_->PrintResults();
     cout << "Inner min status is " << innerMin_->Status() << endl;
 
-    outerMinStatus_ = outerMin_->Status();
-    innerMinStatus_ = innerMin_->Status();
+    outerMinStatus = outerMin->Status();
+    innerMinStatus = innerMin_->Status();
+    outerMin_Edm = outerMin->Edm();
 
     setBestValues();
+    
+    delete outerMin;
 }
 
 void topEventMinimizer::setBestValues()
