@@ -177,13 +177,13 @@ void lightJetChiSquareMinimumSolver::setCartesianWidths(
             cout<< "jetPxPyWidths is "<< jetPxPyWidths_.at(i);
             //jetPyPxWidths_.at(i) = jetPxPyWidths_.at(i);*/
 
-        double Pt2 = pow(jets.at(i).Pt(), 2);
-        double sigmaPt2 = pow(jetPtWidths.at(i), 2);
-        double sigmaPhi2 = pow(jetPhiWidths.at(i), 2);
-        double cosPhi = cos(jets.at(i).Phi());
-        double sinPhi = sin(jets.at(i).Phi());
-        double cosPhi2 = pow(cosPhi, 2);
-        double sinPhi2 = pow(sinPhi, 2);
+        const double Pt2 = pow(jets.at(i).Pt(), 2);
+        const double sigmaPt2 = pow(jetPtWidths.at(i), 2);
+        const double sigmaPhi2 = pow(jetPhiWidths.at(i), 2);
+        const double cosPhi = cos(jets.at(i).Phi());
+        const double sinPhi = sin(jets.at(i).Phi());
+        const double cosPhi2 = pow(cosPhi, 2);
+        const double sinPhi2 = pow(sinPhi, 2);
         jetPxWidths2_.at(i) = sigmaPt2 * cosPhi2 + sigmaPhi2 * Pt2 * sinPhi2;
         jetPyWidths2_.at(i) = sigmaPt2 * sinPhi2 + sigmaPhi2 * Pt2 * cosPhi2;
         jetPxPyWidths_.at(i) =
@@ -201,6 +201,7 @@ void lightJetChiSquareMinimumSolver::setCartesianWidths(
              << " with width of " << sqrt(jetPxWidths2_.at(i)) << "\n"
              << "py  is " << jets.at(i).Pt() * sin(jets.at(i).Phi())
              << " with width of " << sqrt(jetPyWidths2_.at(i)) << "\n"
+             << "pxpy  width is " << sqrt(jetPxPyWidths_[i]) << "\n"
              << "correlation coefficient is "
              << jetPxPyWidths_.at(i) /
                     (sqrt(jetPxWidths2_.at(i)) * sqrt(jetPyWidths2_.at(i)))
@@ -247,17 +248,17 @@ void lightJetChiSquareMinimumSolver::calcSigmas()
         }
     }
 
-//     bool checkDecomp = false;
+    //     bool checkDecomp = false;
     if (do3D_) {
         dynamic_cast<TDecompLU *>(inverter3D_)
             ->SetMatrix(TMatrixD(inverseSumSigmas3D_));
-//         checkDecomp = inverter3D_->Decompose();
+        //         checkDecomp = inverter3D_->Decompose();
         dynamic_cast<TDecompLU *>(inverter3D_)->Invert(inverseSumSigmas3D_);
         // inverseSumSigmas3D_.Print();
     } else {
         dynamic_cast<TDecompLU *>(inverter2D_)
             ->SetMatrix(TMatrixD(inverseSumSigmas2D_));
-//         checkDecomp = inverter2D_->Decompose();
+        //         checkDecomp = inverter2D_->Decompose();
         dynamic_cast<TDecompLU *>(inverter2D_)->Invert(inverseSumSigmas2D_);
         // inverseSumSigmas2D_.Print();
     }
@@ -293,26 +294,29 @@ void lightJetChiSquareMinimumSolver::calcMin()
     // return;
     chi2_ = 0;
 
-    double dArray3D[3] = {dx_, dy_, dz_};
-    TVectorD dVec3D(3, dArray3D);
+    const double dArray3D[3] = {dx_, dy_, dz_};
+    const TVectorD dVec3D(3, dArray3D);
 
-    double dArray2D[2] = {dx_, dy_};
-    TVectorD dVec2D(2, dArray2D);
+    const double dArray2D[2] = {dx_, dy_};
+    const TVectorD dVec2D(2, dArray2D);
 
-    for (unsigned int i = 0; i < nJets_; i++) {
+    for (unsigned int i = 0; i < nJets_; ++i) {
         if (do3D_) {
             TMatrixD thisJetB(jetSigmas3D_.at(i));
             thisJetB *= inverseSumSigmas3D_;
-            TVectorD thisJetDelta = thisJetB * dVec3D;
+            const TVectorD thisJetDelta = thisJetB * dVec3D;
             minDeltasX_.at(i) = thisJetDelta[0];
             minDeltasY_.at(i) = thisJetDelta[1];
             minDeltasZ_.at(i) = thisJetDelta[2];
         } else {
-            TMatrixD thisJetB(jetSigmas2D_.at(i));
-            thisJetB *= inverseSumSigmas2D_;
-            TVectorD thisJetDelta = thisJetB * dVec2D;
-            minDeltasX_.at(i) = thisJetDelta[0];
-            minDeltasY_.at(i) = thisJetDelta[1];
+            // FIXME a better matrix order? minDeltasX_ & Y_ still large
+            const TVectorD thisJetDelta =
+                (inverseSumSigmas2D_ * jetSigmas2D_[i]) * dVec2D;
+            // TMatrixD thisJetB(jetSigmas2D_.at(i));
+            // thisJetB *= inverseSumSigmas2D_;
+            // const TVectorD thisJetDelta = thisJetB * dVec2D;
+            minDeltasX_[i] = thisJetDelta[0];
+            minDeltasY_[i] = thisJetDelta[1];
             // minDeltasZ_.at(i) = 0.;
         }
     }
@@ -320,7 +324,13 @@ void lightJetChiSquareMinimumSolver::calcMin()
     if (do3D_) {
         chi2_ = dVec3D * (inverseSumSigmas3D_ * dVec3D);
     } else {
-        chi2_ = dVec2D * (inverseSumSigmas2D_ * dVec2D);
+        double chi2 = 0;
+        for (unsigned int i = 0; i < nJets_; ++i) {
+            chi2 += minDeltasX_[i] * minDeltasX_[i] / jetSigmas2D_[i][0][0] +
+                    minDeltasY_[i] * minDeltasY_[i] / jetSigmas2D_[i][1][1];
+        }
+        chi2_ = chi2;
+        // chi2_ = dVec2D * (inverseSumSigmas2D_ * dVec2D);
     }
 }
 

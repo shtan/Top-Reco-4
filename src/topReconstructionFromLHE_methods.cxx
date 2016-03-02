@@ -6,7 +6,7 @@
 topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 {
     debug_verbosity = 0;
-    
+
     // if parameter tree is not specified (or zero), connect the file
     // used to generate this class and read the Tree.
     if (tree == NULL) {
@@ -62,7 +62,7 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
     for (int i = 0; i < chi_size; ++i) {
         chinames.push_back(chinamesArray[i]);
     }
-    
+
     Set_def_parameters();
 }
 
@@ -77,13 +77,13 @@ void topReconstructionFromLHE::Set_def_parameters()
     sigmaEtaLep = 0;
     sigmaPhiJet = 0.01;
     sigmaEtaJet = 0.01;
-//         sigmaPtJet = 0.1;
-//         sigmaPhiJet = 0.;
-//         sigmaEtaJet = 0.;
-//         sigmaPtJet = 0.1;
-//         sigmaPtLep = 0.1;
-//         sigmaPhiLep = 0.01;
-//         sigmaEtaLep = 0.01;
+    //         sigmaPtJet = 0.1;
+    //         sigmaPhiJet = 0.;
+    //         sigmaEtaJet = 0.;
+    //         sigmaPtJet = 0.1;
+    //         sigmaPtLep = 0.1;
+    //         sigmaPhiLep = 0.01;
+    //         sigmaEtaLep = 0.01;
 }
 
 topReconstructionFromLHE::~topReconstructionFromLHE()
@@ -104,7 +104,7 @@ double topReconstructionFromLHE::deltaR(XYZTLorentzVector &p2,
     while (thisDeltaPhi < -3.14159265359) {
         thisDeltaPhi += 2 * 3.14159265359;
     }
-    
+
     return sqrt(thisDeltaPhi * thisDeltaPhi + thisDeltaEta * thisDeltaEta);
 }
 
@@ -129,11 +129,11 @@ void topReconstructionFromLHE::initPlotting(TString dir)
     fileName += "output_";
     fileName += ".root";
 
-//     float leftbound = -150.;
-//     float rightbound = 150.;
-//     float canvsize1 = 700;
-//     float canvsize2 = 700;
-//     int numbins = 100;
+    //     float leftbound = -150.;
+    //     float rightbound = 150.;
+    //     float canvsize1 = 700;
+    //     float canvsize2 = 700;
+    //     int numbins = 100;
 
     outFile = new TFile(fileName, "RECREATE", "tree");
     // outTree = new TTree("tree","tree");
@@ -148,11 +148,11 @@ void topReconstructionFromLHE::initOutput(TString dir, int whichLoop)
     fileName += whichLoop;
     fileName += ".root";
 
-//     float leftbound = -150.;
-//     float rightbound = 150.;
-//     float canvsize1 = 700;
-//     float canvsize2 = 700;
-//     int numbins = 100;
+    //     float leftbound = -150.;
+    //     float rightbound = 150.;
+    //     float canvsize1 = 700;
+    //     float canvsize2 = 700;
+    //     int numbins = 100;
 
     outFile = new TFile(fileName, "RECREATE", "tree");
     outTree = new TTree("tree", "tree");

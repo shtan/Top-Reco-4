@@ -1053,12 +1053,12 @@ void neutrinoSolutions::getNeutrinoVectors()
 //
 //	// Calculate the intersection between two straight lines, x axis
 //	Double_t x = (ax1 *(ay2 *(x1-x2)+x2 * y1 - x1 * y2 )+ ax2 * (ay1 * (-x1+x2)-
-//x2 * y1+x1 * y2))
+// x2 * y1+x1 * y2))
 //	  / (-(ay1-ay2) * (x1-x2)+(ax1-ax2)* (y1-y2));
 //
 //	// Calculate the intersection between two straight lines, y axis
 //	Double_t y = (ax1 * ay2 * (y1-y2)+ax2 * ay1 * (-y1+y2)+(ay1-ay2) * (x2 *
-//y1-x1 * y2))/(-(ay1-ay2) * (x1-x2)+(ax1-ax2) * (y1-y2));
+// y1-x1 * y2))/(-(ay1-ay2) * (x1-x2)+(ax1-ax2) * (y1-y2));
 //
 //	// Find the tightest interval along the x-axis defined by the four points
 //	Double_t xrange_min = max(min(x1, x2), min(ax1, ax2));
@@ -1067,12 +1067,13 @@ void neutrinoSolutions::getNeutrinoVectors()
 //	// If points from the two lines overlap, they are trivially intersecting
 //	if ((x1 == ax1 && y1 == ay1) or (x2 == ax2 && y2 == ay2)){
 //	  intersectionPoints.push_back( make_pair( (x1 == ax1 && y1 == ay1) ? x1 :
-//x2, (x1 == ax1 && y1 == ay1) ? y1 : y2) ) ; //SetPoint(i, (x1 == ax1 and y1 ==
-//ay1) ? x1 : x2, (x1 == ax1 and y1 == ay1) ? y1 : y2);
+// x2, (x1 == ax1 && y1 == ay1) ? y1 : y2) ) ; //SetPoint(i, (x1 == ax1 and y1
+// ==
+// ay1) ? x1 : x2, (x1 == ax1 and y1 == ay1) ? y1 : y2);
 //	  i++;
 //	}
 //	// If the intersection between the two lines is within the tight range, add
-//it to the list of intersections.
+// it to the list of intersections.
 //	else if(x > xrange_min && x < xrange_max)
 //	  {
 //            intersectionPoints.push_back(make_pair(x, y)) ;

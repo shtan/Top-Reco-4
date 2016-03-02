@@ -511,26 +511,26 @@ WDaughter1E_  << endl;
 //  bJetE_*WDaughter1E_*(WDaughter2Mass2_ - mW2_ + WDaughter1P2_) +
 //  WDaughter1E2*(bJetE2 + mW2_ - bJetP_*(bJetP_ + c*WDaughter1P_)) +
 //		      WDaughter1P_*((-bJetE2 - mW2_ + bJetP2_)*WDaughter1P_ +
-//c*bJetP_*(WDaughter2Mass2_ - mW2_ + WDaughter1P2_)) -
+// c*bJetP_*(WDaughter2Mass2_ - mW2_ + WDaughter1P2_)) -
 //		      sqrt((WDaughter1E4 + pow(WDaughter2Mass2_ - mW2_,2) +
-//2*(WDaughter2Mass2_ + mW2_)*WDaughter1P2_ + WDaughter1P4 -
-//2*WDaughter1E2*(WDaughter2Mass2_ + mW2_ + WDaughter1P2_))*
+// 2*(WDaughter2Mass2_ + mW2_)*WDaughter1P2_ + WDaughter1P4 -
+// 2*WDaughter1E2*(WDaughter2Mass2_ + mW2_ + WDaughter1P2_))*
 //			   (pow(c*WDaughter1E_*bJetP_ - bJetE_*WDaughter1P_,2) +
-//bJetP2_*(WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
-//WDaughter1P_)*s2)))/((WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
-//WDaughter1P_));
+// bJetP2_*(WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
+// WDaughter1P_)*s2)))/((WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
+// WDaughter1P_));
 //  double mTopEdge2 = (bJetE_*WDaughter1E3 -
 //  bJetE_*WDaughter1E_*(WDaughter2Mass2_ - mW2_ + WDaughter1P2_) +
 //  WDaughter1E2*(bJetE2 + mW2_ - bJetP_*(bJetP_ + c*WDaughter1P_)) +
 //		      WDaughter1P_*((-bJetE2 - mW2_ + bJetP2_)*WDaughter1P_ +
-//c*bJetP_*(WDaughter2Mass2_ - mW2_ + WDaughter1P2_)) +
+// c*bJetP_*(WDaughter2Mass2_ - mW2_ + WDaughter1P2_)) +
 //		      sqrt((WDaughter1E4 + pow(WDaughter2Mass2_ - mW2_,2) +
-//2*(WDaughter2Mass2_ + mW2_)*WDaughter1P2_ + WDaughter1P4 -
-//2*WDaughter1E2*(WDaughter2Mass2_ + mW2_ + WDaughter1P2_))*
+// 2*(WDaughter2Mass2_ + mW2_)*WDaughter1P2_ + WDaughter1P4 -
+// 2*WDaughter1E2*(WDaughter2Mass2_ + mW2_ + WDaughter1P2_))*
 //			   (pow(c*WDaughter1E_*bJetP_ - bJetE_*WDaughter1P_,2) +
-//bJetP2_*(WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
-//WDaughter1P_)*s2)))/((WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
-//WDaughter1P_));
+// bJetP2_*(WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
+// WDaughter1P_)*s2)))/((WDaughter1E_ - WDaughter1P_)*(WDaughter1E_ +
+// WDaughter1P_));
 //
 //
 //  //cout << "Top mass squared edges: (" << mTopEdge2 << ", " << mTopEdge1 <<
@@ -597,12 +597,12 @@ WDaughter1E_  << endl;
 //      while(Z2_ < 0.)
 //	{
 //	  //mTop += inc*1.e-3*(mTopEdgeHigh_-mTopEdgeLow_); //no bound (upper or
-//lower) on mTop in this case
+// lower) on mTop in this case
 //	  mTop += inc*1.e-2*mTopAssumed_;
 //	  if(mTop < 0.)
 //	    {
 //	      cout << "Switching to starting at the high edge and incrementing
-//upwards" << endl;
+// upwards" << endl;
 //	      mTop=mTopEdgeHigh_;
 //	      inc=1.;
 //	    }

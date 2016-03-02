@@ -98,8 +98,8 @@ void topReconstructionFromLHE::DeclareHists()
         for (auto vtype : varTypes) {
             double lbound = -1;
             double rbound = 1;
-            if (vtype == "Pt" ||
-                vtype == "Px" || vtype == "Py" || vtype == "Pz") {
+            if (vtype == "Pt" || vtype == "Px" || vtype == "Py" ||
+                vtype == "Pz") {
                 lbound = -150;
                 rbound = 150;
             }
@@ -118,9 +118,8 @@ void topReconstructionFromLHE::DeclareHists()
 
             for (auto diff : difTypes) {
                 const string hname = name + "_" + vtype + "_" + diff;
-                histdif[diff][vtype][name] = new TH1D(hname.c_str(),
-                                                      hname.c_str(), 100,
-                                                      lbound, rbound);
+                histdif[diff][vtype][name] =
+                    new TH1D(hname.c_str(), hname.c_str(), 100, lbound, rbound);
             }
         }
     }
@@ -136,15 +135,15 @@ void topReconstructionFromLHE::DeclareCanvases()
     for (auto name : names) {
         for (auto vtype : varTypes) {
             const string cname = "c_" + name + "_" + vtype;
-            canvasdif[vtype][name] = new TCanvas(cname.c_str(), cname.c_str(),
-                                                 700, 700);
+            canvasdif[vtype][name] =
+                new TCanvas(cname.c_str(), cname.c_str(), 700, 700);
         }
     }
 
     for (auto chiname : chinames) {
         const string cname = "c_ChiSquared_" + chiname;
-        canvaschi[chiname] = new TCanvas(cname.c_str(), cname.c_str(),
-                                         700, 700);
+        canvaschi[chiname] =
+            new TCanvas(cname.c_str(), cname.c_str(), 700, 700);
     }
 }
 
@@ -156,7 +155,7 @@ string topReconstructionFromLHE::Get_pname(const string &lep_flag,
         if (lep_flag == it->at(0) and name == it->at(1))
             pname = it->at(2);
     }
-    
+
     return pname;
 }
 
@@ -165,7 +164,7 @@ void topReconstructionFromLHE::FillLH(handleEvent &evh)
     string leptonFlagStr = "0";
     if (evh.leptonFlag)
         leptonFlagStr = "1";
-    
+
     for (auto name : names) {
         const string pname = Get_pname(leptonFlagStr, name);
         *evh.smearedParticlesLH[name] = *evh.smearedParticles[pname];
@@ -179,13 +178,13 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
     string leptonFlagStr = "0";
     if (evh.leptonFlag)
         leptonFlagStr = "1";
-    
+
     for (auto name : names) {
         const string pname = Get_pname(leptonFlagStr, name);
-        
+
         FillHists_(evh.trueParticles[pname], evh.smearedParticles[pname],
                    "smearedTrue", name, histdif);
-        
+
         FillHists_(evh.trueParticles[pname], evh.bestParticles[pname],
                    "bestTrue", name, histdif);
     }
@@ -202,22 +201,21 @@ void topReconstructionFromLHE::FillHists_(const XYZTLorentzVector *v1,
 {
     hm[DT]["Pt"][name]->Fill(v1->Pt() - v2->Pt());
     hm[DT]["Pt_"][name]->Fill((v1->Pt() - v2->Pt()) / v1->Pt());
-    
+
     hm[DT]["Px"][name]->Fill(v1->Px() - v2->Px());
     hm[DT]["Px_"][name]->Fill((v1->Px() - v2->Px()) / v1->Px());
     hm[DT]["Py"][name]->Fill(v1->Py() - v2->Py());
     hm[DT]["Py_"][name]->Fill((v1->Py() - v2->Py()) / v1->Py());
     hm[DT]["Pz"][name]->Fill(v1->Pz() - v2->Pz());
     hm[DT]["Pz_"][name]->Fill((v1->Pz() - v2->Pz()) / v1->Pz());
-    
+
     hm[DT]["M"][name]->Fill(v1->M() - v2->M());
     hm[DT]["M_"][name]->Fill((v1->M() - v2->M()) / v1->M());
-    
+
     hm[DT]["Eta"][name]->Fill(v1->Eta() - v2->Eta());
     hm[DT]["Eta_"][name]->Fill((v1->Eta() - v2->Eta()) / v1->Eta());
     hm[DT]["Phi"][name]->Fill(v1->Phi() - v2->Phi());
     hm[DT]["Phi_"][name]->Fill((v1->Phi() - v2->Phi()) / v1->Phi());
-    
 }
 
 void topReconstructionFromLHE::PlotHists()
@@ -238,17 +236,17 @@ void topReconstructionFromLHE::PlotHists()
             TH1D *h_smeared = histdif["smearedTrue"][vtype][name];
             TH1D *h_true = histdif["bestTrue"][vtype][name];
             TCanvas *canv = canvasdif[vtype][name];
-            
+
             h_smeared->SetFillColor(mc1);
             h_smeared->SetLineColor(mc1);
             h_true->SetLineColor(mc2);
 
-            h_smeared->GetXaxis()->SetTitle((vtype + " Resolution " +
-                                             unit).c_str());
+            h_smeared->GetXaxis()->SetTitle(
+                (vtype + " Resolution " + unit).c_str());
             h_smeared->GetYaxis()->SetTitle("Events");
             h_smeared->SetTitle((name + "_" + vtype).c_str());
-            h_smeared->SetMaximum(max(h_smeared->GetMaximum(),
-                                      h_true->GetMaximum()) + 1);
+            h_smeared->SetMaximum(
+                max(h_smeared->GetMaximum(), h_true->GetMaximum()) + 1);
 
             canv->cd();
 
@@ -370,8 +368,8 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         if (ientry < 0)
             break;
         // if (jentry > 0) break;
-        fChain->GetEntry(jentry);  //Long64_t nbytes = 0, nb = 0;
-//         nbytes += nb;
+        fChain->GetEntry(jentry); // Long64_t nbytes = 0, nb = 0;
+        //         nbytes += nb;
         // if (Cut(ientry) < 0) continue;
 
         //      bool leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar
@@ -382,7 +380,6 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         // double METx(0.), METy(0.);
         //         int iJet = 0;
 
-        
         if (debug_verbosity >= 2) {
             cout << "Before loading event.\n";
             Print_smear_bs_SM(evh);
@@ -414,7 +411,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
 
         // Set smeared higgs by adding bFromH and bbarFromH
         *(evh.smearedParticles["higgs"]) = *(evh.smearedParticles["bFromH"]) +
-                                        *(evh.smearedParticles["bbarFromH"]);
+                                           *(evh.smearedParticles["bbarFromH"]);
         if (debug_verbosity >= 2)
             cout << "Setting non-top objects" << endl;
         vector<XYZTLorentzVector> nonTopObjects;
@@ -422,21 +419,22 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         vector<double> nonTopObjectEtaWidths;
         vector<double> nonTopObjectPhiWidths;
 
-        // nonTopObjects.push_back(dynamic_cast<XYZTLorentzVector>
-        // (evh.smearedParticles["bFromH"]));
         nonTopObjects.push_back(*(evh.smearedParticles["bFromH"]));
         nonTopObjectPtWidths.push_back(
             sqrt(evh.smearedParticles["bFromH"]->Pt()));
         nonTopObjectEtaWidths.push_back(0.01);
         nonTopObjectPhiWidths.push_back(0.01);
 
-        //      nonTopObjects.push_back(dynamic_cast<XYZTLorentzVector>
-        //      (evh.smearedParticles["bbarFromH"]));
         nonTopObjects.push_back(*(evh.smearedParticles["bbarFromH"]));
         nonTopObjectPtWidths.push_back(
             sqrt(evh.smearedParticles["bbarFromH"]->Pt()));
         nonTopObjectEtaWidths.push_back(0.01);
         nonTopObjectPhiWidths.push_back(0.01);
+        // nonTopObjects.push_back(*(evh.smearedParticles["bFromH"]) +
+        //     *(evh.smearedParticles["bbarFromH"]));
+        // nonTopObjectPtWidths.push_back(30);
+        // nonTopObjectEtaWidths.push_back(0.01);
+        // nonTopObjectPhiWidths.push_back(0.01);
 
         for (auto particle : smearedOtherLightPartons) {
             nonTopObjects.push_back(particle);
@@ -450,13 +448,13 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         }
 
         topEventMinimizer ev(nonTopObjects, nonTopObjectPtWidths,
-                             nonTopObjectEtaWidths, nonTopObjectPhiWidths,
-                             mTop, sigmaMTop, mW, sigmaMW);
+                             nonTopObjectEtaWidths, nonTopObjectPhiWidths, mTop,
+                             sigmaMTop, mW, sigmaMW);
 
         if (debug_verbosity >= 2)
             cout << "Before add tops:" << endl;
         Loop_load_event_tt_SM(evh, ev);
-        
+
         // ev.printTopConstituents();
         ev.initializeDeltas();
         // ev.calcTopMassRanges();
@@ -468,7 +466,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         // thisPlotName+=jentry;
         // ev.plotEllipses(thisPlotName);
 
-//         ev.minimizeNonTopChiSquare();
+        //         ev.minimizeNonTopChiSquare();
 
         ev.minimizeTotalChiSquare();
         if (debug_verbosity >= 2)
@@ -490,8 +488,8 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         Loop_fill_results_SM(ev, evh);
 
         // Set best higgs by adding bFromH and bbarFromH
-        *evh.bestParticles["higgs"] = *(evh.bestParticles["bFromH"]) +
-                                      *(evh.bestParticles["bbarFromH"]);
+        *evh.bestParticles["higgs"] =
+            *(evh.bestParticles["bFromH"]) + *(evh.bestParticles["bbarFromH"]);
 
         // Fill Hists
         if (debug_verbosity >= 2)
@@ -501,7 +499,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
             FillHists(evh);
         }
         FillLH(evh);
-        
+
         if (debug_verbosity >= 1)
             Loop_diagnostics(evh);
 
@@ -537,8 +535,8 @@ void topReconstructionFromLHE::Loop_load_eventh_SM(handleEvent &evh)
 
     // lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
     // neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
-    evh.trueParticles["bottom"]->SetPxPyPzE(P_X->at(8), P_Y->at(8),
-                                            P_Z->at(8), E->at(8));
+    evh.trueParticles["bottom"]->SetPxPyPzE(P_X->at(8), P_Y->at(8), P_Z->at(8),
+                                            E->at(8));
     evh.trueParticles["antiBottom"]->SetPxPyPzE(P_X->at(9), P_Y->at(9),
                                                 P_Z->at(9), E->at(9));
     evh.trueParticles["qFromW"]->SetPxPyPzE(P_X->at(10), P_Y->at(10),
@@ -555,7 +553,7 @@ void topReconstructionFromLHE::Loop_load_eventh_SM(handleEvent &evh)
     evh.trueParticles["top"]->SetPxPyPzE(P_X->at(14), P_Y->at(14), P_Z->at(14),
                                          E->at(14));
     evh.trueParticles["antiTop"]->SetPxPyPzE(P_X->at(15), P_Y->at(15),
-                                            P_Z->at(15), E->at(15));
+                                             P_Z->at(15), E->at(15));
     evh.trueParticles["Wplus"]->SetPxPyPzE(P_X->at(16), P_Y->at(16),
                                            P_Z->at(16), E->at(16));
     evh.trueParticles["Wminus"]->SetPxPyPzE(P_X->at(17), P_Y->at(17),
@@ -572,46 +570,47 @@ void topReconstructionFromLHE::Loop_load_eventh_enu_SM(handleEvent &evh)
         evh.smearedParticles["antiNeutrino"]->SetPxPyPzE(
             P_X->at(20), P_Y->at(20), 0,
             sqrt(pow(P_X->at(20), 2) + pow(P_Y->at(20), 2)));
-        
+
         evh.trueParticles["lepton"]->SetPxPyPzE(P_X->at(7), P_Y->at(7),
                                                 P_Z->at(7), E->at(7));
         evh.trueParticles["antiNeutrino"]->SetPxPyPzE(P_X->at(18), P_Y->at(18),
                                                       P_Z->at(18), E->at(18));
-        
-        *evh.smearedParticles["Wminus"] = *(evh.smearedParticles["lepton"]) +
-                                          *(evh.smearedParticles["antiNeutrino"]
-                                                                              );
+
+        *evh.smearedParticles["Wminus"] =
+            *(evh.smearedParticles["lepton"]) +
+            *(evh.smearedParticles["antiNeutrino"]);
         *evh.smearedParticles["Wplus"] = *(evh.smearedParticles["qFromW"]) +
                                          *(evh.smearedParticles["qbarFromW"]);
         *evh.smearedParticles["top"] = *(evh.smearedParticles["Wplus"]) +
                                        *(evh.smearedParticles["bottom"]);
-        *evh.smearedParticles["antiTop"] = *(evh.smearedParticles["Wminus"]) +
-                                           *(evh.smearedParticles["antiBottom"]
-                                                                              );
+        *evh.smearedParticles["antiTop"] =
+            *(evh.smearedParticles["Wminus"]) +
+            *(evh.smearedParticles["antiBottom"]);
 
         evh.leptonFlag = true;
     } else if (PID->at(0) == -13) {
-        evh.smearedParticles["antiLepton"]->SetPxPyPzE(
-                P_X->at(0), P_Y->at(0), P_Z->at(0), E->at(0));
+        evh.smearedParticles["antiLepton"]->SetPxPyPzE(P_X->at(0), P_Y->at(0),
+                                                       P_Z->at(0), E->at(0));
         // define smeared neutrino as the MET; Pz set to zero; E set based
         // on zero mass and Px and Py
         evh.smearedParticles["neutrino"]->SetPxPyPzE(
             P_X->at(20), P_Y->at(20), 0,
             sqrt(pow(P_X->at(20), 2) + pow(P_Y->at(20), 2)));
-        
+
         evh.trueParticles["antiLepton"]->SetPxPyPzE(P_X->at(7), P_Y->at(7),
                                                     P_Z->at(7), E->at(7));
         evh.trueParticles["neutrino"]->SetPxPyPzE(P_X->at(18), P_Y->at(18),
                                                   P_Z->at(18), E->at(18));
-        
+
         *evh.smearedParticles["Wplus"] = *(evh.smearedParticles["antiLepton"]) +
                                          *(evh.smearedParticles["neutrino"]);
         *evh.smearedParticles["Wminus"] = *(evh.smearedParticles["qFromW"]) +
                                           *(evh.smearedParticles["qbarFromW"]);
         *evh.smearedParticles["top"] = *(evh.smearedParticles["Wplus"]) +
                                        *(evh.smearedParticles["bottom"]);
-        *evh.smearedParticles["antiTop"] = *(evh.smearedParticles["Wminus"]) +
-                                           *(evh.smearedParticles["antiBottom"]);
+        *evh.smearedParticles["antiTop"] =
+            *(evh.smearedParticles["Wminus"]) +
+            *(evh.smearedParticles["antiBottom"]);
 
         evh.leptonFlag = false;
     }
@@ -623,43 +622,39 @@ void topReconstructionFromLHE::Loop_load_event_tt_SM(handleEvent &evh,
     if (evh.leptonFlag == false) {
         const auto b = evh.smearedParticles["bottom"];
         const auto al = evh.smearedParticles["antiLepton"];
-        ev.addLeptonicTop(b->Px(), b->Py(), b->Pz(), b->E(),
-                          sqrt(b->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          al->Px(), al->Py(), al->Pz(), al->E(),
-                          sigmaPtLep, sigmaEtaLep, sigmaPhiLep,
-                          mTop, sigmaMTop, mW, sigmaMW);
+        ev.addLeptonicTop(b->Px(), b->Py(), b->Pz(), b->E(), sqrt(b->Pt()),
+                          sigmaEtaJet, sigmaPhiJet, al->Px(), al->Py(),
+                          al->Pz(), al->E(), sigmaPtLep, sigmaEtaLep,
+                          sigmaPhiLep, mTop, sigmaMTop, mW, sigmaMW);
 
         const auto bbar = evh.smearedParticles["antiBottom"];
         const auto Wq1 = evh.smearedParticles["qFromW"];
         const auto Wq2 = evh.smearedParticles["qbarFromW"];
         ev.addHadronicTop(bbar->Px(), bbar->Py(), bbar->Pz(), bbar->E(),
-                          sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          Wq1->Px(), Wq1->Py(), Wq1->Pz(), Wq1->E(),
-                          sqrt(Wq1->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          Wq2->Px(), Wq2->Py(), Wq2->Pz(), Wq2->E(),
-                          sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          mTop, sigmaMTop, mW, sigmaMW);
+                          sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet, Wq1->Px(),
+                          Wq1->Py(), Wq1->Pz(), Wq1->E(), sqrt(Wq1->Pt()),
+                          sigmaEtaJet, sigmaPhiJet, Wq2->Px(), Wq2->Py(),
+                          Wq2->Pz(), Wq2->E(), sqrt(Wq2->Pt()), sigmaEtaJet,
+                          sigmaPhiJet, mTop, sigmaMTop, mW, sigmaMW);
     }
 
     if (evh.leptonFlag == true) {
         const auto b = evh.smearedParticles["bottom"];
         const auto Wq1 = evh.smearedParticles["qFromW"];
         const auto Wq2 = evh.smearedParticles["qbarFromW"];
-        ev.addHadronicTop(b->Px(), b->Py(), b->Pz(), b->E(),
-                          sqrt(b->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          Wq1->Px(), Wq1->Py(), Wq1->Pz(), Wq1->E(),
-                          sqrt(Wq1->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          Wq2->Px(), Wq2->Py(), Wq2->Pz(), Wq2->E(),
-                          sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet,
+        ev.addHadronicTop(b->Px(), b->Py(), b->Pz(), b->E(), sqrt(b->Pt()),
+                          sigmaEtaJet, sigmaPhiJet, Wq1->Px(), Wq1->Py(),
+                          Wq1->Pz(), Wq1->E(), sqrt(Wq1->Pt()), sigmaEtaJet,
+                          sigmaPhiJet, Wq2->Px(), Wq2->Py(), Wq2->Pz(),
+                          Wq2->E(), sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet,
                           mTop, sigmaMTop, mW, sigmaMW);
 
         const auto bbar = evh.smearedParticles["antiBottom"];
         const auto l = evh.smearedParticles["lepton"];
         ev.addLeptonicTop(bbar->Px(), bbar->Py(), bbar->Pz(), bbar->E(),
-                          sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          l->Px(), l->Py(), l->Pz(), l->E(),
-                          sigmaPtLep, sigmaEtaLep, sigmaPhiLep,
-                          mTop, sigmaMTop, mW, sigmaMW);
+                          sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet, l->Px(),
+                          l->Py(), l->Pz(), l->E(), sigmaPtLep, sigmaEtaLep,
+                          sigmaPhiLep, mTop, sigmaMTop, mW, sigmaMW);
     }
 }
 
@@ -695,33 +690,27 @@ void topReconstructionFromLHE::Loop_fill_results_SM(topEventMinimizer &ev,
         *evh.bestParticles["qbarFromW"] = ev.getConverter("getWDaughter2", 1);
     } else {
         *evh.bestParticles["lepton"] = ev.getConverter("getWDaughter1", 1);
-        *evh.bestParticles["antiNeutrino"] = ev.getConverter("getWDaughter2", 1);
+        *evh.bestParticles["antiNeutrino"] =
+            ev.getConverter("getWDaughter2", 1);
     }
     *evh.bestParticles["bbarFromH"] = ev.getConverter("getNonTopObject4", 1);
 }
 
 void topReconstructionFromLHE::Loop_diagnostics(handleEvent &evh)
 {
-    XYZTLorentzVector gen_all = *evh.smearedParticles["bottom"] +
-                                *evh.smearedParticles["antiBottom"] +
-                                *evh.smearedParticles["qFromW"] +
-                                *evh.smearedParticles["qbarFromW"] +
-                                *evh.smearedParticles["bFromH"] +
-                                *evh.smearedParticles["bbarFromH"] +
-                                *evh.smearedParticles["lepton"] +
-                                *evh.smearedParticles["antiNeutrino"];
-    XYZTLorentzVector best_all = *evh.bestParticles["top"] +
-                                 *evh.bestParticles["antiTop"] +
-                                 *evh.bestParticles["bFromH"] +
-                                 *evh.bestParticles["bbarFromH"];
-    XYZTLorentzVector best_tt = *evh.bestParticles["top"] +
-                                *evh.bestParticles["antiTop"];
-    
-    cout << "Event, pT(gen_all), pT(best_all), pT(tt) = "
-         << eventNumber << ", "
-         << gen_all.Pt() << ", "
-         << best_all.Pt() << ", "
-         << best_tt.Pt()
+    XYZTLorentzVector gen_all =
+        *evh.smearedParticles["bottom"] + *evh.smearedParticles["antiBottom"] +
+        *evh.smearedParticles["qFromW"] + *evh.smearedParticles["qbarFromW"] +
+        *evh.smearedParticles["bFromH"] + *evh.smearedParticles["bbarFromH"] +
+        *evh.smearedParticles["lepton"] + *evh.smearedParticles["antiNeutrino"];
+    XYZTLorentzVector best_all =
+        *evh.bestParticles["top"] + *evh.bestParticles["antiTop"] +
+        *evh.bestParticles["bFromH"] + *evh.bestParticles["bbarFromH"];
+    XYZTLorentzVector best_tt =
+        *evh.bestParticles["top"] + *evh.bestParticles["antiTop"];
+
+    cout << "Event, pT(gen_all), pT(best_all), pT(tt) = " << eventNumber << ", "
+         << gen_all.Pt() << ", " << best_all.Pt() << ", " << best_tt.Pt()
          << endl;
 }
 

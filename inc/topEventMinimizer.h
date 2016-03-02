@@ -166,6 +166,17 @@ class topEventMinimizer
     // map < string, FnTestPtr* > testMap;
 
   public:
+    // flags
+    const bool debug = true;
+    
+    // status observables
+    int innerMinStatus;
+    int outerMinStatus;
+    
+    double outerMin_Edm;
+    
+    
+    // functions
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, vector<int>, vector<int>, vector<int>,
                       vector<bool>, double, double, double, double);
@@ -245,12 +256,6 @@ class topEventMinimizer
     double getNonTopChiSquare();
 
     void initializeDeltas();
-    
-    // status observables
-    int innerMinStatus;
-    int outerMinStatus;
-    
-    double outerMin_Edm;
 };
 
 #endif
