@@ -310,8 +310,9 @@ topSystemChiSquare *topEventMinimizer::makeLeptonicTop(
         sigmaMTop, mW, sigmaMW));
 }
 
-topSystemChiSquare *
-topEventMinimizer::makeHadronicTop(int ibJet, int iWDaughter1, int iWDaughter2)
+topSystemChiSquare *topEventMinimizer::makeHadronicTop(int ibJet,
+                                                       int iWDaughter1,
+                                                       int iWDaughter2)
 {
     return dynamic_cast<topSystemChiSquare *>(new hadronicTopSystemChiSquare(
         allObjects_.at(ibJet).Px(), allObjects_.at(ibJet).Py(),
@@ -845,8 +846,8 @@ void topEventMinimizer::minimizeTotalChiSquare()
 
     // std::cout<<"before set functor"<<std::endl;
     // Set up the functor
-    ROOT::Math::Functor func(
-        this, &topEventMinimizer::outerMinimizationOperator, nParameters);
+    ROOT::Math::Functor func(this,
+                &topEventMinimizer::outerMinimizationOperator, nParameters);
 
     // std::cout<<"before setfunc"<<std::endl;
     // Set up the minimization piece:
