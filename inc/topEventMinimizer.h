@@ -277,6 +277,11 @@ class topEventMinimizer
   double getTopMassChiSquare();
   double getNonTopChiSquare();
 
+  double getOneTopMassChiSquare(int);
+  double getOneBChiSquare(int);
+  double getOneWDaughter1ChiSquare(int);
+  double getOneWMassChiSquare(int);
+
   void initializeDeltas();
 
 

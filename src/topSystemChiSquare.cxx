@@ -236,7 +236,8 @@ void topSystemChiSquare::resetBJet()
 {
   double phiNew = reconstructed_bJetPhi_+bJetPhiDelta_*bJetPhiWidth_;
   double etaNew = reconstructed_bJetEta_+bJetEtaDelta_*bJetEtaWidth_;
-  double ptNew  = reconstructed_bJetPt_*exp(bJetPtDelta_*bJetPtWidth_) ;
+  //double ptNew  = reconstructed_bJetPt_*exp(bJetPtDelta_*bJetPtWidth_) ;
+  double ptNew = reconstructed_bJetPt_+bJetPtDelta_*bJetPtWidth_;
   double pxNew = ptNew*cos(phiNew);
   double pyNew = ptNew*sin(phiNew);
   double pzNew = ptNew*sinh(etaNew);
@@ -259,7 +260,8 @@ void topSystemChiSquare::resetWDaughter1()
 {
   double phiNew = reconstructed_WDaughter1Phi_+WDaughter1PhiDelta_*WDaughter1PhiWidth_;
   double etaNew = reconstructed_WDaughter1Eta_+WDaughter1EtaDelta_*WDaughter1EtaWidth_;
-  double ptNew  = reconstructed_WDaughter1Pt_*exp(WDaughter1PtDelta_*WDaughter1PtWidth_) ;
+  //double ptNew  = reconstructed_WDaughter1Pt_*exp(WDaughter1PtDelta_*WDaughter1PtWidth_) ;
+  double ptNew = reconstructed_WDaughter1Pt_+WDaughter1PtDelta_*WDaughter1PtWidth_;
   double pxNew = ptNew*cos(phiNew);
   double pyNew = ptNew*sin(phiNew);
   double pzNew = ptNew*sinh(etaNew);
@@ -418,7 +420,7 @@ void topSystemChiSquare::calcTopMassRange()
 
   rangeFlag_ = false;
 
-  //cout << "Using pole mass " << mTop_ << " GeV" << endl;
+  cout << "Using pole mass " << mTop_ << " GeV" << endl;
 
 
   double mW = mW_+sigmaMW_*deltaMW_;
@@ -463,8 +465,8 @@ void topSystemChiSquare::calcTopMassRange()
   if(mTopEdge1<=0) 
     {
       cout << "infinite lower edge" << endl;
-      //cout << "first W daughter energy is " << WDaughter1E_ << endl; 
-      //cout << "first W daughter momentum is " << WDaughter1P << endl;
+      cout << "first W daughter energy is " << WDaughter1E_ << endl; 
+      cout << "first W daughter momentum is " << WDaughter1P << endl;
       //mTopEdge1 = 0;
       //return;
     }
@@ -472,8 +474,8 @@ void topSystemChiSquare::calcTopMassRange()
   if(mTopEdge2>= 500) 
     {
       cout << "infinite upper edge" << endl;
-      //cout << "first W daughter energy is " << WDaughter1E_ << endl;
-      //cout << "first W daughter momentum is " << WDaughter1P << endl;
+      cout << "first W daughter energy is " << WDaughter1E_ << endl;
+      cout << "first W daughter momentum is " << WDaughter1P << endl;
       //mTopEdge2 = 500;
       //return;
     }
@@ -521,7 +523,7 @@ void topSystemChiSquare::calcTopMassRange()
 	}
       else if(pos1&&!pos2&&pos3)
 	{
-	  //cout << "Z^2 is positive below " << mTopEdge1 << " and above " << mTopEdge2 << endl;
+	  cout << "Z^2 is positive below " << mTopEdge1 << " and above " << mTopEdge2 << endl;
 	  if(mTop_<mTopEdge1)
 	    {
 	      rangeFlag_=true;
@@ -567,7 +569,7 @@ void topSystemChiSquare::calcTopMassRange()
 	}
       else if(!pos1&&pos2&&!pos3)
 	{
-	  //cout << "Z^2 is positive between " << mTopEdge1 << " and " << mTopEdge2 << endl;
+	  cout << "Z^2 is positive between " << mTopEdge1 << " and " << mTopEdge2 << endl;
 	  rangeFlag_=true;
 	  mTopEdgeLow_=mTopEdge1;
 	  mTopEdgeHigh_=mTopEdge2;
@@ -651,7 +653,7 @@ void topSystemChiSquare::calcTopMassRange()
       cout << "No top mass range where Z^2 is positive was found" << endl;
       return;
     }
-  cout<<"aftercheck"<<endl;
+  //cout<<"aftercheck"<<endl;
 
   if(hasHighEdge_) cout << "Allowed top mass range is [ " << mTopEdgeLow_ << " , " << mTopEdgeHigh_ << " ]" << endl;
   else cout << "Allowed top mass range is [ " << mTopEdgeLow_ << " , +inf [" << endl;
@@ -729,18 +731,18 @@ void topSystemChiSquare::calcTopMassRange()
       //calcWDaughter2Ellipse();
       //WDaughter2Calc_.calcWDaughterEllipse();
       //WDaughter2Calc_.calcExtendedWDaughterEllipse();
-      cout << "Resetting second W daughter" << endl;
+      //cout << "Resetting second W daughter" << endl;
       //if(tempTheta!=0) resetWDaughter2(tempTheta);
 
       //printWDaughter2();
 
-      //cout << "Re-printing values -- they should match the starting values printed above" << endl;
+      cout << "Re-printing values -- they should match the starting values printed above" << endl;
       
-      //cout << "Current top mass is " << WDaughter2Calc_.getTopMass() << endl;
+      cout << "Current top mass is " << WDaughter2Calc_.getTopMass() << endl;
 
       //if(tempTheta!=getEllipseAngle()) cout << "Issue resetting ellipse angle to starting value" << endl;
 
-     // cout << "Current ellipse angle is " << tempTheta << endl;
+      //cout << "Current ellipse angle is " << tempTheta << endl;
 
     }
 

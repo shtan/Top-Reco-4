@@ -141,6 +141,7 @@ public :
    void Plot(TString);
    TFile* outFilePlot;
 
+   void Print();
 
    //Branches
 
@@ -172,6 +173,10 @@ public :
     void PlotHists();
     void DeclareOutBranches(handleEvent);
     void DeclareInBranchesForPlotting(handleEvent&);
+    void PrintMass(string, handleEvent&);
+    void PrintPt(string, handleEvent&);
+    void PrintPhi(string, handleEvent&);
+    void PrintEta(string, handleEvent&);
 
     XYZTLorentzVector testvec;
 
@@ -238,16 +243,17 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
      }
     //particleNames(particleNameArray, particleNameArray+13);
     
-    string namesArray [13] = {"Leptonic_Bottom", "Hadronic_Bottom", "Leptonic_Top", "Hadronic_Top", "Leptonic_W", "Hadronic_W", "Lepton_or_AntiLepton", "Neutrino_or_AntiNeutrino", "Quark_from_W", "Antiquark_from_W", "Higgs", "B_from_H", "Bbar_from_H"};
+//    string namesArray [13] = {"Leptonic_Bottom", "Hadronic_Bottom", "Leptonic_Top", "Hadronic_Top", "Leptonic_W", "Hadronic_W", "Lepton_or_AntiLepton", "Neutrino_or_AntiNeutrino", "Quark_from_W", "Antiquark_from_W", "Higgs", "B_from_H", "Bbar_from_H"};
+    string namesArray [13] = {"Leptonic_Bottom", "Leptonic_W", "Leptonic_Top", "Lepton_or_AntiLepton", "Neutrino_or_AntiNeutrino", "Hadronic_Bottom", "Hadronic_W", "Hadronic_Top", "Quark_from_W", "Antiquark_from_W", "B_from_H", "Bbar_from_H", "Higgs" };
     names.clear();
     for (int i = 0; i<13; i++){
         names.push_back(namesArray[i]);
     }
 
-//    string chinamesArray [12] = {"total", "topSystem", "topMass", "hadronic", "nonTop", "leptonicBottom", "leptonicWMass", "hadronicWMass", "hadronicBottom", "lepton", "qFromW", "qbarFromW" };
-    string chinamesArray [5] = {"total", "topSystem", "topMass", "hadronic", "nonTop" };
+    string chinamesArray [22] = {"total", "topSystem", "topMass", "hadronic", "nonTop", "leptonicBottom", "leptonicWMass", "lepton_or_antilepton", "leptonicTopMass", "hadronicBottom", "hadronicWMass", "hadronicTopMass", "qFromW", "qbarFromW", "bottom", "antiBottom", "lepton", "antiLepton", "top_topMass", "antiTop_topMass", "Wplus_Wmass", "Wminus_Wmass" };
+    //string chinamesArray [5] = {"total", "topSystem", "topMass", "hadronic", "nonTop" };
     chinames.clear();
-    for (int i = 0; i<5; i++){
+    for (int i = 0; i<22; i++){
         chinames.push_back(chinamesArray[i]);
     }
 

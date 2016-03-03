@@ -95,6 +95,7 @@ void leptonicTopSystemChiSquare::calcChiSquare()
 
 double leptonicTopSystemChiSquare::getBChiSquare()
 {
+    cout<<"inside leptonicgetb"<<endl;
     double bchi2 = bJetPtDelta_*bJetPtDelta_
         +bJetPhiDelta_*bJetPhiDelta_
         +bJetEtaDelta_*bJetEtaDelta_;

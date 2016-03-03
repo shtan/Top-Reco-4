@@ -708,14 +708,14 @@ void topEventMinimizer::minimizeNonTopChiSquare()
       parName+=iTop;
       if(hasHighEdge)
 	{
-	  //cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
-	  //cout << "deltaMTop range is " << deltaMTopRangeLow << " to " << deltaMTopRangeHigh << endl;
+	  cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
+	  cout << "deltaMTop range is " << deltaMTopRangeLow << " to " << deltaMTopRangeHigh << endl;
 	  innerMin_->SetLimitedVariable(iPar,string(parName),topMassDeltas_.at(iTop),0.1,deltaMTopRangeLow,deltaMTopRangeHigh);
 	}
       else
 	{
-	  //cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
-          //cout << "deltaMTop lower edge is "<< deltaMTopRangeLow << endl;
+	  cout << "Current top mass delta is " << topMassDeltas_.at(iTop) << endl;
+          cout << "deltaMTop lower edge is "<< deltaMTopRangeLow << endl;
 	  innerMin_->SetLowerLimitedVariable(iPar,string(parName),topMassDeltas_.at(iTop),0.1,deltaMTopRangeLow);
 	}
       iPar+=1;
@@ -1036,6 +1036,26 @@ void topEventMinimizer::getBestDeltas(vector<double>& bJetPtDeltas, vector<doubl
       nonTopObjectPxDeltas.push_back( nonTopObjects_PxDeltasBest_.at(iOther) );
       nonTopObjectPyDeltas.push_back( nonTopObjects_PyDeltasBest_.at(iOther) );
     }
+}
+
+double topEventMinimizer::getOneTopMassChiSquare(int iTop){
+    return (topSystemChiSquares_.at(iTop)).first->getTopMassChiSquare();
+}
+
+double topEventMinimizer::getOneBChiSquare(int iTop){
+    //cout<<"inside getonebchiSquare"<<endl;
+    double toreturn = (topSystemChiSquares_.at(iTop)).first->getBChiSquare();
+    return toreturn;
+}
+
+double topEventMinimizer::getOneWDaughter1ChiSquare(int iTop){
+    double toreturn = (topSystemChiSquares_.at(iTop)).first->getWDaughter1ChiSquare();
+    return toreturn;
+}
+
+double topEventMinimizer::getOneWMassChiSquare(int iTop){
+    double toreturn = (topSystemChiSquares_.at(iTop)).first->getWMassChiSquare();
+    return toreturn;
 }
 
 void topEventMinimizer::calcTopChiSquare()
