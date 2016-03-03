@@ -269,6 +269,43 @@ void topReconstructionFromLHE::PlotHists()
     }
 }
 
+void topReconstructionFromLHE::PrintPt(string whichParticle, handleEvent &evh){
+    cout<< whichParticle<< endl;
+    cout<< "Pt true = " << evh.trueParticlesLH[whichParticle]->Pt() << endl;
+    cout<< "Pt smeared = " << evh.smearedParticlesLH[whichParticle]->Pt() << endl;
+    cout<< "Pt best = " << evh.bestParticlesLH[whichParticle]->Pt() << endl;
+    cout<< "Pt smeared - true = " << evh.smearedParticlesLH[whichParticle]->Pt() - evh.trueParticlesLH[whichParticle]->Pt() << endl;
+    cout<< "Pt best - true = " << evh.bestParticlesLH[whichParticle]->Pt() - evh.trueParticlesLH[whichParticle]->Pt() << endl;
+}
+
+void topReconstructionFromLHE::PrintPhi(string whichParticle, handleEvent &evh){
+    cout<< whichParticle<< endl;
+    cout<< "Phi true = " << evh.trueParticlesLH[whichParticle]->Phi() << endl;
+    cout<< "Phi smeared = " << evh.smearedParticlesLH[whichParticle]->Phi() << endl;
+    cout<< "Phi best = " << evh.bestParticlesLH[whichParticle]->Phi() << endl;
+    cout<< "Phi smeared - true = " << evh.smearedParticlesLH[whichParticle]->Phi() - evh.trueParticlesLH[whichParticle]->Phi() << endl;
+    cout<< "Phi best - true = " << evh.bestParticlesLH[whichParticle]->Phi() - evh.trueParticlesLH[whichParticle]->Phi() << endl;
+}
+
+void topReconstructionFromLHE::PrintEta(string whichParticle, handleEvent &evh){
+    cout<< whichParticle<< endl;
+    cout<< "Eta true = " << evh.trueParticlesLH[whichParticle]->Eta() << endl;
+    cout<< "Eta smeared = " << evh.smearedParticlesLH[whichParticle]->Eta() << endl;
+    cout<< "Eta best = " << evh.bestParticlesLH[whichParticle]->Eta() << endl;
+    cout<< "Eta smeared - true = " << evh.smearedParticlesLH[whichParticle]->Eta() - evh.trueParticlesLH[whichParticle]->Eta() << endl;
+    cout<< "Eta best - true = " << evh.bestParticlesLH[whichParticle]->Eta() - evh.trueParticlesLH[whichParticle]->Eta() << endl;
+}
+
+void topReconstructionFromLHE::PrintMass(string whichParticle, handleEvent &evh){
+    cout<< whichParticle<< endl;
+    cout<< "Mass true = " << evh.trueParticlesLH[whichParticle]->M() << endl;
+    cout<< "Mass smeared = " << evh.smearedParticlesLH[whichParticle]->M() << endl;
+    cout<< "Mass best = " << evh.bestParticlesLH[whichParticle]->M() << endl;
+    cout<< "Mass smeared - true = " << evh.smearedParticlesLH[whichParticle]->M() - evh.trueParticlesLH[whichParticle]->M() << endl;
+    cout<< "Mass best - true = " << evh.bestParticlesLH[whichParticle]->M() - evh.trueParticlesLH[whichParticle]->M() << endl;
+}
+
+
 void topReconstructionFromLHE::Plot(TString dir)
 {
     inFilePlot = new TFile("output_files/output_0.root");
@@ -290,7 +327,12 @@ void topReconstructionFromLHE::Plot(TString dir)
         // cout<<"balh"<<endl;
         if ((innerMinStatus == 0 or innerMinStatus == 1) and
             (outerMinStatus == 0 or outerMinStatus == 1)) {
+            //if (*(evh.chiSquareds["total"]) < 1){
+            //if ( ( (evh.bestParticlesLH["Leptonic_W"]->M()-evh.trueParticlesLH["Leptonic_W"]->M()) > -15 ) and ( (evh.bestParticlesLH["Leptonic_W"]->M()-evh.trueParticlesLH["Leptonic_W"]->M()) < 15 ) ){
+
             FillHists(evh);
+            //}
+            //}
         }
         // cout<<"after fillhists"<<endl;
     }
@@ -302,6 +344,61 @@ void topReconstructionFromLHE::Plot(TString dir)
     outFilePlot->Close();
 
     cout << "Done!" << endl;
+}
+
+void topReconstructionFromLHE::Print()
+{
+    inFilePlot = new TFile("output_files/output_0.root");
+    inTreePlot = (TTree*)inFilePlot->Get("tree");
+
+
+    handleEvent evh(particleNames, names, chinames);
+    DeclareInBranchesForPlotting(evh);
+    DeclareHists();
+
+    int numEvents = inTreePlot->GetEntries();
+
+    for (int i = 0; i < numEvents; i++){
+        inTreePlot->GetEntry(i);
+        if ( (innerMinStatus == 0 or innerMinStatus == 1) and (outerMinStatus == 0 or outerMinStatus == 1) ){
+            cout << endl;
+            cout << "eventNumber = " << eventNumber << endl;
+            PrintMass("Leptonic_W", evh);
+            PrintPt("Leptonic_Bottom", evh);
+            PrintPhi("Leptonic_Bottom", evh);
+            PrintEta("Leptonic_Bottom", evh);
+            PrintPt("Neutrino_or_AntiNeutrino", evh);
+            PrintPhi("Neutrino_or_AntiNeutrino", evh);
+            PrintEta("Neutrino_or_AntiNeutrino", evh);
+            PrintMass("Leptonic_Top",evh);
+            PrintMass("Hadronic_W", evh);
+            PrintPt("Hadronic_Bottom", evh);
+            PrintPt("Quark_from_W", evh);
+            PrintPt("Antiquark_from_W", evh);
+
+            for (vector<string>::const_iterator t = chinames.begin(); t < chinames.end(); t++){
+                cout<<*t<<" " << evh.chiSquareds[*t]<<endl;
+            }
+
+       /*     cout<<"Px total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["Hadronic_Bottom"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["Lepton_or_Antilepton"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["Quark_from_W"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["Antiquark_from_W"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["B_from_H"]->Px() <<endl;
+            cout<<evh.bestParticlesLH["Bbar_from_H"]->Px() << endl; */
+
+           cout<<"Px total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Px() + evh.bestParticlesLH["Hadronic_Bottom"]->Px() + evh.bestParticlesLH["Lepton_or_AntiLepton"]->Px() + evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Px() + evh.bestParticlesLH["Quark_from_W"]->Px() + evh.bestParticlesLH["Antiquark_from_W"]->Px() + evh.bestParticlesLH["B_from_H"]->Px() + evh.bestParticlesLH["Bbar_from_H"]->Px() << endl; 
+           cout<<"Py total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Py() + evh.bestParticlesLH["Hadronic_Bottom"]->Py() + evh.bestParticlesLH["Lepton_or_AntiLepton"]->Py() + evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Py() + evh.bestParticlesLH["Quark_from_W"]->Py() + evh.bestParticlesLH["Antiquark_from_W"]->Py() + evh.bestParticlesLH["B_from_H"]->Py() + evh.bestParticlesLH["Bbar_from_H"]->Py() << endl; 
+
+
+
+        }
+        //cout<<"after fillhists"<<endl;
+    }
+
+
 }
 
 void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
@@ -667,6 +764,43 @@ void topReconstructionFromLHE::Loop_fill_results_SM(topEventMinimizer &ev,
     evh.chiSquareds["topMass"] = ev.getTopMassChiSquare();
     evh.chiSquareds["topSystem"] = ev.getTopChiSquare();
     evh.chiSquareds["total"] = ev.getChiSquare();
+    evh.chiSquareds["qbarFromW"]=ev.getHadronicChiSquare();
+      
+    evh.chiSquareds["top_topMass"] = ev.getOneTopMassChiSquare(0);
+    evh.chiSquareds["antiTop_topMass"] = ev.getOneTopMassChiSquare(1);
+    evh.chiSquareds["bottom"] = ev.getOneBChiSquare(0);
+    evh.chiSquareds["antiBottom"] = ev.getOneBChiSquare(1);
+    evh.chiSquareds["Wplus_Wmass"] = ev.getOneWMassChiSquare(0);
+    evh.chiSquareds["Wminus_Wmass"] = ev.getOneWMassChiSquare(1);
+
+    if (evh.leptonFlag ==0 ){
+        evh.chiSquareds["leptonicTopMass"] = ev.getOneTopMassChiSquare(0);
+        evh.chiSquareds["hadronicTopMass"] = ev.getOneTopMassChiSquare(1);
+        evh.chiSquareds["leptonicBottom"] = ev.getOneBChiSquare(0);
+        evh.chiSquareds["hadronicBottom"] = ev.getOneBChiSquare(1);
+        evh.chiSquareds["leptonicWMass"] = ev.getOneWMassChiSquare(0);
+        evh.chiSquareds["hadronicWMass"] = ev.getOneWMassChiSquare(1);
+        evh.chiSquareds["qFromW"] = ev.getOneWDaughter1ChiSquare(1);
+        evh.chiSquareds["lepton"] = ev.getOneWDaughter1ChiSquare(0);
+        evh.chiSquareds["lepton_or_antilepton"] = ev.getOneWDaughter1ChiSquare(0);
+
+    } else if (evh.leptonFlag == 1 ){
+        evh.chiSquareds["leptonicTopMass"] = ev.getOneTopMassChiSquare(1);
+        evh.chiSquareds["hadronicTopMass"] = ev.getOneTopMassChiSquare(0);
+        evh.chiSquareds["leptonicBottom"] = ev.getOneBChiSquare(1);
+        evh.chiSquareds["hadronicBottom"] = ev.getOneBChiSquare(0);
+        evh.chiSquareds["leptonicWMass"] = ev.getOneWMassChiSquare(1);
+        evh.chiSquareds["hadronicWMass"] = ev.getOneWMassChiSquare(0);
+        evh.chiSquareds["qFromW"] = ev.getOneWDaughter1ChiSquare(0);
+        evh.chiSquareds["antiLepton"] = ev.getOneWDaughter1ChiSquare(1);
+        evh.chiSquareds["lepton_or_antilepton"] = ev.getOneWDaughter1ChiSquare(1);
+
+    }
+
+    //for (vector<string>::const_iterator t = chinames.begin(); t < chinames.end(); t++){
+    //    cout<<*t<<" " << *(evh.chiSquareds[*t])<<endl;
+    //}
+
 
     *evh.bestParticles["top"] = ev.getConverter("getTop", 0);
     *evh.bestParticles["bottom"] = ev.getConverter("getBJet", 0);

@@ -186,6 +186,10 @@ class topSystemChiSquare
 
     double getTopMassChiSquare();
 
+    virtual double getBChiSquare() = 0;
+    virtual double getWMassChiSquare() = 0;
+    virtual double getWDaughter1ChiSquare() = 0;
+
     void calcTopMomentum();
     void getTopMomentum(double &, double &, double &, double &);
 

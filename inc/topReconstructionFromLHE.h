@@ -174,6 +174,9 @@ class topReconstructionFromLHE
     void Plot(TString);
     TFile *outFilePlot;
 
+    // For printing-only function
+    void Print();
+
     // Branches
     int eventNumber;
 
@@ -200,6 +203,11 @@ class topReconstructionFromLHE
     void PlotHists();
     void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
+    void PrintMass(string, handleEvent&);
+    void PrintPt(string, handleEvent&);
+    void PrintPhi(string, handleEvent&);
+    void PrintEta(string, handleEvent&);
+
     void Loop_diagnostics(handleEvent &);
     void Loop_load_eventh_SM(handleEvent &);
     void Loop_load_eventh_enu_SM(handleEvent &);

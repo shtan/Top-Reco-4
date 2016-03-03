@@ -1067,6 +1067,26 @@ void topEventMinimizer::getBestDeltas(
     }
 }
 
+double topEventMinimizer::getOneTopMassChiSquare(int iTop){
+    return (topSystemChiSquares_.at(iTop)).first->getTopMassChiSquare();
+}
+
+double topEventMinimizer::getOneBChiSquare(int iTop){
+    //cout<<"inside getonebchiSquare"<<endl;
+    double toreturn = (topSystemChiSquares_.at(iTop)).first->getBChiSquare();
+    return toreturn;
+}
+
+double topEventMinimizer::getOneWDaughter1ChiSquare(int iTop){
+    double toreturn = (topSystemChiSquares_.at(iTop)).first->getWDaughter1ChiSquare();
+    return toreturn;
+}
+
+double topEventMinimizer::getOneWMassChiSquare(int iTop){
+    double toreturn = (topSystemChiSquares_.at(iTop)).first->getWMassChiSquare();
+    return toreturn;
+}
+
 void topEventMinimizer::calcTopChiSquare()
 {
     topChi2_ = 0;

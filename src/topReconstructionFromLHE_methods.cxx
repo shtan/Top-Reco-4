@@ -35,18 +35,18 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
 
     const int name_size = 13;
     string namesArray[name_size] = {"Leptonic_Bottom",
-                                    "Hadronic_Bottom",
-                                    "Leptonic_Top",
-                                    "Hadronic_Top",
-                                    "Leptonic_W",
-                                    "Hadronic_W",
                                     "Lepton_or_AntiLepton",
                                     "Neutrino_or_AntiNeutrino",
+                                    "Leptonic_W",
+                                    "Leptonic_Top",
+                                    "Hadronic_Bottom",
                                     "Quark_from_W",
                                     "Antiquark_from_W",
-                                    "Higgs",
+                                    "Hadronic_W",
+                                    "Hadronic_Top",
                                     "B_from_H",
-                                    "Bbar_from_H"};
+                                    "Bbar_from_H",
+                                    "Higgs"};
     names.reserve(name_size);
     for (int i = 0; i < name_size; ++i) {
         names.push_back(namesArray[i]);
@@ -55,9 +55,14 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
     //    string chinamesArray [12] = {"total", "topSystem", "topMass",
     //    "hadronic", "nonTop", "leptonicBottom", "leptonicWMass",
     //    "hadronicWMass", "hadronicBottom", "lepton", "qFromW", "qbarFromW" };
-    const int chi_size = 5;
-    string chinamesArray[chi_size] = {"total", "topSystem", "topMass",
-                                      "hadronic", "nonTop"};
+    const int chi_size = 22;
+    string chinamesArray[chi_size] = {
+        "total", "topSystem", "topMass", "hadronic", "nonTop",
+        "leptonicBottom", "leptonicWMass", "lepton_or_antilepton",
+        "leptonicTopMass", "hadronicBottom", "hadronicWMass",
+        "hadronicTopMass", "qFromW", "qbarFromW",
+        "bottom", "antiBottom", "lepton", "antiLepton",
+        "top_topMass", "antiTop_topMass", "Wplus_Wmass", "Wminus_Wmass"};
     chinames.reserve(chi_size);
     for (int i = 0; i < chi_size; ++i) {
         chinames.push_back(chinamesArray[i]);
