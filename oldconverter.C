@@ -15,17 +15,18 @@
 using namespace std;
 using namespace ROOT::Math;
 
-
-int main(){
+int main()
+{
 
     converter t;
-    //t.Loop("output_files",0,1);
+    // t.Loop("output_files",0,1);
     t.Loop();
 
     return 0;
 }
 
-void converter::Filler(int i, int j){
+void converter::Filler(int i, int j)
+{
     PID.at(i) = Pid.at(j);
     P_X.at(i) = Px.at(j);
     P_Y.at(i) = Py.at(j);
@@ -34,21 +35,22 @@ void converter::Filler(int i, int j){
     M.at(i) = Ma.at(j);
 
     return;
-
 }
 
-void converter::Smearer( TLorentzVector &jet ){
+void converter::Smearer(TLorentzVector &jet)
+{
     double pt = jet.Pt();
     double phi = jet.Phi();
     double eta = jet.Eta();
     double e = jet.Energy();
-    double newpt = pt + sqrt(pt)*rand.Gaus();
-    double newphi = phi + 0.01*rand.Gaus();
-    jet.SetPtEtaPhiE( newpt, eta, newphi, e );
+    double newpt = pt + sqrt(pt) * rand.Gaus();
+    double newphi = phi + 0.01 * rand.Gaus();
+    jet.SetPtEtaPhiE(newpt, eta, newphi, e);
     return;
 }
 
-void converter::SmearedFiller( int i, TLorentzVector &jet, int pid ){
+void converter::SmearedFiller(int i, TLorentzVector &jet, int pid)
+{
     PID.at(i) = pid;
     P_X.at(i) = jet.Px();
     P_Y.at(i) = jet.Py();
@@ -58,273 +60,290 @@ void converter::SmearedFiller( int i, TLorentzVector &jet, int pid ){
     return;
 }
 
-//void converter::Loop(TString dir, int whichLoop, int maxLoops)
+// void converter::Loop(TString dir, int whichLoop, int maxLoops)
 void converter::Loop()
-//int main()
+// int main()
 {
-    //int whichLoop = 1; int maxLoops = 1;
-//   In a ROOT session, you can do:
-//      Root > .L topReconstructionFromLHE.C
-//      Root > topReconstructionFromLHE t
-//      Root > t.GetEntry(12); // Fill t data members with entry number 12
-//      Root > t.Show();       // Show values of entry 12
-//      Root > t.Show(16);     // Read and show values of entry 16
-//      Root > t.Loop();       // Loop on all entries
-//
+    // int whichLoop = 1; int maxLoops = 1;
+    //   In a ROOT session, you can do:
+    //      Root > .L topReconstructionFromLHE.C
+    //      Root > topReconstructionFromLHE t
+    //      Root > t.GetEntry(12); // Fill t data members with entry number 12
+    //      Root > t.Show();       // Show values of entry 12
+    //      Root > t.Show(16);     // Read and show values of entry 16
+    //      Root > t.Loop();       // Loop on all entries
+    //
 
-//     This is the loop skeleton where:
-//    jentry is the global entry number in the chain
-//    ientry is the entry number in the current Tree
-//  Note that the argument to GetEntry must be:
-//    jentry for TChain::GetEntry
-//    ientry for TTree::GetEntry and TBranch::GetEntry
-//
-//       To read only selected branches, Insert statements like:
-// METHOD1:
-//    fChain->SetBranchStatus("*",0);  // disable all branches
-//    fChain->SetBranchStatus("branchname",1);  // activate branchname
-// METHOD2: replace line
-//    fChain->GetEntry(jentry);       //read all branches
-//by  b_branchname->GetEntry(ientry); //read only this branch
-    //std::cout<<"before fchain"<<std::endl;
-   //if (fChain == 0) return;
-//   TRandom3 rand;
-   rand.SetSeed(10);
+    //     This is the loop skeleton where:
+    //    jentry is the global entry number in the chain
+    //    ientry is the entry number in the current Tree
+    //  Note that the argument to GetEntry must be:
+    //    jentry for TChain::GetEntry
+    //    ientry for TTree::GetEntry and TBranch::GetEntry
+    //
+    //       To read only selected branches, Insert statements like:
+    // METHOD1:
+    //    fChain->SetBranchStatus("*",0);  // disable all branches
+    //    fChain->SetBranchStatus("branchname",1);  // activate branchname
+    // METHOD2: replace line
+    //    fChain->GetEntry(jentry);       //read all branches
+    // by  b_branchname->GetEntry(ientry); //read only this branch
+    // std::cout<<"before fchain"<<std::endl;
+    // if (fChain == 0) return;
+    //   TRandom3 rand;
+    rand.SetSeed(10);
 
-/*   vector<double> Px, Py, Pz, E, M;
-   vector<int> PID;
-   int numpar;
-*/
-   TFile *infile = TFile::Open( "./singlemu_onshell2_6nov.root" );
-   TTree *intree = (TTree*)infile->Get("LHEF");
+    /*   vector<double> Px, Py, Pz, E, M;
+       vector<int> PID;
+       int numpar;
+    */
+    TFile *infile = TFile::Open("./singlemu_onshell2_6nov.root");
+    TTree *intree = (TTree *)infile->Get("LHEF");
 
-   //intree->SetMakeClass(1);
+    // intree->SetMakeClass(1);
 
-   //vector<double> Px, Py, Pz, En, Ma;
-   //vector<int> Pid, mother1, mother2;
-   //int numpar;
-   int numparr = -99;
+    // vector<double> Px, Py, Pz, En, Ma;
+    // vector<int> Pid, mother1, mother2;
+    // int numpar;
+    int numparr = -99;
 
-   //double Pxd, Pyd, Pzd, Mad;
-   double_t End [200];
-   double *Pxd [20];
-   double *Pyd [20];
-   double *Pzd [20];
-   double *Mad [20];
-   //End = -999;
-   int *Pidd [20];
-   int *mother1d [20];
-   int *mother2d [20];
-   *(End)[0] = 14;
-   *(End)[1] = 16;
-   *(End)[10] = 57;
-   *(Pxd)[0]=15;
+    // double Pxd, Pyd, Pzd, Mad;
+    double_t End[200];
+    double *Pxd[20];
+    double *Pyd[20];
+    double *Pzd[20];
+    double *Mad[20];
+    // End = -999;
+    int *Pidd[20];
+    int *mother1d[20];
+    int *mother2d[20];
+    *(End)[0] = 14;
+    *(End)[1] = 16;
+    *(End)[10] = 57;
+    *(Pxd)[0] = 15;
 
-   intree->SetMakeClass(1);
+    intree->SetMakeClass(1);
 
-   intree->SetBranchAddress("Particle.Px", Pxd);
-   intree->SetBranchAddress("Particle.Py", Pyd);
-   intree->SetBranchAddress("Particle.Pz", Pzd);
-   intree->SetBranchAddress("Particle.E", End);
-   intree->SetBranchAddress("Particle.M", Mad);
-   intree->SetBranchAddress("Particle.PID", Pidd);
-   intree->SetBranchAddress("Particle_size",&numparr);
-   intree->SetBranchAddress("Particle.Mother1", mother1d);
-   intree->SetBranchAddress("Particle.Mother2", mother2d);
-/*
-   intree->SetBranchAddress("Particle.Px", &Px);
-   intree->SetBranchAddress("Particle.Py", &Py);
-   intree->SetBranchAddress("Particle.Pz", &Pz);
-   intree->SetBranchAddress("Particle.E", &En);
-   intree->SetBranchAddress("Particle.M", &Ma);
-   intree->SetBranchAddress("Particle.PID", &Pid);
-   intree->SetBranchAddress("Particle.@size",&numparr);
-   intree->SetBranchAddress("Particle.Mother1", &mother1);
-   intree->SetBranchAddress("Particle.Mother2", &mother2);
-*/
-   TFile *outfile = new TFile("./fixedsinglemuntuple.root","RECREATE","tree");
-   TTree *outtree = new TTree("outtree","outtree");
+    intree->SetBranchAddress("Particle.Px", Pxd);
+    intree->SetBranchAddress("Particle.Py", Pyd);
+    intree->SetBranchAddress("Particle.Pz", Pzd);
+    intree->SetBranchAddress("Particle.E", End);
+    intree->SetBranchAddress("Particle.M", Mad);
+    intree->SetBranchAddress("Particle.PID", Pidd);
+    intree->SetBranchAddress("Particle_size", &numparr);
+    intree->SetBranchAddress("Particle.Mother1", mother1d);
+    intree->SetBranchAddress("Particle.Mother2", mother2d);
+    /*
+       intree->SetBranchAddress("Particle.Px", &Px);
+       intree->SetBranchAddress("Particle.Py", &Py);
+       intree->SetBranchAddress("Particle.Pz", &Pz);
+       intree->SetBranchAddress("Particle.E", &En);
+       intree->SetBranchAddress("Particle.M", &Ma);
+       intree->SetBranchAddress("Particle.PID", &Pid);
+       intree->SetBranchAddress("Particle.@size",&numparr);
+       intree->SetBranchAddress("Particle.Mother1", &mother1);
+       intree->SetBranchAddress("Particle.Mother2", &mother2);
+    */
+    TFile *outfile =
+        new TFile("./fixedsinglemuntuple.root", "RECREATE", "tree");
+    TTree *outtree = new TTree("outtree", "outtree");
 
-   //vector<double> P_X, P_Y, P_Z, E, M;
-   //vector<int> PID;
+    // vector<double> P_X, P_Y, P_Z, E, M;
+    // vector<int> PID;
 
-   outtree->Branch("P_X", &P_X);
-   outtree->Branch("P_Y", &P_Y);
-   outtree->Branch("P_Z", &P_Z);
-   outtree->Branch("E", &E);
-   outtree->Branch("M", &M);
-   outtree->Branch("PID", &PID);
+    outtree->Branch("P_X", &P_X);
+    outtree->Branch("P_Y", &P_Y);
+    outtree->Branch("P_Z", &P_Z);
+    outtree->Branch("E", &E);
+    outtree->Branch("M", &M);
+    outtree->Branch("PID", &PID);
 
-   for (int i=0; i<20; i++){
-       P_X.push_back(0);
-       P_Y.push_back(0);
-       P_Z.push_back(0);
-       E.push_back(0);
-       M.push_back(0);
-       PID.push_back(-9999);
-   }
+    for (int i = 0; i < 20; i++) {
+        P_X.push_back(0);
+        P_Y.push_back(0);
+        P_Z.push_back(0);
+        E.push_back(0);
+        M.push_back(0);
+        PID.push_back(-9999);
+    }
 
-   //initOutput(dir,whichLoop);
+    // initOutput(dir,whichLoop);
 
-   //Long64_t nentries = fChain->GetEntriesFast();
-   Long64_t nentries = intree->GetEntries();
-   
-   //Long64_t nbytes = 0, nb = 0;
+    // Long64_t nentries = fChain->GetEntriesFast();
+    Long64_t nentries = intree->GetEntries();
 
-   vector<XYZTLorentzVector> nonTopObjects;
-   vector<double> nonTopObjectPtWidths;
-   vector<double> nonTopObjectEtaWidths;
-   vector<double> nonTopObjectPhiWidths;
+    // Long64_t nbytes = 0, nb = 0;
 
-   //gStyle->SetOptStat(101110);
-   //TCanvas c1("c1","c1",500,500);
-   //TH1D h_chi2("h_chi2","",100,0,100);
-   std::cout<<"hi!"<<std::endl;
+    vector<XYZTLorentzVector> nonTopObjects;
+    vector<double> nonTopObjectPtWidths;
+    vector<double> nonTopObjectEtaWidths;
+    vector<double> nonTopObjectPhiWidths;
 
-   //int jStart = whichLoop*(nentries/maxLoops) + ((whichLoop>(maxLoops-nentries%maxLoops))?(whichLoop+nentries%maxLoops-maxLoops):0);
-//int jStart = 17;
-  // int jFinish = jStart + (nentries+whichLoop)/maxLoops;
-   std::cout<<"number of entries = "<<nentries<<std::endl;
-   int jStart = 0;
-   //int jFinish = nentries;
-   int jFinish = 5;
+    // gStyle->SetOptStat(101110);
+    // TCanvas c1("c1","c1",500,500);
+    // TH1D h_chi2("h_chi2","",100,0,100);
+    std::cout << "hi!" << std::endl;
 
-   std::cout<<jStart<<std::endl;
-   std::cout<<"nentries = "<< nentries<<std::endl;
-   std::cout<<jFinish<<std::endl;
+    // int jStart = whichLoop*(nentries/maxLoops) +
+    // ((whichLoop>(maxLoops-nentries%maxLoops))?(whichLoop+nentries%maxLoops-maxLoops):0);
+    // int jStart = 17;
+    // int jFinish = jStart + (nentries+whichLoop)/maxLoops;
+    std::cout << "number of entries = " << nentries << std::endl;
+    int jStart = 0;
+    // int jFinish = nentries;
+    int jFinish = 5;
 
-    //TH1F* bottomPt = new TH1F("bottomPt","bottomPt",100,-300,300);
+    std::cout << jStart << std::endl;
+    std::cout << "nentries = " << nentries << std::endl;
+    std::cout << jFinish << std::endl;
 
-   for (Long64_t jentry=jStart; jentry<jFinish; jentry++) {
-     cout << "BEGINNING BRANCH NUMBER " << jentry << endl;
-      //Long64_t ientry = LoadTree(jentry);
-      intree->GetEntry(jentry);
+    // TH1F* bottomPt = new TH1F("bottomPt","bottomPt",100,-300,300);
 
-      cout<<"numparr = " <<numparr<<endl;
+    for (Long64_t jentry = jStart; jentry < jFinish; jentry++) {
+        cout << "BEGINNING BRANCH NUMBER " << jentry << endl;
+        // Long64_t ientry = LoadTree(jentry);
+        intree->GetEntry(jentry);
 
-      cout<< *(End)[0] << endl;
-      cout<< *(End)[1]<<endl;
-      cout<<*(End)[10]<<endl;
-      cout<<*(Pxd)[0]<<endl;
+        cout << "numparr = " << numparr << endl;
 
-      numpar = (int)(Px.size());
+        cout << *(End)[0] << endl;
+        cout << *(End)[1] << endl;
+        cout << *(End)[10] << endl;
+        cout << *(Pxd)[0] << endl;
 
-      if (numpar != 15){
-          cout <<"numpar != 15" <<endl;
-          cout << numpar << endl;
-          continue;
-      }
-      //if (ientry < 0) break;
-      //if (jentry > 0) break;
-      //nb = fChain->GetEntry(jentry);   nbytes += nb;
-      // if (Cut(ientry) < 0) continue;
-      //
+        numpar = (int)(Px.size());
 
-    TLorentzVector bJetFromTop, bbarJetFromTop, bJetFromH, bbarJetFromH, qFromW, qbarFromW, muon;
-    double leptonPx, leptonPy;
-    int qFromWPID, qbarFromWPID;
-
-      int counter = 0;
-
-      for (int ivec=0; ivec < numpar; ivec++){
-        if (Pid.at(ivec) == 5){
-            if (Pid.at( mother1.at(ivec) ) == 6 or Pid.at( mother2.at(ivec) ) == 6 ){
-                Filler( 8, ivec );
-                counter++;
-                bJetFromTop.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-            }
-            if (Pid.at( mother1.at(ivec) ) == 25 or Pid.at( mother2.at(ivec) ) == 25 ){
-                Filler( 12, ivec );
-                counter++;
-                bJetFromH.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-             }
-        } else if (Pid.at(ivec) == -5){
-            if (Pid.at( mother1.at(ivec) ) == -6 or Pid.at( mother2.at(ivec) ) == -6 ){
-                Filler( 9, ivec );
-                counter++;
-                bbarJetFromTop.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-             }
-            if (Pid.at( mother1.at(ivec) ) == 25 or Pid.at( mother2.at(ivec) ) == 25 ){
-                Filler( 13, ivec );
-                counter++;
-                bbarJetFromH.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-             }
-        } else if (Pid.at(ivec) == 13){
-            Filler( 7, ivec );
-            counter++;
-            muon.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-            SmearedFiller( 0, muon, 13 );
-            leptonPx = Px.at(ivec);
-            leptonPy = Py.at(ivec);
-        } else if (Pid.at(ivec) == 1 or Pid.at(ivec) == 2 or Pid.at(ivec) == 3 or Pid.at(ivec) == 4 ){
-            Filler ( 10, ivec );
-            counter++;
-            qFromW.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-            qFromWPID = Pid.at(ivec);
-         } else if (Pid.at(ivec) == -1 or Pid.at(ivec) == -2 or Pid.at(ivec) == -3 or Pid.at(ivec) == -4 ){
-            Filler (11, ivec);
-            counter++;
-            qbarFromW.SetPxPyPzE( Px.at(ivec), Py.at(ivec), Pz.at(ivec), E.at(ivec) );
-            qbarFromWPID = Pid.at(ivec);
-         } else if (Pid.at(ivec) == -14){
-            Filler (18, ivec);
-            counter++;
-        } else if (Pid.at(ivec) == 6){
-            Filler (14, ivec);
-            counter++;
-        } else if (Pid.at(ivec) == -6){
-            Filler (15, ivec);
-        } else if (Pid.at(ivec) == 24){
-            Filler (16, ivec);
-            counter++;
-        } else if (Pid.at(ivec) == -24){
-            Filler (17, ivec);
-            counter++;
-        } else if (Pid.at(ivec) == 25){
-            Filler (19, ivec);
-            counter++;
+        if (numpar != 15) {
+            cout << "numpar != 15" << endl;
+            cout << numpar << endl;
+            continue;
         }
-      }
-      if (counter != 13){
-          cout <<"counter != 13" <<endl;
-          continue;
-      }
+        // if (ientry < 0) break;
+        // if (jentry > 0) break;
+        // nb = fChain->GetEntry(jentry);   nbytes += nb;
+        // if (Cut(ientry) < 0) continue;
+        //
 
-    //start smearing
-    //double newpt = 0;
-    Smearer( bJetFromTop );
-    Smearer( bbarJetFromTop );
-    Smearer( qFromW );
-    Smearer( qbarFromW );
-    Smearer( bJetFromH );
-    Smearer( bbarJetFromH );
+        TLorentzVector bJetFromTop, bbarJetFromTop, bJetFromH, bbarJetFromH,
+            qFromW, qbarFromW, muon;
+        double leptonPx, leptonPy;
+        int qFromWPID, qbarFromWPID;
 
-    SmearedFiller( 1, bJetFromTop, 5 );
-    SmearedFiller( 2, bbarJetFromTop, -5 );
-    SmearedFiller( 3, qFromW, qFromWPID );
-    SmearedFiller( 4, qbarFromW, qbarFromWPID );
-    SmearedFiller( 5, bJetFromH, 5 );
-    SmearedFiller( 6, bbarJetFromH, -5 );
+        int counter = 0;
 
-    double metPx = -( bJetFromTop.Px() + bbarJetFromTop.Px() + bJetFromH.Px() + bbarJetFromH.Px() + qFromW.Px() + qbarFromW.Px() + leptonPx );
-    double metPy = -( bJetFromTop.Py() + bbarJetFromTop.Py() + bJetFromH.Py() + bbarJetFromH.Py() + qFromW.Py() + qbarFromW.Py() + leptonPy );
+        for (int ivec = 0; ivec < numpar; ivec++) {
+            if (Pid.at(ivec) == 5) {
+                if (Pid.at(mother1.at(ivec)) == 6 or
+                    Pid.at(mother2.at(ivec)) == 6) {
+                    Filler(8, ivec);
+                    counter++;
+                    bJetFromTop.SetPxPyPzE(Px.at(ivec), Py.at(ivec),
+                                           Pz.at(ivec), E.at(ivec));
+                }
+                if (Pid.at(mother1.at(ivec)) == 25 or
+                    Pid.at(mother2.at(ivec)) == 25) {
+                    Filler(12, ivec);
+                    counter++;
+                    bJetFromH.SetPxPyPzE(Px.at(ivec), Py.at(ivec), Pz.at(ivec),
+                                         E.at(ivec));
+                }
+            } else if (Pid.at(ivec) == -5) {
+                if (Pid.at(mother1.at(ivec)) == -6 or
+                    Pid.at(mother2.at(ivec)) == -6) {
+                    Filler(9, ivec);
+                    counter++;
+                    bbarJetFromTop.SetPxPyPzE(Px.at(ivec), Py.at(ivec),
+                                              Pz.at(ivec), E.at(ivec));
+                }
+                if (Pid.at(mother1.at(ivec)) == 25 or
+                    Pid.at(mother2.at(ivec)) == 25) {
+                    Filler(13, ivec);
+                    counter++;
+                    bbarJetFromH.SetPxPyPzE(Px.at(ivec), Py.at(ivec),
+                                            Pz.at(ivec), E.at(ivec));
+                }
+            } else if (Pid.at(ivec) == 13) {
+                Filler(7, ivec);
+                counter++;
+                muon.SetPxPyPzE(Px.at(ivec), Py.at(ivec), Pz.at(ivec),
+                                E.at(ivec));
+                SmearedFiller(0, muon, 13);
+                leptonPx = Px.at(ivec);
+                leptonPy = Py.at(ivec);
+            } else if (Pid.at(ivec) == 1 or Pid.at(ivec) == 2 or
+                       Pid.at(ivec) == 3 or Pid.at(ivec) == 4) {
+                Filler(10, ivec);
+                counter++;
+                qFromW.SetPxPyPzE(Px.at(ivec), Py.at(ivec), Pz.at(ivec),
+                                  E.at(ivec));
+                qFromWPID = Pid.at(ivec);
+            } else if (Pid.at(ivec) == -1 or Pid.at(ivec) == -2 or
+                       Pid.at(ivec) == -3 or Pid.at(ivec) == -4) {
+                Filler(11, ivec);
+                counter++;
+                qbarFromW.SetPxPyPzE(Px.at(ivec), Py.at(ivec), Pz.at(ivec),
+                                     E.at(ivec));
+                qbarFromWPID = Pid.at(ivec);
+            } else if (Pid.at(ivec) == -14) {
+                Filler(18, ivec);
+                counter++;
+            } else if (Pid.at(ivec) == 6) {
+                Filler(14, ivec);
+                counter++;
+            } else if (Pid.at(ivec) == -6) {
+                Filler(15, ivec);
+            } else if (Pid.at(ivec) == 24) {
+                Filler(16, ivec);
+                counter++;
+            } else if (Pid.at(ivec) == -24) {
+                Filler(17, ivec);
+                counter++;
+            } else if (Pid.at(ivec) == 25) {
+                Filler(19, ivec);
+                counter++;
+            }
+        }
+        if (counter != 13) {
+            cout << "counter != 13" << endl;
+            continue;
+        }
 
-    P_X.at(20) = metPx;
-    P_Y.at(20) = metPy;
-    P_Z.at(20) = 0;
-    PID.at(20) = -9999;
-    E.at(20) = 0;
-    M.at(20) = 0;
+        // start smearing
+        // double newpt = 0;
+        Smearer(bJetFromTop);
+        Smearer(bbarJetFromTop);
+        Smearer(qFromW);
+        Smearer(qbarFromW);
+        Smearer(bJetFromH);
+        Smearer(bbarJetFromH);
 
-  }
-   outtree->Fill();
-   outfile->Write();
+        SmearedFiller(1, bJetFromTop, 5);
+        SmearedFiller(2, bbarJetFromTop, -5);
+        SmearedFiller(3, qFromW, qFromWPID);
+        SmearedFiller(4, qbarFromW, qbarFromWPID);
+        SmearedFiller(5, bJetFromH, 5);
+        SmearedFiller(6, bbarJetFromH, -5);
+
+        double metPx =
+            -(bJetFromTop.Px() + bbarJetFromTop.Px() + bJetFromH.Px() +
+              bbarJetFromH.Px() + qFromW.Px() + qbarFromW.Px() + leptonPx);
+        double metPy =
+            -(bJetFromTop.Py() + bbarJetFromTop.Py() + bJetFromH.Py() +
+              bbarJetFromH.Py() + qFromW.Py() + qbarFromW.Py() + leptonPy);
+
+        P_X.at(20) = metPx;
+        P_Y.at(20) = metPy;
+        P_Z.at(20) = 0;
+        PID.at(20) = -9999;
+        E.at(20) = 0;
+        M.at(20) = 0;
+    }
+    outtree->Fill();
+    outfile->Write();
     outfile->Close();
     return;
 }
 
-
-      
 /*
       XYZTLorentzVector lepton, antiLepton;
       XYZTLorentzVector neutrino, antiNeutrino;
@@ -334,37 +353,40 @@ void converter::Loop()
       XYZTLorentzVector recoTopQuark(0,0,0,0), recoAntiTopQuark(0,0,0,0);
       XYZTLorentzVector WPlus, WMinus, higgs, qFromW, qbarFromW, met;
       XYZTLorentzVector recoWPlus(0,0,0,0), recoWMinus(0,0,0,0);
-      XYZTLorentzVector smearedLightQuark1, smearedLightQuark2, smearedBottomQuark, smearedAntiBottomQuark;
-      XYZTLorentzVector smearedLightParton1, smearedLightParton2, smearedLepton, smearedAntiLepton;
+      XYZTLorentzVector smearedLightQuark1, smearedLightQuark2,
+smearedBottomQuark, smearedAntiBottomQuark;
+      XYZTLorentzVector smearedLightParton1, smearedLightParton2, smearedLepton,
+smearedAntiLepton;
       XYZTLorentzVector smearedOtherLightParton;
       std::vector<XYZTLorentzVector> smearedOtherLightPartons;
-      bool leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar branch is the leptonic one), 0 otherwise.
+      bool leptonFlag = 0; //1 if lepton and antineutrino (i.e. tbar branch is
+the leptonic one), 0 otherwise.
 
       double METx(0.), METy(0.);
       int iJet = 0;
 //      for(int iParticle = 0 ; iParticle < n_particles; iParticle++)
 //	{
-	  smearedLightQuark1.SetPxPyPzE(P_X->at(3),P_Y->at(3),P_Z->at(3),E->at(3));
-	  smearedLightQuark2.SetPxPyPzE(P_X->at(4),P_Y->at(4),P_Z->at(4),E->at(4));
-	  smearedBottomQuark.SetPxPyPzE(P_X->at(1),P_Y->at(1),P_Z->at(1),E->at(1));
-	  smearedAntiBottomQuark.SetPxPyPzE(P_X->at(2),P_Y->at(2),P_Z->at(2),E->at(2));
-	  smearedLightParton1.SetPxPyPzE(P_X->at(5),P_Y->at(5),P_Z->at(5),E->at(5));
-	  smearedLightParton2.SetPxPyPzE(P_X->at(6),P_Y->at(6),P_Z->at(6),E->at(6));
-	  //smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+      smearedLightQuark1.SetPxPyPzE(P_X->at(3),P_Y->at(3),P_Z->at(3),E->at(3));
+      smearedLightQuark2.SetPxPyPzE(P_X->at(4),P_Y->at(4),P_Z->at(4),E->at(4));
+      smearedBottomQuark.SetPxPyPzE(P_X->at(1),P_Y->at(1),P_Z->at(1),E->at(1));
+      smearedAntiBottomQuark.SetPxPyPzE(P_X->at(2),P_Y->at(2),P_Z->at(2),E->at(2));
+      smearedLightParton1.SetPxPyPzE(P_X->at(5),P_Y->at(5),P_Z->at(5),E->at(5));
+      smearedLightParton2.SetPxPyPzE(P_X->at(6),P_Y->at(6),P_Z->at(6),E->at(6));
+      //smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
 
-	  topQuark.SetPxPyPzE(P_X->at(14),P_Y->at(14),P_Z->at(14),E->at(14));
-	  antiTopQuark.SetPxPyPzE(P_X->at(15),P_Y->at(15),P_Z->at(15),E->at(15));
-	  WPlus.SetPxPyPzE(P_X->at(16),P_Y->at(16),P_Z->at(16),E->at(16));
-	  WMinus.SetPxPyPzE(P_X->at(17),P_Y->at(17),P_Z->at(17),E->at(17));
+      topQuark.SetPxPyPzE(P_X->at(14),P_Y->at(14),P_Z->at(14),E->at(14));
+      antiTopQuark.SetPxPyPzE(P_X->at(15),P_Y->at(15),P_Z->at(15),E->at(15));
+      WPlus.SetPxPyPzE(P_X->at(16),P_Y->at(16),P_Z->at(16),E->at(16));
+      WMinus.SetPxPyPzE(P_X->at(17),P_Y->at(17),P_Z->at(17),E->at(17));
           //lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
-	  //neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
-	  bottomQuark.SetPxPyPzE(P_X->at(8),P_Y->at(8),P_Z->at(8),E->at(8));
-	  antiBottomQuark.SetPxPyPzE(P_X->at(9),P_Y->at(9),P_Z->at(9),E->at(9));
-	  qFromW.SetPxPyPzE(P_X->at(10),P_Y->at(10),P_Z->at(10),E->at(10));
-	  qbarFromW.SetPxPyPzE(P_X->at(11),P_Y->at(11),P_Z->at(11),E->at(11));
-	  lightParton1.SetPxPyPzE(P_X->at(12),P_Y->at(12),P_Z->at(12),E->at(12));
-	  lightParton2.SetPxPyPzE(P_X->at(13),P_Y->at(13),P_Z->at(13),E->at(13));
-	  higgs.SetPxPyPzE(P_X->at(19),P_Y->at(19),P_Z->at(19),E->at(19));
+      //neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+      bottomQuark.SetPxPyPzE(P_X->at(8),P_Y->at(8),P_Z->at(8),E->at(8));
+      antiBottomQuark.SetPxPyPzE(P_X->at(9),P_Y->at(9),P_Z->at(9),E->at(9));
+      qFromW.SetPxPyPzE(P_X->at(10),P_Y->at(10),P_Z->at(10),E->at(10));
+      qbarFromW.SetPxPyPzE(P_X->at(11),P_Y->at(11),P_Z->at(11),E->at(11));
+      lightParton1.SetPxPyPzE(P_X->at(12),P_Y->at(12),P_Z->at(12),E->at(12));
+      lightParton2.SetPxPyPzE(P_X->at(13),P_Y->at(13),P_Z->at(13),E->at(13));
+      higgs.SetPxPyPzE(P_X->at(19),P_Y->at(19),P_Z->at(19),E->at(19));
           met.SetPxPyPzE(P_X->at(20),P_Y->at(20),P_Z->at(20),E->at(20));
           std::cout<<"after set met"<<std::endl;
 
@@ -372,30 +394,34 @@ void converter::Loop()
         allExternal.SetPxPyPzE(0,0,0,0);
 
           for ( int ii=0; ii < ( (int)PID->size() - 21 ); ii++){
-              smearedOtherLightParton.SetPxPyPzE(P_X->at(ii+21), P_Y->at(ii+21), P_Z->at(ii+21), E->at(ii+21) );
+              smearedOtherLightParton.SetPxPyPzE(P_X->at(ii+21), P_Y->at(ii+21),
+P_Z->at(ii+21), E->at(ii+21) );
               smearedOtherLightPartons.push_back(smearedOtherLightParton);
 
               allExternal += smearedOtherLightParton;
           }
-          std::cout<<"SIZEEEEEEEEEEEEEEEEEEE = " << smearedOtherLightPartons.size() << std::endl;
+          std::cout<<"SIZEEEEEEEEEEEEEEEEEEE = " <<
+smearedOtherLightPartons.size() << std::endl;
 
         XYZTLorentzVector leptonToAdd;
 
           if (PID->at(0) == 13) {
-        	  smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+              smearedLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
                   lepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
-        	  antiNeutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+              antiNeutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
                   leptonFlag = 1;
                   leptonToAdd = smearedLepton;
           } else if (PID->at(0) == -13){
-        	  smearedAntiLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
+              smearedAntiLepton.SetPxPyPzE(P_X->at(0),P_Y->at(0),P_Z->at(0),E->at(0));
                   antiLepton.SetPxPyPzE(P_X->at(7),P_Y->at(7),P_Z->at(7),E->at(7));
-        	  neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
+              neutrino.SetPxPyPzE(P_X->at(18),P_Y->at(18),P_Z->at(18),E->at(18));
                   leptonFlag = 0;
                   leptonToAdd = smearedAntiLepton;
           }
 
-    XYZTLorentzVector allVisible = smearedLightQuark1 + smearedLightQuark2 + smearedBottomQuark + smearedAntiBottomQuark + smearedLightParton1 + smearedLightParton2 + leptonToAdd + allExternal;
+    XYZTLorentzVector allVisible = smearedLightQuark1 + smearedLightQuark2 +
+smearedBottomQuark + smearedAntiBottomQuark + smearedLightParton1 +
+smearedLightParton2 + leptonToAdd + allExternal;
 
     std::cout<< "comparison "<<std::endl;
     std::cout<< allVisible.Px() <<std::endl;
@@ -404,15 +430,18 @@ void converter::Loop()
     //std::cout<<met.Pz()<<std::endl;
     //std::cout<<met.E()<<std::endl;
 
-    //hack-test to form an extra particle to absorb the discrepancy between met and sum of all visible particles
+    //hack-test to form an extra particle to absorb the discrepancy between met
+and sum of all visible particles
     XYZTLorentzVector extraParticle;
-    extraParticle.SetPxPyPzE(-allVisible.Px()-met.Px(), -allVisible.Py()-met.Py(), 0, pow( (allVisible.Px()+met.Px()),2) + pow( (allVisible.Py()+met.Py()),2) );
+    extraParticle.SetPxPyPzE(-allVisible.Px()-met.Px(),
+-allVisible.Py()-met.Py(), 0, pow( (allVisible.Px()+met.Px()),2) + pow(
+(allVisible.Py()+met.Py()),2) );
 
     std::cout<< (allVisible.Px()+extraParticle.Px()) <<std::endl;
     std::cout<< met.Px() << std::endl;
 
-          
-          
+
+
           //	} //end loop over particles
 
       //cout << "true W+             mass is " << WPlus.M()        << endl;
@@ -421,7 +450,7 @@ void converter::Loop()
       //cout << "true anti top quark mass is " << antiTopQuark.M() << endl;
 
 
-      //cout << "true neutrino momentum:" << endl; 
+      //cout << "true neutrino momentum:" << endl;
       //printVector(neutrino);
       //cout << "true anti-neutrino momentum:" << endl;
       //printVector(antiNeutrino);
@@ -438,12 +467,13 @@ void converter::Loop()
       nonTopObjectPtWidths.clear();
       nonTopObjectEtaWidths.clear();
       nonTopObjectPhiWidths.clear();
-      
-      
+
+
       //for fully leptonic decays
       //METx -= lepton.Px() + antiLepton.Px();
       //METy -= lepton.Py() + antiLepton.Py();
-      //simulate hadronically decaying \bar{t} quark, so smear the lepton and subtract it from the MET separately
+      //simulate hadronically decaying \bar{t} quark, so smear the lepton and
+subtract it from the MET separately
       METx -= antiLepton.Px();
       METy -= antiLepton.Py();
 */
@@ -466,7 +496,8 @@ void converter::Loop()
       double lightJet2PhiSmear = 0.01*rand.Gaus();
       double bJet1EtaSmear = 0.01*rand.Gaus();
       double bJet2EtaSmear = 0.01*rand.Gaus();
-      //smear the lepton and anti-neutrino as if they were jets, to simulate the \bar{t} quark decaying hadronically
+      //smear the lepton and anti-neutrino as if they were jets, to simulate the
+   \bar{t} quark decaying hadronically
       double leptonPtSmear = log(1.+0.1)*rand.Gaus();
       double leptonPhiSmear = 0.01*rand.Gaus();
       double leptonEtaSmear = 0.01*rand.Gaus();
@@ -475,34 +506,36 @@ void converter::Loop()
       double antiNeutrinoEtaSmear = 0.01*rand.Gaus();
 */
 
-/*      
+/*
       double pt(bottomQuark.Pt()*exp(bJet1PtSmear));
       double phi(bottomQuark.Phi()+bJet1PhiSmear);
       double eta(bottomQuark.Eta()+bJet1EtaSmear);
-      double energy(sqrt((bottomQuark.M2()+bottomQuark.Pt()*bottomQuark.Pt()*cosh(eta)*cosh(eta)))*exp(bJet1PtSmear));
-      
+      double
+   energy(sqrt((bottomQuark.M2()+bottomQuark.Pt()*bottomQuark.Pt()*cosh(eta)*cosh(eta)))*exp(bJet1PtSmear));
+
       smearedBottomQuark.SetPx(pt*cos(phi));
       smearedBottomQuark.SetPy(pt*sin(phi));
       smearedBottomQuark.SetPz(pt*sinh(eta));
       smearedBottomQuark.SetE(energy);
-*/      
+*/
 //      recoTopQuark+=smearedBottomQuark;
-/*	  
+/*
       METx -= smearedBottomQuark.Px();
       METy -= smearedBottomQuark.Py();
-	  
+
       pt = antiBottomQuark.Pt()*exp(bJet2PtSmear);
       phi = antiBottomQuark.Phi()+bJet2PhiSmear;
       eta = antiBottomQuark.Eta()+bJet2EtaSmear;
-      energy = sqrt((antiBottomQuark.M2()+antiBottomQuark.Pt()*antiBottomQuark.Pt()*cosh(eta)*cosh(eta)))*exp(bJet2PtSmear);
-      
+      energy =
+   sqrt((antiBottomQuark.M2()+antiBottomQuark.Pt()*antiBottomQuark.Pt()*cosh(eta)*cosh(eta)))*exp(bJet2PtSmear);
+
       smearedAntiBottomQuark.SetPx(pt*cos(phi));
       smearedAntiBottomQuark.SetPy(pt*sin(phi));
       smearedAntiBottomQuark.SetPz(pt*sinh(eta));
       smearedAntiBottomQuark.SetE(energy);
-*/      
+*/
 //      recoAntiTopQuark+=smearedAntiBottomQuark;
-/*	  
+/*
       METx -= smearedAntiBottomQuark.Px();
       METy -= smearedAntiBottomQuark.Py();
 
@@ -510,13 +543,14 @@ void converter::Loop()
       pt = lepton.Pt()*exp(leptonPtSmear);
       phi = lepton.Phi()+leptonPhiSmear;
       eta = lepton.Eta()+leptonEtaSmear;
-      energy = sqrt((lepton.M2()+lepton.Pt()*lepton.Pt()*cosh(eta)*cosh(eta)))*exp(leptonPtSmear);
-      
+      energy =
+   sqrt((lepton.M2()+lepton.Pt()*lepton.Pt()*cosh(eta)*cosh(eta)))*exp(leptonPtSmear);
+
       smearedLightQuark1.SetPx(pt*cos(phi));
       smearedLightQuark1.SetPy(pt*sin(phi));
       smearedLightQuark1.SetPz(pt*sinh(eta));
       smearedLightQuark1.SetE(energy);
-      
+
       METx -= smearedLightQuark1.Px();
       METy -= smearedLightQuark1.Py();
 
@@ -524,7 +558,8 @@ void converter::Loop()
       pt = antiNeutrino.Pt()*exp(antiNeutrinoPtSmear);
       phi = antiNeutrino.Phi()+antiNeutrinoPhiSmear;
       eta = antiNeutrino.Eta()+antiNeutrinoEtaSmear;
-      energy = sqrt((antiNeutrino.M2()+antiNeutrino.Pt()*antiNeutrino.Pt()*cosh(eta)*cosh(eta)))*exp(antiNeutrinoPtSmear);
+      energy =
+   sqrt((antiNeutrino.M2()+antiNeutrino.Pt()*antiNeutrino.Pt()*cosh(eta)*cosh(eta)))*exp(antiNeutrinoPtSmear);
 
       smearedLightQuark2.SetPx(pt*cos(phi));
       smearedLightQuark2.SetPy(pt*sin(phi));
@@ -534,12 +569,12 @@ void converter::Loop()
       METx -= smearedLightQuark2.Px();
       METy -= smearedLightQuark2.Py();
 
-	  
+
       pt = lightParton1.Pt()*exp(lightJet1PtSmear);
       phi = lightParton1.Phi()+lightJet1PhiSmear;
       eta = lightParton1.Eta();
       energy = lightParton1.E()*exp(lightJet1PtSmear);
-      
+
       smearedLightParton1.SetPx(pt*cos(phi));
       smearedLightParton1.SetPy(pt*sin(phi));
       smearedLightParton1.SetPz(pt*sinh(eta));
@@ -547,12 +582,12 @@ void converter::Loop()
       METx -= smearedLightParton1.Px();
       METy -= smearedLightParton1.Py();
 
-	  
+
       pt = lightParton2.Pt()*exp(lightJet2PtSmear);
       phi = lightParton2.Phi()+lightJet2PhiSmear;
       eta = lightParton2.Eta();
       energy = lightParton2.E()*exp(lightJet2PtSmear);
-      
+
       smearedLightParton2.SetPx(pt*cos(phi));
       smearedLightParton2.SetPy(pt*sin(phi));
       smearedLightParton2.SetPz(pt*sinh(eta));
@@ -573,7 +608,7 @@ void converter::Loop()
 //	{
 //	  smearingSwitchedLightJetOrdering = false;
 //	}
-      
+
 /*
 
       nonTopObjects.push_back(smearedLightParton1);
@@ -1739,8 +1774,8 @@ void topReconstructionFromLHE::moveStatsBox(TH1F *hist){
         cout <<"null pointer"<<endl;
         return;
     }*/
-    //float x1 = s->GetX1NDC();
-    //float x2 = s->GetX2NDC();
+// float x1 = s->GetX1NDC();
+// float x2 = s->GetX2NDC();
 /*    float y1 = s->GetY1NDC();
     float y2 = s->GetY2NDC();
 cout<<"2"<<endl;

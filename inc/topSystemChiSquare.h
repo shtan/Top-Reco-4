@@ -19,116 +19,112 @@
 
 using namespace std;
 using namespace ROOT::Math;
-typedef LorentzVector<PxPyPzE4D<double> > XYZTLorentzVector;
-
+typedef LorentzVector<PxPyPzE4D<double>> XYZTLorentzVector;
 
 class topSystemChiSquare
 {
 
-  // private:
-   protected:
-  // public:
+    // private:
+  protected:
+    // public:
 
-  double bJetPx_;
-  double bJetPy_;
-  double bJetPz_;
-  double bJetE_ ;
+    double bJetPx_;
+    double bJetPy_;
+    double bJetPz_;
+    double bJetE_;
 
-  double WDaughter1Px_;
-  double WDaughter1Py_;
-  double WDaughter1Pz_;
-  double WDaughter1E_ ;
+    double WDaughter1Px_;
+    double WDaughter1Py_;
+    double WDaughter1Pz_;
+    double WDaughter1E_;
 
-  double mTop_;
-  double mW_;
-  //double mWDaughter1_;
-  double mWDaughter2_;
+    double mTop_;
+    double mW_;
+    // double mWDaughter1_;
+    double mWDaughter2_;
 
-  //widths
-  double bJetPtWidth_ ;
-  double bJetEtaWidth_;
-  double bJetPhiWidth_;
+    // widths
+    double bJetPtWidth_;
+    double bJetEtaWidth_;
+    double bJetPhiWidth_;
 
-  double WDaughter1PtWidth_ ;
-  double WDaughter1EtaWidth_;
-  double WDaughter1PhiWidth_;
+    double WDaughter1PtWidth_;
+    double WDaughter1EtaWidth_;
+    double WDaughter1PhiWidth_;
 
-  double sigmaMTop_;
-  double sigmaMW_;
+    double sigmaMTop_;
+    double sigmaMW_;
 
-  //delta parameters for measured vs true values
-  double bJetPtDelta_ ;
-  double bJetEtaDelta_; 
-  double bJetPhiDelta_;
+    // delta parameters for measured vs true values
+    double bJetPtDelta_;
+    double bJetEtaDelta_;
+    double bJetPhiDelta_;
 
-  double WDaughter1PtDelta_ ;
-  double WDaughter1EtaDelta_;
-  double WDaughter1PhiDelta_;
+    double WDaughter1PtDelta_;
+    double WDaughter1EtaDelta_;
+    double WDaughter1PhiDelta_;
 
-  double deltaMTop_;
-  double deltaMW_;
+    double deltaMTop_;
+    double deltaMW_;
 
-  bool rangeFlag_;
-  bool hasHighEdge_;
-  double mTopEdgeLow_, mTopEdgeHigh_;
-  double deltaMTopRangeLow_, deltaMTopRangeHigh_;
+    bool rangeFlag_;
+    bool hasHighEdge_;
+    double mTopEdgeLow_, mTopEdgeHigh_;
+    double deltaMTopRangeLow_, deltaMTopRangeHigh_;
 
-  //reconstructed values
-  XYZTLorentzVector reconstructed_bJetLorentzVector_;
+    // reconstructed values
+    XYZTLorentzVector reconstructed_bJetLorentzVector_;
 
-  double reconstructed_bJetPt_ ;
-  double reconstructed_bJetPhi_;
-  double reconstructed_bJetEta_;
-  double reconstructed_bJetMass2_ ;
+    double reconstructed_bJetPt_;
+    double reconstructed_bJetPhi_;
+    double reconstructed_bJetEta_;
+    double reconstructed_bJetMass2_;
 
-  XYZTLorentzVector reconstructed_WDaughter1LorentzVector_;
+    XYZTLorentzVector reconstructed_WDaughter1LorentzVector_;
 
-  double reconstructed_WDaughter1Pt_ ;
-  double reconstructed_WDaughter1Phi_;
-  double reconstructed_WDaughter1Eta_;
-  double reconstructed_WDaughter1Mass2_ ;
+    double reconstructed_WDaughter1Pt_;
+    double reconstructed_WDaughter1Phi_;
+    double reconstructed_WDaughter1Eta_;
+    double reconstructed_WDaughter1Mass2_;
 
+    WDaughterEllipseCalculator WDaughter2Calc_;
 
-  
-  WDaughterEllipseCalculator WDaughter2Calc_;
+    double WDaughter2Px_;
+    double WDaughter2Py_;
+    double WDaughter2Pz_;
+    double WDaughter2E_;
 
-  double WDaughter2Px_;
-  double WDaughter2Py_;
-  double WDaughter2Pz_;
-  double WDaughter2E_ ;
-		  
-  double WDaughter2Pt_ ;
-  double WDaughter2Phi_;
-  double WDaughter2Eta_;
+    double WDaughter2Pt_;
+    double WDaughter2Phi_;
+    double WDaughter2Eta_;
 
-  double topPx_;
-  double topPy_;
-  double topPz_;
-  double topE_ ;
+    double topPx_;
+    double topPy_;
+    double topPz_;
+    double topE_;
 
+    void setBJet(double, double, double, double);
+    void setObservedBJet(double, double, double, double);
+    void setWDaughter1(double, double, double, double);
+    void setObservedWDaughter1(double, double, double, double);
 
-  void setBJet(double, double, double, double);
-  void setObservedBJet(double, double, double, double);
-  void setWDaughter1(double, double, double, double);
-  void setObservedWDaughter1(double, double, double, double);
+    void setTopMass(double m) { mTop_ = m; };
+    void setWMass(double m) { mW_ = m; };
+    void setWDaughter2Mass(double m) { mWDaughter2_ = m; };
 
-  void setTopMass(double m){ mTop_=m; };
-  void setWMass(double m){ mW_=m; };
-  void setWDaughter2Mass(double m){ mWDaughter2_=m; };
+    void resetBJet();
+    void resetWDaughter1();
+    void resetWDaughter2(double);
+    // void resetAll();
 
-  void resetBJet();
-  void resetWDaughter1();
-  void resetWDaughter2(double);
-  //void resetAll();
+    void setBJetDeltas(const double, const double, const double);
+    void setWDaughter1Deltas(const double, const double, const double);
 
-  void setBJetDeltas(const double, const double, const double );
-  void setWDaughter1Deltas(const double, const double, const double );
-
-  void setBJetWidths(double , double, double );
-  void setWDaughter1Widths(double , double , double );
-  void setTopMassWidth(double sigmaMTop){ sigmaMTop_=sigmaMTop; };
-  void setWMassWidth(double sigmaMW){ sigmaMW_=sigmaMW; };
-/*
+    void setBJetWidths(double, double, double);
+    void setWDaughter1Widths(double, double, double);
+    void setTopMassWidth(double sigmaMTop) { sigmaMTop_ = sigmaMTop; };
+    void setWMassWidth(double sigmaMW) { sigmaMW_ = sigmaMW; };
+    /*
   void calcTopMassRange();
 
   void setTopMassDelta(double delta) { deltaMTop_=delta; } ;
@@ -140,76 +136,72 @@ class topSystemChiSquare
 		 double);
 
   TMatrixD* getHomogeneousWDaughterEllipse();
-*/ //moved to public
+*/ // moved to public
 
-  double breitWignerError(double&,double&,const double&);
+    double breitWignerError(double &, double &, const double &);
 
- public:
+  public:
+    topSystemChiSquare(const double &, const double &, const double &,
+                       const double &, const double &, const double &,
+                       const double &, const double &, const double &,
+                       const double &, const double &, const double &,
+                       const double &, const double &, const double &,
+                       const double &, const double &, const double &,
+                       const double &);
 
-  topSystemChiSquare(const double& , const double& , const double& , const double& , 
-		     const double& , const double& , const double& , 
-		     const double& , const double& , const double& , const double& ,
-                     const double& , const double& , const double& ,
-		     const double& , const double& , 
-		     const double& , const double& ,
-		     const double& );
+    topSystemChiSquare(const topSystemChiSquare &other);
 
-  topSystemChiSquare(const topSystemChiSquare& other);
+    virtual ~topSystemChiSquare();
 
-  virtual ~topSystemChiSquare();
+    virtual void printTopConstituents() = 0;
 
-  virtual void printTopConstituents() =0;
+    // void printTopInfo();
 
-  //void printTopInfo();
-  
-  double theta_;
+    double theta_;
 
-  void getBJet(double& , double& , double& , double& );
-  void getWDaughter1(double& , double& , double& , double& );
-  void getWDaughter2(double& , double& , double& , double& );
+    void getBJet(double &, double &, double &, double &);
+    void getWDaughter1(double &, double &, double &, double &);
+    void getWDaughter2(double &, double &, double &, double &);
 
-  void setupWDaughter2Ellipse();
-  void calcWDaughter2Ellipse();
-  void getWDaughter2Momentum(double& , double& , double& );
-  virtual void setEllipseAngle(double) =0;
-  double getEllipseAngle() { return theta_; } ;
-  virtual void setWDaughter2(double, double, double) =0;
-  virtual void calcWDaughter2Deltas() =0;
-  virtual void getWDaughter2Deltas(double& , double& , double& ) =0;
-  virtual void printWDaughter2() =0;
-  double getZ2(double, double, double);
+    void setupWDaughter2Ellipse();
+    void calcWDaughter2Ellipse();
+    void getWDaughter2Momentum(double &, double &, double &);
+    virtual void setEllipseAngle(double) = 0;
+    double getEllipseAngle() { return theta_; };
+    virtual void setWDaughter2(double, double, double) = 0;
+    virtual void calcWDaughter2Deltas() = 0;
+    virtual void getWDaughter2Deltas(double &, double &, double &) = 0;
+    virtual void printWDaughter2() = 0;
+    double getZ2(double, double, double);
 
-  bool hasTopMassRange() { return rangeFlag_; } ;
-  void getTopMassRange(bool& , double& , double& );
-  void getTopMassDeltaRange(bool& , double& , double& );
-  double getTopMass() { return mTop_+sigmaMTop_*deltaMTop_; };
+    bool hasTopMassRange() { return rangeFlag_; };
+    void getTopMassRange(bool &, double &, double &);
+    void getTopMassDeltaRange(bool &, double &, double &);
+    double getTopMass() { return mTop_ + sigmaMTop_ * deltaMTop_; };
 
-  double getWMass() { return mW_+sigmaMW_*deltaMW_; };
+    double getWMass() { return mW_ + sigmaMW_ * deltaMW_; };
 
-  virtual double getChiSquare() =0 ;
-  virtual double getHadronicChiSquare() =0;
-  
-  double getTopMassChiSquare();
+    virtual double getChiSquare() = 0;
+    virtual double getHadronicChiSquare() = 0;
 
-  void calcTopMomentum();
-  void getTopMomentum(double& , double& , double& , double& );
+    double getTopMassChiSquare();
 
-  void calcTopMassRange();
+    void calcTopMomentum();
+    void getTopMomentum(double &, double &, double &, double &);
 
-  void setTopMassDelta(double delta) { deltaMTop_=delta; } ;
-  void setWMassDelta(double delta) { deltaMW_=delta; } ;
+    void calcTopMassRange();
 
-  void setDeltas(double, double, double, 
-		 double, double, double,
-		 //double, 
-		 double);
+    void setTopMassDelta(double delta) { deltaMTop_ = delta; };
+    void setWMassDelta(double delta) { deltaMW_ = delta; };
 
-  TMatrixD* getHomogeneousWDaughterEllipse();
+    void setDeltas(double, double, double, double, double, double,
+                   // double,
+                   double);
 
-
+    TMatrixD *getHomogeneousWDaughterEllipse();
 };
 
-//void topSystemChiSquare::printTopInfo()
+// void topSystemChiSquare::printTopInfo()
 //{
 //  cout << "In the parent class:" << endl;
 //  cout << "Second W daughter momentum:"
@@ -220,4 +212,3 @@ class topSystemChiSquare
 //}
 
 #endif
-
