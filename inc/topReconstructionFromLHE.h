@@ -222,8 +222,8 @@ class topReconstructionFromLHE
 
     // handleEvent evh_outside;
 
-    vector<string> varTypes = {"Pt", "Eta", "Phi", "Px", "Py", "Pz", "M",
-                               "Pt_", "Eta_", "Phi_", "Px_", "Py_", "Pz_", "M_"};
+    vector<string> varTypes = {"Pt", "Eta", "Phi", "M", "Px", "Py", "Pz", "E",
+                               "Pt_", "Eta_", "Phi_", "M_", "Px_", "Py_", "Pz_", "E_"};
     vector<string> difTypes = {"smearedTrue", "bestTrue"};
 
     vector<vector<string>> nameMap = {

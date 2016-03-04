@@ -111,7 +111,7 @@ void topReconstructionFromLHE::DeclareHists()
                 lbound = -5;
                 rbound = 5;
             }
-            if (vtype == "M") {
+            if (vtype == "M" || vtype == "E") {
                 lbound = -150;
                 rbound = 150;
             }
@@ -212,6 +212,9 @@ void topReconstructionFromLHE::FillHists_(const XYZTLorentzVector *v1,
     hm[DT]["M"][name]->Fill(v1->M() - v2->M());
     hm[DT]["M_"][name]->Fill((v1->M() - v2->M()) / v1->M());
 
+    hm[DT]["E"][name]->Fill(v1->E() - v2->E());
+    hm[DT]["E_"][name]->Fill((v1->E() - v2->E()) / v1->E());
+
     hm[DT]["Eta"][name]->Fill(v1->Eta() - v2->Eta());
     hm[DT]["Eta_"][name]->Fill((v1->Eta() - v2->Eta()) / v1->Eta());
     hm[DT]["Phi"][name]->Fill(v1->Phi() - v2->Phi());
@@ -226,11 +229,12 @@ void topReconstructionFromLHE::PlotHists()
     //     int mc3 = 3;
     //     int mc0 = 0;
 
+    int iter = 0;
     for (auto name : names) {
         for (auto vtype : varTypes) {
             string unit = "";
             if (vtype == "Pt" or vtype == "Px" or vtype == "Py" or
-                vtype == "Pz" or vtype == "M") {
+                vtype == "Pz" or vtype == "M" or vtype == "E") {
                 unit = "(GeV)";
             }
             TH1D *h_smeared = histdif["smearedTrue"][vtype][name];
@@ -241,8 +245,14 @@ void topReconstructionFromLHE::PlotHists()
             h_smeared->SetLineColor(mc1);
             h_true->SetLineColor(mc2);
 
-            h_smeared->GetXaxis()->SetTitle(
-                (vtype + " Resolution " + unit).c_str());
+            if (vtype == "Pt" or vtype == "Px" or vtype == "Py" or vtype == "Phi" or 
+                vtype == "Pz" or vtype == "M" or vtype == "E" or vtype == "Eta") {
+                h_smeared->GetXaxis()->SetTitle(
+                    (vtype + " Residual " + unit).c_str());
+            } else {
+                h_smeared->GetXaxis()->SetTitle(
+                    (vtype + " Resolution " + unit).c_str());
+            }
             h_smeared->GetYaxis()->SetTitle("Events");
             h_smeared->SetTitle((name + "_" + vtype).c_str());
             h_smeared->SetMaximum(
@@ -256,15 +266,41 @@ void topReconstructionFromLHE::PlotHists()
             moveStatsBox(h_smeared);
 
             canv->Write();
+            //canv->Print((name + "_" + vtype + ".pdf").c_str());
+ 
+            if( iter == 0 ){
+                canv->Print("./pdfplots2/plots.pdf[");
+                canv->Print("./pdfplots2/plots.pdf");
+            } else if ( iter == (int)(names.size())*(int)(varTypes.size()) - 1 ){
+                canv->Print("./pdfplots2/plots.pdf");
+                canv->Print("./pdfplots2/plots.pdf]");
+            } else {
+                canv->Print("./pdfplots2/plots.pdf");
+            }
             canv->ls();
+
+            ++iter;
         }
     }
 
+    int iterchi = 0;
     for (auto name : chinames) {
         histchi[name]->SetTitle(("chiSquared_" + name).c_str());
         canvaschi[name]->cd();
         histchi[name]->Draw("HIST");
         canvaschi[name]->Write();
+
+        if( iterchi == 0 ){
+            canvaschi[name]->Print("./pdfplots2/chiplots.pdf[");
+            canvaschi[name]->Print("./pdfplots2/chiplots.pdf");
+        } else if ( iterchi == (int)(chinames.size()) - 1 ){
+            canvaschi[name]->Print("./pdfplots2/chiplots.pdf");
+            canvaschi[name]->Print("./pdfplots2/chiplots.pdf]");
+        } else {
+            canvaschi[name]->Print("./pdfplots2/chiplots.pdf");
+        }
+        ++iterchi;
+
         canvaschi[name]->ls();
     }
 }
@@ -391,6 +427,11 @@ void topReconstructionFromLHE::Print()
 
            cout<<"Px total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Px() + evh.bestParticlesLH["Hadronic_Bottom"]->Px() + evh.bestParticlesLH["Lepton_or_AntiLepton"]->Px() + evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Px() + evh.bestParticlesLH["Quark_from_W"]->Px() + evh.bestParticlesLH["Antiquark_from_W"]->Px() + evh.bestParticlesLH["B_from_H"]->Px() + evh.bestParticlesLH["Bbar_from_H"]->Px() << endl; 
            cout<<"Py total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Py() + evh.bestParticlesLH["Hadronic_Bottom"]->Py() + evh.bestParticlesLH["Lepton_or_AntiLepton"]->Py() + evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Py() + evh.bestParticlesLH["Quark_from_W"]->Py() + evh.bestParticlesLH["Antiquark_from_W"]->Py() + evh.bestParticlesLH["B_from_H"]->Py() + evh.bestParticlesLH["Bbar_from_H"]->Py() << endl; 
+           cout<<"Top Px total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Px() + evh.bestParticlesLH["Hadronic_Bottom"]->Px() + evh.bestParticlesLH["Lepton_or_AntiLepton"]->Px() + evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Px() + evh.bestParticlesLH["Quark_from_W"]->Px() + evh.bestParticlesLH["Antiquark_from_W"]->Px() << endl; 
+           cout<<"Nontop Px total = "<< evh.bestParticlesLH["B_from_H"]->Px() + evh.bestParticlesLH["Bbar_from_H"]->Px() << endl; 
+
+           cout<<"Top Py total = "<< evh.bestParticlesLH["Leptonic_Bottom"]->Py() + evh.bestParticlesLH["Hadronic_Bottom"]->Py() + evh.bestParticlesLH["Lepton_or_AntiLepton"]->Py() + evh.bestParticlesLH["Neutrino_or_AntiNeutrino"]->Py() + evh.bestParticlesLH["Quark_from_W"]->Py() + evh.bestParticlesLH["Antiquark_from_W"]->Py() << endl; 
+           cout<<"Nontop Py total = "<< evh.bestParticlesLH["B_from_H"]->Py() + evh.bestParticlesLH["Bbar_from_H"]->Py() << endl; 
 
 
 
@@ -544,9 +585,13 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
                  << "Setup top event minimizer." << endl;
         }
 
+        double totalTopPx = evh.smearedParticles["top"]->Px() + evh.smearedParticles["antiTop"]->Px();
+        double totalTopPy = evh.smearedParticles["top"]->Py() + evh.smearedParticles["antiTop"]->Py();
+        double totalTopPz = evh.smearedParticles["top"]->Pz() + evh.smearedParticles["antiTop"]->Pz();
+
         topEventMinimizer ev(nonTopObjects, nonTopObjectPtWidths,
                              nonTopObjectEtaWidths, nonTopObjectPhiWidths, mTop,
-                             sigmaMTop, mW, sigmaMW);
+                             sigmaMTop, mW, sigmaMW, totalTopPx, totalTopPy, totalTopPz);
 
         if (debug_verbosity >= 2)
             cout << "Before add tops:" << endl;

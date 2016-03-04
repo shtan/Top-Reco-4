@@ -11,12 +11,14 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
                                      vector<double> nonTopObjectPhiWidths,
                                      vector<double> nonTopObjectEtaWidths,
                                      double mTop, double sigmaMTop, double mW,
-                                     double sigmaMW)
+                                     double sigmaMW, double totalTopPx, double totalTopPy, double totalTopPz)
     : nTops_(0), nonTopObjects_(nonTopObjects),
       nonTopObjectPtWidths_(nonTopObjectPtWidths),
       nonTopObjectPhiWidths_(nonTopObjectPhiWidths),
       nonTopObjectEtaWidths_(nonTopObjectEtaWidths), mTop_(mTop),
-      sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW), dx_(0.), dy_(0.),
+      sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW),
+      totalTopPx_(totalTopPx), totalTopPy_(totalTopPy), totalTopPz_(totalTopPz),
+      dx_(0.), dy_(0.),
       dz_(0.), nonTopChiSquare_(lightJetChiSquareMinimumSolver(
                    nonTopObjects.size(), dx_, dy_, dz_, false)),
       maxConsideredChiSquareRoot_(30.)
@@ -46,14 +48,16 @@ topEventMinimizer::topEventMinimizer(
     vector<double> allObjectPhiWidths, vector<double> allObjectEtaWidths,
     vector<int> bJets, vector<int> firstWDaughters,
     vector<int> secondWDaughters, vector<bool> isLeptonicTopDecay, double mTop,
-    double sigmaMTop, double mW, double sigmaMW)
+    double sigmaMTop, double mW, double sigmaMW, double totalTopPx, double totalTopPy, double totalTopPz)
     : nTops_(0), bJets_(bJets), firstWDaughters_(firstWDaughters),
       secondWDaughters_(secondWDaughters), allObjects_(allObjects),
       allObjectPtWidths_(allObjectPtWidths),
       allObjectPhiWidths_(allObjectPhiWidths),
       allObjectEtaWidths_(allObjectEtaWidths),
       isLeptonicTopDecay_(isLeptonicTopDecay), mTop_(mTop),
-      sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW), dx_(0.), dy_(0.),
+      sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW),
+      totalTopPx_(totalTopPx), totalTopPy_(totalTopPy), totalTopPz_(totalTopPz),
+      dx_(0.), dy_(0.),
       dz_(0.),
       nonTopChiSquare_(lightJetChiSquareMinimumSolver(
           allObjects.size() - (int)accumulate(isLeptonicTopDecay.begin(),
@@ -532,7 +536,11 @@ void topEventMinimizer::getDxDyFromEllipses()
         }
     }
 
-    setRecoil(sumTopPx, sumTopPy, sumTopPz);
+    double sumDeltaTopPx = sumTopPx - totalTopPx_;
+    double sumDeltaTopPy = sumTopPy - totalTopPy_;
+    double sumDeltaTopPz = sumTopPz - totalTopPz_;
+    //setRecoil(sumTopPx, sumTopPy, sumTopPz);
+    setRecoil(sumDeltaTopPx, sumDeltaTopPy, sumDeltaTopPz);
 }
 
 void topEventMinimizer::findStartingValues(int nPoints)

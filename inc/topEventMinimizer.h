@@ -57,6 +57,10 @@ class topEventMinimizer
     double mW_;
     double sigmaMW_;
 
+    double totalTopPx_;
+    double totalTopPy_;
+    double totalTopPz_;
+
     vector<double> bJets_PtDeltas_;
     vector<double> bJets_PhiDeltas_;
     vector<double> bJets_EtaDeltas_;
@@ -179,10 +183,10 @@ class topEventMinimizer
     // functions
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, vector<int>, vector<int>, vector<int>,
-                      vector<bool>, double, double, double, double);
+                      vector<bool>, double, double, double, double, double, double, double);
 
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
-                      vector<double>, double, double, double, double);
+                      vector<double>, double, double, double, double, double, double, double);
 
     ~topEventMinimizer();
 
