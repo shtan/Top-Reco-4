@@ -208,8 +208,8 @@ void topSystemChiSquare::resetBJet()
 {
     double phiNew = reconstructed_bJetPhi_ + bJetPhiDelta_ * bJetPhiWidth_;
     double etaNew = reconstructed_bJetEta_ + bJetEtaDelta_ * bJetEtaWidth_;
-    //double ptNew = reconstructed_bJetPt_ * exp(bJetPtDelta_ * bJetPtWidth_);
-    double ptNew = reconstructed_bJetPt_+bJetPtDelta_*bJetPtWidth_;
+    // double ptNew = reconstructed_bJetPt_ * exp(bJetPtDelta_ * bJetPtWidth_);
+    double ptNew = reconstructed_bJetPt_ + bJetPtDelta_ * bJetPtWidth_;
     double pxNew = ptNew * cos(phiNew);
     double pyNew = ptNew * sin(phiNew);
     double pzNew = ptNew * sinh(etaNew);
@@ -234,9 +234,10 @@ void topSystemChiSquare::resetWDaughter1()
                     WDaughter1PhiDelta_ * WDaughter1PhiWidth_;
     double etaNew = reconstructed_WDaughter1Eta_ +
                     WDaughter1EtaDelta_ * WDaughter1EtaWidth_;
-    //double ptNew = reconstructed_WDaughter1Pt_ *
-                   exp(WDaughter1PtDelta_ * WDaughter1PtWidth_);
-    double ptNew = reconstructed_WDaughter1Pt_+WDaughter1PtDelta_*WDaughter1PtWidth_;
+    // double ptNew = reconstructed_WDaughter1Pt_ *
+    exp(WDaughter1PtDelta_ * WDaughter1PtWidth_);
+    double ptNew =
+        reconstructed_WDaughter1Pt_ + WDaughter1PtDelta_ * WDaughter1PtWidth_;
     double pxNew = ptNew * cos(phiNew);
     double pyNew = ptNew * sin(phiNew);
     double pzNew = ptNew * sinh(etaNew);
