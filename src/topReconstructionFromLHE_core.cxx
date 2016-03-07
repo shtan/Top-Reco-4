@@ -759,7 +759,7 @@ void topReconstructionFromLHE::Loop_fill_results_SM(topEventMinimizer &ev,
     *evh.bestParticles["bottom"] = ev.getConverter("getBJet", 0);
     *evh.bestParticles["Wplus"] = ev.getConverter("getW", 0);
     // FIXME
-    if (evh.leptonFlag == 0) {
+    if (evh.leptonFlag == false) {
         *evh.bestParticles["antiLepton"] = ev.getConverter("getWDaughter1", 0);
         *evh.bestParticles["neutrino"] = ev.getConverter("getWDaughter2", 0);
     } else {
@@ -772,7 +772,7 @@ void topReconstructionFromLHE::Loop_fill_results_SM(topEventMinimizer &ev,
     *evh.bestParticles["antiBottom"] = ev.getConverter("getBJet", 1);
     *evh.bestParticles["Wminus"] = ev.getConverter("getW", 1);
     // FIXME
-    if (evh.leptonFlag == 0) {
+    if (evh.leptonFlag == false) {
         *evh.bestParticles["qFromW"] = ev.getConverter("getWDaughter1", 1);
         *evh.bestParticles["qbarFromW"] = ev.getConverter("getWDaughter2", 1);
     } else {
@@ -783,9 +783,35 @@ void topReconstructionFromLHE::Loop_fill_results_SM(topEventMinimizer &ev,
     *evh.bestParticles["bbarFromH"] = ev.getConverter("getNonTopObject4", 1);
 }
 
-double topReconstructionFromLHE::Calc_rel_error(const handleEvent &evh)
+double topReconstructionFromLHE::Calc_rel_error(handleEvent &evh)
 {
-    return -1;
+    double err = Calc_rel_error_(evh, "bFromH");
+    err += Calc_rel_error_(evh, "bbarFromH");
+    err += Calc_rel_error_(evh, "qFromW");
+    err += Calc_rel_error_(evh, "qbarFromW");
+    
+    if (evh.leptonFlag == false) {
+        err += Calc_rel_error_(evh, "antiLepton");
+        err += Calc_rel_error_(evh, "neutrino");
+    } else {
+        err += Calc_rel_error_(evh, "lepton");
+        err += Calc_rel_error_(evh, "antiNeutrino");
+    }
+    
+    return err;
+}
+
+double topReconstructionFromLHE::Calc_rel_error_(handleEvent &evh,
+                                                 const string particle)
+{
+    const auto true_p = evh.trueParticles[particle];
+    const auto best_p = evh.bestParticles[particle];
+    const double dE = (true_p->E() - best_p->E()) / true_p->E();
+    const double dpx = (true_p->Px() - best_p->Px()) / true_p->Px();
+    const double dpy = (true_p->Py() - best_p->Py()) / true_p->Py();
+    const double dpz = (true_p->Pz() - best_p->Pz()) / true_p->Pz();
+    
+    return (dE * dE + dpx * dpx + dpy * dpy + dpz * dpz);
 }
 
 // void topReconstructionFromLHE::getBestObjects(){}

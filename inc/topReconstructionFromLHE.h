@@ -218,7 +218,8 @@ class topReconstructionFromLHE
     
     string Get_pname(const string &, const string &);
     
-    double Calc_rel_error(const handleEvent &);
+    double Calc_rel_error(handleEvent &);
+    double Calc_rel_error_(handleEvent &, const string);
 
     XYZTLorentzVector testvec;
 
