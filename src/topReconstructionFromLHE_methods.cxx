@@ -56,13 +56,17 @@ topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
     //    "hadronic", "nonTop", "leptonicBottom", "leptonicWMass",
     //    "hadronicWMass", "hadronicBottom", "lepton", "qFromW", "qbarFromW" };
     const int chi_size = 22;
-    string chinamesArray[chi_size] = {
-        "total", "topSystem", "topMass", "hadronic", "nonTop",
-        "leptonicBottom", "leptonicWMass", "lepton_or_antilepton",
-        "leptonicTopMass", "hadronicBottom", "hadronicWMass",
-        "hadronicTopMass", "qFromW", "qbarFromW",
-        "bottom", "antiBottom", "lepton", "antiLepton",
-        "top_topMass", "antiTop_topMass", "Wplus_Wmass", "Wminus_Wmass"};
+    string chinamesArray[chi_size] = {"total",           "topSystem",
+                                      "topMass",         "hadronic",
+                                      "nonTop",          "leptonicBottom",
+                                      "leptonicWMass",   "lepton_or_antilepton",
+                                      "leptonicTopMass", "hadronicBottom",
+                                      "hadronicWMass",   "hadronicTopMass",
+                                      "qFromW",          "qbarFromW",
+                                      "bottom",          "antiBottom",
+                                      "lepton",          "antiLepton",
+                                      "top_topMass",     "antiTop_topMass",
+                                      "Wplus_Wmass",     "Wminus_Wmass"};
     chinames.reserve(chi_size);
     for (int i = 0; i < chi_size; ++i) {
         chinames.push_back(chinamesArray[i]);

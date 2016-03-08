@@ -11,16 +11,17 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
                                      vector<double> nonTopObjectPhiWidths,
                                      vector<double> nonTopObjectEtaWidths,
                                      double mTop, double sigmaMTop, double mW,
-                                     double sigmaMW, double totalTopPx, double totalTopPy, double totalTopPz)
+                                     double sigmaMW, double totalTopPx,
+                                     double totalTopPy, double totalTopPz)
     : nTops_(0), nonTopObjects_(nonTopObjects),
       nonTopObjectPtWidths_(nonTopObjectPtWidths),
       nonTopObjectPhiWidths_(nonTopObjectPhiWidths),
       nonTopObjectEtaWidths_(nonTopObjectEtaWidths), mTop_(mTop),
       sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW),
       totalTopPx_(totalTopPx), totalTopPy_(totalTopPy), totalTopPz_(totalTopPz),
-      dx_(0.), dy_(0.),
-      dz_(0.), nonTopChiSquare_(lightJetChiSquareMinimumSolver(
-                   nonTopObjects.size(), dx_, dy_, dz_, false)),
+      dx_(0.), dy_(0.), dz_(0.),
+      nonTopChiSquare_(lightJetChiSquareMinimumSolver(nonTopObjects.size(), dx_,
+                                                      dy_, dz_, false)),
       maxConsideredChiSquareRoot_(30.)
 {
     // cout << "Basic constructor" << endl;
@@ -48,7 +49,8 @@ topEventMinimizer::topEventMinimizer(
     vector<double> allObjectPhiWidths, vector<double> allObjectEtaWidths,
     vector<int> bJets, vector<int> firstWDaughters,
     vector<int> secondWDaughters, vector<bool> isLeptonicTopDecay, double mTop,
-    double sigmaMTop, double mW, double sigmaMW, double totalTopPx, double totalTopPy, double totalTopPz)
+    double sigmaMTop, double mW, double sigmaMW, double totalTopPx,
+    double totalTopPy, double totalTopPz)
     : nTops_(0), bJets_(bJets), firstWDaughters_(firstWDaughters),
       secondWDaughters_(secondWDaughters), allObjects_(allObjects),
       allObjectPtWidths_(allObjectPtWidths),
@@ -57,8 +59,7 @@ topEventMinimizer::topEventMinimizer(
       isLeptonicTopDecay_(isLeptonicTopDecay), mTop_(mTop),
       sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW),
       totalTopPx_(totalTopPx), totalTopPy_(totalTopPy), totalTopPz_(totalTopPz),
-      dx_(0.), dy_(0.),
-      dz_(0.),
+      dx_(0.), dy_(0.), dz_(0.),
       nonTopChiSquare_(lightJetChiSquareMinimumSolver(
           allObjects.size() - (int)accumulate(isLeptonicTopDecay.begin(),
                                               isLeptonicTopDecay.end(), 0),
@@ -314,9 +315,8 @@ topSystemChiSquare *topEventMinimizer::makeLeptonicTop(
         sigmaMTop, mW, sigmaMW));
 }
 
-topSystemChiSquare *topEventMinimizer::makeHadronicTop(int ibJet,
-                                                       int iWDaughter1,
-                                                       int iWDaughter2)
+topSystemChiSquare *
+topEventMinimizer::makeHadronicTop(int ibJet, int iWDaughter1, int iWDaughter2)
 {
     return dynamic_cast<topSystemChiSquare *>(new hadronicTopSystemChiSquare(
         allObjects_.at(ibJet).Px(), allObjects_.at(ibJet).Py(),
@@ -539,7 +539,7 @@ void topEventMinimizer::getDxDyFromEllipses()
     double sumDeltaTopPx = sumTopPx - totalTopPx_;
     double sumDeltaTopPy = sumTopPy - totalTopPy_;
     double sumDeltaTopPz = sumTopPz - totalTopPz_;
-    //setRecoil(sumTopPx, sumTopPy, sumTopPz);
+    // setRecoil(sumTopPx, sumTopPy, sumTopPz);
     setRecoil(sumDeltaTopPx, sumDeltaTopPy, sumDeltaTopPz);
 }
 
@@ -854,8 +854,8 @@ void topEventMinimizer::minimizeTotalChiSquare()
 
     // std::cout<<"before set functor"<<std::endl;
     // Set up the functor
-    ROOT::Math::Functor func(this,
-                &topEventMinimizer::outerMinimizationOperator, nParameters);
+    ROOT::Math::Functor func(
+        this, &topEventMinimizer::outerMinimizationOperator, nParameters);
 
     // std::cout<<"before setfunc"<<std::endl;
     // Set up the minimization piece:
@@ -1075,23 +1075,29 @@ void topEventMinimizer::getBestDeltas(
     }
 }
 
-double topEventMinimizer::getOneTopMassChiSquare(int iTop){
+double topEventMinimizer::getOneTopMassChiSquare(int iTop)
+{
     return (topSystemChiSquares_.at(iTop)).first->getTopMassChiSquare();
 }
 
-double topEventMinimizer::getOneBChiSquare(int iTop){
-    //cout<<"inside getonebchiSquare"<<endl;
+double topEventMinimizer::getOneBChiSquare(int iTop)
+{
+    // cout<<"inside getonebchiSquare"<<endl;
     double toreturn = (topSystemChiSquares_.at(iTop)).first->getBChiSquare();
     return toreturn;
 }
 
-double topEventMinimizer::getOneWDaughter1ChiSquare(int iTop){
-    double toreturn = (topSystemChiSquares_.at(iTop)).first->getWDaughter1ChiSquare();
+double topEventMinimizer::getOneWDaughter1ChiSquare(int iTop)
+{
+    double toreturn =
+        (topSystemChiSquares_.at(iTop)).first->getWDaughter1ChiSquare();
     return toreturn;
 }
 
-double topEventMinimizer::getOneWMassChiSquare(int iTop){
-    double toreturn = (topSystemChiSquares_.at(iTop)).first->getWMassChiSquare();
+double topEventMinimizer::getOneWMassChiSquare(int iTop)
+{
+    double toreturn =
+        (topSystemChiSquares_.at(iTop)).first->getWMassChiSquare();
     return toreturn;
 }
 

@@ -8,6 +8,7 @@ src/lightJetChiSquareMinimumSolver.o
 src/topEventMinimizer.o
 src/topSystemChiSquare.o
 src/topReconstructionFromLHE_core.o
+src/topReconstructionFromLHE_diagnostics.o
 src/topReconstructionFromLHE_methods.o
 topReconstructionFromLHE
 topReconstructionFromLHE.o
