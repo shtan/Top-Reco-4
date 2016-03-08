@@ -235,8 +235,8 @@ void hadronicTopSystemChiSquare::calcWDaughter2Deltas()
 
     // double deltaPt =abs(log(WDaughter2Pt_/reconstructed_WDaughter2Pt_));
     // //why is there an absolute value?
-    //double deltaPt = log(WDaughter2Pt_ / reconstructed_WDaughter2Pt_);
-    double deltaPt = WDaughter2Pt_-reconstructed_WDaughter2Pt_;
+    // double deltaPt = log(WDaughter2Pt_ / reconstructed_WDaughter2Pt_);
+    double deltaPt = WDaughter2Pt_ - reconstructed_WDaughter2Pt_;
     double deltaEta = WDaughter2Eta_ - reconstructed_WDaughter2Eta_;
     double deltaPhi = WDaughter2Phi_ - reconstructed_WDaughter2Phi_;
     while (deltaPhi > 3.14159265359) {
