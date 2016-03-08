@@ -11,3 +11,6 @@ src/topReconstructionFromLHE_core.o
 src/topReconstructionFromLHE_methods.o
 topReconstructionFromLHE
 topReconstructionFromLHE.o
+plots/*
+output_files/*
+results/*
