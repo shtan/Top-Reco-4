@@ -327,6 +327,9 @@ void topReconstructionFromLHE::Plot(TString dir)
             // < 15 ) ){
 
             FillHists(evh);
+
+            if (debug_verbosity >= 1)
+                Loop_diagnostics(evh);
             //}
             //}
         }
@@ -801,8 +804,8 @@ double topReconstructionFromLHE::Calc_rel_error(handleEvent &evh)
     return err;
 }
 
-double topReconstructionFromLHE::Calc_rel_error_(handleEvent &evh,
-                                                 const string particle)
+inline double topReconstructionFromLHE::Calc_rel_error_(handleEvent &evh,
+                                                        const string particle)
 {
     const auto true_p = evh.trueParticles[particle];
     const auto best_p = evh.bestParticles[particle];
