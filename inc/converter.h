@@ -33,7 +33,7 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>
 class converter
 {
   public:
-    TTree *fChain; //! pointer to the analyzed TTree or TChain
+    TTree *fChain;  //! pointer to the analyzed TTree or TChain
     Int_t fCurrent; //! current Tree number in a TChain
 
     // Fixed size dimensions of array or collections stored in the TTree if any.

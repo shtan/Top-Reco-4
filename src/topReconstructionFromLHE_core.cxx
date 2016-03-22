@@ -327,6 +327,9 @@ void topReconstructionFromLHE::Plot(TString dir)
             // < 15 ) ){
 
             FillHists(evh);
+
+            if (debug_verbosity >= 1)
+                Loop_diagnostics(evh);
             //}
             //}
         }
@@ -343,7 +346,8 @@ void topReconstructionFromLHE::Plot(TString dir)
 }
 
 void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
-                                    const int maxLoops, const int max_evts)
+                                    const int maxLoops, const int first_evt,
+                                    const int last_evt)
 {
     // int whichLoop = 1; int maxLoops = 1;
     //   In a ROOT session, you can do:
@@ -384,10 +388,9 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
     // Long64_t nentries = intree->GetEntries();
     // int jStart = whichLoop*(nentries/maxLoops) +
     // ((whichLoop>(maxLoops-nentries%maxLoops))?(whichLoop+nentries%maxLoops-maxLoops):0);
-    const int jStart = 0;
-    int jFinish = max_evts;
-    if (max_evts < 0)
-        jFinish = jStart + (nentries + whichLoop) / maxLoops;
+    int jFinish = last_evt;
+    if (last_evt < 0)
+        jFinish = first_evt + (nentries + whichLoop) / maxLoops;
 
     // Declare structure (used as a container) to store all the particles
     handleEvent evh(particleNames, names, chinames);
@@ -396,9 +399,9 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
     DeclareOutBranches(evh);
 
     if (debug_verbosity >= 2)
-        cout << "Loop start, finish, n_entries: " << jStart << ", " << jFinish
-             << ", " << nentries << endl;
-    for (Long64_t jentry = jStart; jentry < jFinish; ++jentry) {
+        cout << "Loop start, finish, n_entries: " << first_evt << ", "
+             << jFinish << ", " << nentries << endl;
+    for (Long64_t jentry = first_evt; jentry < jFinish; ++jentry) {
         if (debug_verbosity >= 2)
             cout << "BEGINNING BRANCH NUMBER " << jentry << endl;
         Long64_t ientry = LoadTree(jentry);
@@ -537,7 +540,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         // Set best higgs by adding bFromH and bbarFromH
         *evh.bestParticles["higgs"] =
             *(evh.bestParticles["bFromH"]) + *(evh.bestParticles["bbarFromH"]);
-        
+
         rel_error = Calc_rel_error(evh);
 
         // Fill Hists
@@ -789,7 +792,7 @@ double topReconstructionFromLHE::Calc_rel_error(handleEvent &evh)
     err += Calc_rel_error_(evh, "bbarFromH");
     err += Calc_rel_error_(evh, "qFromW");
     err += Calc_rel_error_(evh, "qbarFromW");
-    
+
     if (evh.leptonFlag == false) {
         err += Calc_rel_error_(evh, "antiLepton");
         err += Calc_rel_error_(evh, "neutrino");
@@ -797,12 +800,12 @@ double topReconstructionFromLHE::Calc_rel_error(handleEvent &evh)
         err += Calc_rel_error_(evh, "lepton");
         err += Calc_rel_error_(evh, "antiNeutrino");
     }
-    
+
     return err;
 }
 
-double topReconstructionFromLHE::Calc_rel_error_(handleEvent &evh,
-                                                 const string particle)
+inline double topReconstructionFromLHE::Calc_rel_error_(handleEvent &evh,
+                                                        const string particle)
 {
     const auto true_p = evh.trueParticles[particle];
     const auto best_p = evh.bestParticles[particle];
@@ -810,7 +813,7 @@ double topReconstructionFromLHE::Calc_rel_error_(handleEvent &evh,
     const double dpx = (true_p->Px() - best_p->Px()) / true_p->Px();
     const double dpy = (true_p->Py() - best_p->Py()) / true_p->Py();
     const double dpz = (true_p->Pz() - best_p->Pz()) / true_p->Pz();
-    
+
     return (dE * dE + dpx * dpx + dpy * dpy + dpz * dpz);
 }
 
