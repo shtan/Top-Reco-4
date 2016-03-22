@@ -14,6 +14,7 @@
 #include "Math/GenVector/LorentzVector.h"
 
 using namespace std;
+using namespace commonstruct;
 
 void topReconstructionFromLHE::DeclareOutBranches(handleEvent &evh)
 {
@@ -493,10 +494,14 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         const double totalTopPz = evh.smearedParticles["top"]->Pz() +
                                   evh.smearedParticles["antiTop"]->Pz();
 
+        top_system topsys(b);
+
         topEventMinimizer ev(nonTopObjects, nonTopObjectPtWidths,
                              nonTopObjectEtaWidths, nonTopObjectPhiWidths, mTop,
                              sigmaMTop, mW, sigmaMW, totalTopPx, totalTopPy,
-                             totalTopPz);
+                             totalTopPz, topsys);
+
+        cout << "LOOKHERE 1 " << topsys.vars.b_delta_pt << endl;
 
         if (debug_verbosity >= 2)
             cout << "Before add tops:" << endl;
@@ -518,6 +523,10 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         ev.minimizeTotalChiSquare();
         if (debug_verbosity >= 2)
             cout << "After minimizeTotalChiSquare()." << endl;
+
+        cout << "LOOKHERE " << topsys.vars.b_delta_pt << endl;
+        topsys.vars.b_delta_pt = 2.3;
+        cout << adder(topsys) << endl;
 
         // h_chi2.Fill(ev.getChiSquare());
 

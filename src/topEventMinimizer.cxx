@@ -6,13 +6,15 @@
 #include <TGraph.h>
 #include <TCanvas.h>
 
+using namespace commonstruct;
+
 topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
                                      vector<double> nonTopObjectPtWidths,
                                      vector<double> nonTopObjectPhiWidths,
                                      vector<double> nonTopObjectEtaWidths,
                                      double mTop, double sigmaMTop, double mW,
                                      double sigmaMW, double totalTopPx,
-                                     double totalTopPy, double totalTopPz)
+                                     double totalTopPy, double totalTopPz, top_system &chab)
     : nTops_(0), nonTopObjects_(nonTopObjects),
       nonTopObjectPtWidths_(nonTopObjectPtWidths),
       nonTopObjectPhiWidths_(nonTopObjectPhiWidths),
@@ -22,7 +24,7 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
       dx_(0.), dy_(0.), dz_(0.),
       nonTopChiSquare_(lightJetChiSquareMinimumSolver(nonTopObjects.size(), dx_,
                                                       dy_, dz_, false)),
-      maxConsideredChiSquareRoot_(30.)
+      maxConsideredChiSquareRoot_(30.), topsys(chab)
 {
     // cout << "Basic constructor" << endl;
 
@@ -50,7 +52,7 @@ topEventMinimizer::topEventMinimizer(
     vector<int> bJets, vector<int> firstWDaughters,
     vector<int> secondWDaughters, vector<bool> isLeptonicTopDecay, double mTop,
     double sigmaMTop, double mW, double sigmaMW, double totalTopPx,
-    double totalTopPy, double totalTopPz)
+    double totalTopPy, double totalTopPz, top_system &chab)
     : nTops_(0), bJets_(bJets), firstWDaughters_(firstWDaughters),
       secondWDaughters_(secondWDaughters), allObjects_(allObjects),
       allObjectPtWidths_(allObjectPtWidths),
@@ -66,7 +68,7 @@ topEventMinimizer::topEventMinimizer(
           dx_, dy_, dz_, false)),
       ellipseAngles_(vector<double>(nTops_, 0.)),
       ellipseAnglesBest_(vector<double>(nTops_, 0.)),
-      maxConsideredChiSquareRoot_(30.)
+      maxConsideredChiSquareRoot_(30.), topsys(chab)
 {
     // cout << "constructor with input tops" << endl;
 
@@ -234,6 +236,10 @@ void topEventMinimizer::initializeDeltas()
         cerr << "No tops have been added yet!" << endl;
         return;
     }
+
+    topsys.vars.b_delta_pt = 6.8;
+    //double blah = tester();
+    cout << "ADDER " << adder(topsys) << endl;
 
     bJets_PtDeltas_ = vector<double>(nTops_, 0.);
     bJets_PhiDeltas_ = vector<double>(nTops_, 0.);

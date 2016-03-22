@@ -6,8 +6,11 @@
 #include "hadronicTopSystemChiSquare.h"
 #include "leptonicTopSystemChiSquare.h"
 #include "lightJetChiSquareMinimumSolver.h"
+#include "commonstruct.h"
 #include "TLorentzVector.h"
 #include <map>
+
+//using namespace commonstruct;
 
 class topEventMinimizer
 {
@@ -169,6 +172,8 @@ class topEventMinimizer
     // typedef void (topEventMinimizer::FnTestPtr)();
     // map < string, FnTestPtr* > testMap;
 
+    commonstruct::top_system & topsys;
+
   public:
     // flags
     const bool debug = true;
@@ -183,10 +188,10 @@ class topEventMinimizer
     // functions
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, vector<int>, vector<int>, vector<int>,
-                      vector<bool>, double, double, double, double, double, double, double);
+                      vector<bool>, double, double, double, double, double, double, double, commonstruct::top_system&);
 
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
-                      vector<double>, double, double, double, double, double, double, double);
+                      vector<double>, double, double, double, double, double, double, double, commonstruct::top_system&);
 
     ~topEventMinimizer();
 
