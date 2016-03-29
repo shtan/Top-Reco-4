@@ -8,6 +8,55 @@
 
 using namespace commonstruct;
 
+topEventMinimizer::topEventMinimizer(big_struct & bigstructure,
+                                     vector<XYZTLorentzVector> nonTopObjects,
+                                     vector<double> nonTopObjectPtWidths,
+                                     vector<double> nonTopObjectPhiWidths,
+                                     vector<double> nonTopObjectEtaWidths,
+                                     double mTop, double sigmaMTop, double mW,
+                                     double sigmaMW, double totalTopPx,
+                                     double totalTopPy, double totalTopPz)
+    : bigstruct(bigstructure),
+      dx_(0.), dy_(0.), dz_(0.),
+      nonTopChiSquare_(lightJetChiSquareMinimumSolver(bigstruct.nontops->input.jet_pt.size(), dx_,
+                                                      dy_, dz_, false)),
+{
+    // cout << "Basic constructor" << endl;
+    nTops_ = 0;
+    totalTopPx_ = totalTopPx;
+    totalTopPy_ = totalTopPy;
+    totalTopPz_ = totalTopPz;
+    nonTopObjects_ = nonTopObjects;
+    nonTopObjectPtWidths_ = nonTopObjectPtWidths;
+    nonTopObjectPhiWidths_ = nonTopObjectPhiWidths;
+    nonTopObjectEtaWidths_ = nonTopObjectEtaWidths;
+    mTop_ = mTop;
+    sigmaMTop_ = sigmaMTop;
+    mW_ = mW;
+    sigmaMW_ = sigmaMW;
+    maxConsideredChiSquareRoot_ = 30;
+
+    setupMap();
+
+    calcNonTopMomentum();
+
+    nonTopChiSquare_.setupEquations(nonTopObjects_, nonTopObjectPtWidths_,
+                                    nonTopObjectPhiWidths_,
+                                    nonTopObjectEtaWidths_);
+
+
+    nonTopObjects_PxDeltasBest_ = vector<double>(nonTopObjects.size(), 0.);
+    nonTopObjects_PyDeltasBest_ = vector<double>(nonTopObjects.size(), 0.);
+
+    initializeChiSquares();
+    Initialize_minimizers(outerMin_, innerMin_);
+
+    innerMinStatus = -1;
+    outerMinStatus = -1;
+    outerMin_Edm = -1;
+}
+
+
 topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
                                      vector<double> nonTopObjectPtWidths,
                                      vector<double> nonTopObjectPhiWidths,
@@ -15,18 +64,25 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
                                      double mTop, double sigmaMTop, double mW,
                                      double sigmaMW, double totalTopPx,
                                      double totalTopPy, double totalTopPz, top_system &chab)
-    : nTops_(0), nonTopObjects_(nonTopObjects),
-      nonTopObjectPtWidths_(nonTopObjectPtWidths),
-      nonTopObjectPhiWidths_(nonTopObjectPhiWidths),
-      nonTopObjectEtaWidths_(nonTopObjectEtaWidths), mTop_(mTop),
-      sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW),
-      totalTopPx_(totalTopPx), totalTopPy_(totalTopPy), totalTopPz_(totalTopPz),
-      dx_(0.), dy_(0.), dz_(0.),
+    : dx_(0.), dy_(0.), dz_(0.),
       nonTopChiSquare_(lightJetChiSquareMinimumSolver(nonTopObjects.size(), dx_,
                                                       dy_, dz_, false)),
-      maxConsideredChiSquareRoot_(30.), topsys(chab)
+      topsys(chab)
 {
     // cout << "Basic constructor" << endl;
+    nTops_ = 0;
+    totalTopPx_ = totalTopPx;
+    totalTopPy_ = totalTopPy;
+    totalTopPz_ = totalTopPz;
+    nonTopObjects_ = nonTopObjects;
+    nonTopObjectPtWidths_ = nonTopObjectPtWidths;
+    nonTopObjectPhiWidths_ = nonTopObjectPhiWidths;
+    nonTopObjectEtaWidths_ = nonTopObjectEtaWidths;
+    mTop_ = mTop;
+    sigmaMTop_ = sigmaMTop;
+    mW_ = mW;
+    sigmaMW_ = sigmaMW;
+    maxConsideredChiSquareRoot_ = 30;
 
     setupMap();
 
@@ -40,6 +96,7 @@ topEventMinimizer::topEventMinimizer(vector<XYZTLorentzVector> nonTopObjects,
     nonTopObjects_PyDeltasBest_ = vector<double>(nonTopObjects.size(), 0.);
 
     initializeChiSquares();
+    Initialize_minimizers(outerMin_, innerMin_);
 
     innerMinStatus = -1;
     outerMinStatus = -1;
@@ -53,24 +110,31 @@ topEventMinimizer::topEventMinimizer(
     vector<int> secondWDaughters, vector<bool> isLeptonicTopDecay, double mTop,
     double sigmaMTop, double mW, double sigmaMW, double totalTopPx,
     double totalTopPy, double totalTopPz, top_system &chab)
-    : nTops_(0), bJets_(bJets), firstWDaughters_(firstWDaughters),
-      secondWDaughters_(secondWDaughters), allObjects_(allObjects),
-      allObjectPtWidths_(allObjectPtWidths),
-      allObjectPhiWidths_(allObjectPhiWidths),
-      allObjectEtaWidths_(allObjectEtaWidths),
-      isLeptonicTopDecay_(isLeptonicTopDecay), mTop_(mTop),
-      sigmaMTop_(sigmaMTop), mW_(mW), sigmaMW_(sigmaMW),
-      totalTopPx_(totalTopPx), totalTopPy_(totalTopPy), totalTopPz_(totalTopPz),
-      dx_(0.), dy_(0.), dz_(0.),
+    : dx_(0.), dy_(0.), dz_(0.),
       nonTopChiSquare_(lightJetChiSquareMinimumSolver(
           allObjects.size() - (int)accumulate(isLeptonicTopDecay.begin(),
                                               isLeptonicTopDecay.end(), 0),
           dx_, dy_, dz_, false)),
-      ellipseAngles_(vector<double>(nTops_, 0.)),
-      ellipseAnglesBest_(vector<double>(nTops_, 0.)),
-      maxConsideredChiSquareRoot_(30.), topsys(chab)
+      topsys(chab)
 {
     // cout << "constructor with input tops" << endl;
+    nTops_ = 0;
+    bJets_ = bJets;
+    firstWDaughters_ = firstWDaughters;
+    secondWDaughters_ = secondWDaughters;
+    allObjects_ = allObjects;
+    allObjectPtWidths_ = allObjectPtWidths;
+    allObjectPhiWidths_ = allObjectPhiWidths;
+    allObjectEtaWidths_ = allObjectEtaWidths;
+    isLeptonicTopDecay_ = isLeptonicTopDecay;
+    mTop_ = mTop;
+    sigmaMTop_ = sigmaMTop;
+    mW_ = mW;
+    sigmaMW_ = sigmaMW;
+    totalTopPx_ = totalTopPx;
+    totalTopPy_ = totalTopPy;
+    totalTopPz_ = totalTopPz;
+    maxConsideredChiSquareRoot_ = 30;
 
     setupMap();
 
@@ -97,18 +161,33 @@ topEventMinimizer::topEventMinimizer(
 
     initializeChiSquares();
     initializeDeltas();
+    Initialize_minimizers(outerMin_, innerMin_);
 
     innerMinStatus = -1;
     outerMinStatus = -1;
     outerMin_Edm = -1;
 }
 
+void topEventMinimizer::Initialize_minimizers(ROOT::Math::Minimizer *&outer,
+                                              ROOT::Math::Minimizer *&inner)
+{
+    outer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
+    outer->SetMaxFunctionCalls(1000000);
+    outer->SetTolerance(0.001);
+    outer->SetPrintLevel(5);
+
+    inner = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
+    inner->SetMaxFunctionCalls(1000000);
+    inner->SetTolerance(0.001);
+    inner->SetPrintLevel(0);
+}
+
 topEventMinimizer::~topEventMinimizer()
 {
     // cout << "destructor" << endl;
 
-    // delete innerMin_;
-    // delete outerMin;
+    delete outerMin_;
+    delete innerMin_;
 }
 
 void topEventMinimizer::setupMap()
@@ -668,11 +747,6 @@ void topEventMinimizer::minimizeNonTopChiSquare()
 {
     // cout << "Doing inner minimization" << endl;
 
-    innerMin_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
-    innerMin_->SetMaxFunctionCalls(1000000);
-    innerMin_->SetTolerance(0.001);
-    innerMin_->SetPrintLevel(0);
-
     // cout<<"before infunctor"<<endl;
     // Set up the functor
     ROOT::Math::Functor innerFunc(
@@ -848,26 +922,20 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 
 void topEventMinimizer::minimizeTotalChiSquare()
 {
-    // std::cout<<"at min"<<std::endl;
-    ROOT::Math::Minimizer *outerMin =
-        ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
-    outerMin->SetMaxFunctionCalls(1000000);
-    outerMin->SetTolerance(0.001);
-    outerMin->SetPrintLevel(5);
-
+    //     std::cout<<"at min"<<std::endl;
     const int nParameters = 7 * nTops_; // 3 per b-jet + 3 per W daughter 1 + 1
                                         // per W mass = 7 per top system
 
-    // std::cout<<"before set functor"<<std::endl;
+    //     std::cout<<"before set functor"<<std::endl;
     // Set up the functor
     ROOT::Math::Functor func(
         this, &topEventMinimizer::outerMinimizationOperator, nParameters);
 
-    // std::cout<<"before setfunc"<<std::endl;
+    //     std::cout<<"before setfunc"<<std::endl;
     // Set up the minimization piece:
-    outerMin->SetFunction(func);
+    outerMin_->SetFunction(func);
 
-    // std::cout<<"before set min param"<<std::endl;
+    //     std::cout<<"before set min param"<<std::endl;
     // Setup the minimizer parameters
 
     int iPar = 0, iTop = 0;
@@ -878,43 +946,43 @@ void topEventMinimizer::minimizeTotalChiSquare()
         convert << iTop;
         const string iTop_str = convert.str();
         const string par1 = "bJetPtDelta_" + iTop_str;
-        outerMin->SetLimitedVariable(iPar, par1, bJets_PtDeltas_.at(iTop), 0.1,
-                                     -max, max);
+        outerMin_->SetLimitedVariable(iPar, par1, bJets_PtDeltas_.at(iTop), 0.1,
+                                      -max, max);
         ++iPar;
         const string par2 = "bJetPhiDelta_" + iTop_str;
-        outerMin->SetLimitedVariable(iPar, par2, bJets_PhiDeltas_.at(iTop), 0.1,
-                                     -max, max);
+        outerMin_->SetLimitedVariable(iPar, par2, bJets_PhiDeltas_.at(iTop),
+                                      0.1, -max, max);
         ++iPar;
         const string par3 = "bJetEtaDelta_" + iTop_str;
-        outerMin->SetLimitedVariable(iPar, par3, bJets_EtaDeltas_.at(iTop), 0.1,
-                                     -max, max);
+        outerMin_->SetLimitedVariable(iPar, par3, bJets_EtaDeltas_.at(iTop),
+                                      0.1, -max, max);
         ++iPar;
         const string par4 = "WDaughter1PtDelta_" + iTop_str;
-        outerMin->SetLimitedVariable(
+        outerMin_->SetLimitedVariable(
             iPar, par4, firstWDaughters_PtDeltas_.at(iTop), 0.1, -max, max);
         ++iPar;
         const string par5 = "WDaughter1PhiDelta_" + iTop_str;
-        outerMin->SetLimitedVariable(
+        outerMin_->SetLimitedVariable(
             iPar, par5, firstWDaughters_PhiDeltas_.at(iTop), 0.1, -max, max);
         ++iPar;
         const string par6 = "WDaughter1EtaDelta_" + iTop_str;
-        outerMin->SetLimitedVariable(
+        outerMin_->SetLimitedVariable(
             iPar, par6, firstWDaughters_EtaDeltas_.at(iTop), 0.1, -max, max);
         ++iPar;
         const string par7 = "deltaMW_" + iTop_str;
-        outerMin->SetLimitedVariable(iPar, par7, WMassDeltas_.at(iTop), 0.1,
-                                     -max, max);
+        outerMin_->SetLimitedVariable(iPar, par7, WMassDeltas_.at(iTop), 0.1,
+                                      -max, max);
         ++iPar;
     }
 
     // std::cout<<"before minimize"<<std::endl;
     // cout << "Starting outer minimization" << endl;
-    outerMin->Minimize();
+    outerMin_->Minimize();
 
     // std::cout<<"after minimise"<<std::endl;
 
     // cout << "Minimum chi^2 values reported by Minuit:" << endl;
-    // cout << "Total chi^2 is " << outerMin->MinValue() << endl;
+    // cout << "Total chi^2 is " << outerMin_->MinValue() << endl;
     // cout << "Inner chi^2 is " << innerMin_->MinValue() << endl;
 
     // cout << "Minimum values I found:" << endl;
@@ -930,22 +998,20 @@ void topEventMinimizer::minimizeTotalChiSquare()
     // cout << "Best top system chi^2 is " << topChi2Best_ << endl;
 
     // cout << "Printing outer min results" << endl;
-    outerMin->SetPrintLevel(1);
-    outerMin->PrintResults();
-    cout << "Outer min status is " << outerMin->Status() << endl;
+    outerMin_->SetPrintLevel(1);
+    outerMin_->PrintResults();
+    cout << "Outer min status is " << outerMin_->Status() << endl;
 
     // cout << "Printing inner min results" << endl;
     innerMin_->SetPrintLevel(4);
     innerMin_->PrintResults();
     cout << "Inner min status is " << innerMin_->Status() << endl;
 
-    outerMinStatus = outerMin->Status();
+    outerMinStatus = outerMin_->Status();
     innerMinStatus = innerMin_->Status();
-    outerMin_Edm = outerMin->Edm();
+    outerMin_Edm = outerMin_->Edm();
 
     setBestValues();
-
-    delete outerMin;
 }
 
 void topEventMinimizer::setBestValues()

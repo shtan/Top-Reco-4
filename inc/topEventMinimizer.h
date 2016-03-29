@@ -130,6 +130,7 @@ class topEventMinimizer
     // ROOT::Math::Minimizer* ellipseAngleMin_;
     // ROOT::Math::Minimizer* topMassMin_;
     ROOT::Math::Minimizer *innerMin_;
+    ROOT::Math::Minimizer *outerMin_;
 
     bool checkInputSizes();
 
@@ -139,6 +140,8 @@ class topEventMinimizer
 
     //  void initializeDeltas();
     void initializeChiSquares();
+    void Initialize_minimizers(ROOT::Math::Minimizer *&outer,
+                               ROOT::Math::Minimizer *&inner);
 
     void setRecoil(double, double, double);
 
@@ -177,21 +180,22 @@ class topEventMinimizer
   public:
     // flags
     const bool debug = true;
-    
+
     // status observables
     int innerMinStatus;
     int outerMinStatus;
-    
+
     double outerMin_Edm;
-    
-    
+
     // functions
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, vector<int>, vector<int>, vector<int>,
-                      vector<bool>, double, double, double, double, double, double, double, commonstruct::top_system&);
+                      vector<bool>, double, double, double, double, double,
+                      double, double, commonstruct::top_system&);
 
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
-                      vector<double>, double, double, double, double, double, double, double, commonstruct::top_system&);
+                      vector<double>, double, double, double, double, double,
+                      double, double, commonstruct::top_system&);
 
     ~topEventMinimizer();
 

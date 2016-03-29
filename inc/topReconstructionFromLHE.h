@@ -33,7 +33,8 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>
 }*/
 
 // Declaration and definition of structure
-class handleEvent {
+class handleEvent
+{
   public:
     // ROOT needs double pointer (**) to update containers, i.e., vectors
     map<string, XYZTLorentzVector *> trueParticles, smearedParticles,
@@ -63,15 +64,14 @@ class handleEvent {
             chiSquareds[name] = double();
         }
     }
-    
+
     // clears a map of pointers
-    template<class LV_pointer_map>
-    void Clear_map(LV_pointer_map &m)
+    template <class LV_pointer_map> void Clear_map(LV_pointer_map &m)
     {
         for (auto it = m.begin(); it != m.end(); ++it)
             delete (*it).second;
     }
-    
+
     ~handleEvent()
     {
         // clears maps of pointers
@@ -89,13 +89,13 @@ class topReconstructionFromLHE
   public:
     // verbosity
     int debug_verbosity;
-    
+
     // parameters
     double mTop, mW;
     double sigmaMTop, sigmaMW, sigmaPtLep, sigmaPhiLep, sigmaEtaLep,
-           sigmaPhiJet, sigmaEtaJet;
-    
-    TTree *fChain; //! pointer to the analyzed TTree or TChain
+        sigmaPhiJet, sigmaEtaJet;
+
+    TTree *fChain;  //! pointer to the analyzed TTree or TChain
     Int_t fCurrent; //! current Tree number in a TChain
 
     TFile *inFilePlot;
@@ -153,7 +153,7 @@ class topReconstructionFromLHE
     Int_t GetEntry(Long64_t entry);
     Long64_t LoadTree(Long64_t entry);
     void Init(TTree *tree);
-    void Loop(TString, const int, const int, const int);
+    void Loop(TString, const int, const int, const int, const int);
     Bool_t Notify();
     void Show(Long64_t entry = -1);
     void printVector(XYZTLorentzVector &);
@@ -186,7 +186,7 @@ class topReconstructionFromLHE
     double outerMinEdm;
     double rel_error;
 
-//     bool smearingSwitchedLightJetOrdering;
+    //     bool smearingSwitchedLightJetOrdering;
 
   private:
     typedef void (*FnPtr)(int, double, double, double, double);
@@ -196,17 +196,16 @@ class topReconstructionFromLHE
     void DeclareHists();
     void FillHists(handleEvent &);
     void FillHists_(const XYZTLorentzVector *, const XYZTLorentzVector *,
-                    const string &, const string &,
-                    hmap3 &);
+                    const string &, const string &, hmap3 &);
     void FillLH(handleEvent &);
     void DeclareCanvases();
     void PlotHists();
     void DeclareOutBranches(handleEvent &);
     void DeclareInBranchesForPlotting(handleEvent &);
-    void PrintMass(string, handleEvent&);
-    void PrintPt(string, handleEvent&);
-    void PrintPhi(string, handleEvent&);
-    void PrintEta(string, handleEvent&);
+    void PrintMass(string, handleEvent &);
+    void PrintPt(string, handleEvent &);
+    void PrintPhi(string, handleEvent &);
+    void PrintEta(string, handleEvent &);
 
     void Loop_diagnostics(handleEvent &);
     void Loop_load_eventh_SM(handleEvent &);
@@ -215,18 +214,19 @@ class topReconstructionFromLHE
     void Loop_fill_results_SM(topEventMinimizer &, handleEvent &);
     void Print_smear_bs_SM(handleEvent &);
     void Print_smear_tt_SM(handleEvent &);
-    
+
     string Get_pname(const string &, const string &);
-    
+
     double Calc_rel_error(handleEvent &);
-    double Calc_rel_error_(handleEvent &, const string);
+    inline double Calc_rel_error_(handleEvent &, const string);
 
     XYZTLorentzVector testvec;
 
     // handleEvent evh_outside;
 
-    vector<string> varTypes = {"Pt", "Eta", "Phi", "M", "Px", "Py", "Pz", "E",
-                               "Pt_", "Eta_", "Phi_", "M_", "Px_", "Py_", "Pz_", "E_"};
+    vector<string> varTypes = {"Pt",  "Eta", "Phi", "M",    "Px",   "Py",
+                               "Pz",  "E",   "Pt_", "Eta_", "Phi_", "M_",
+                               "Px_", "Py_", "Pz_", "E_"};
     vector<string> difTypes = {"smearedTrue", "bestTrue"};
 
     vector<vector<string>> nameMap = {
