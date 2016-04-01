@@ -1,6 +1,13 @@
 #include "hadronicTopSystemChiSquare.h"
 
-hadronicTopSystemChiSquare::hadronicTopSystemChiSquare(
+using namespace commonstruct;
+
+hadronicTopSystemChiSquare::hadronicTopSystemChiSquare( top_system &topsystem )
+    : topSystemChiSquare( topsystem )
+{
+}
+
+/*hadronicTopSystemChiSquare::hadronicTopSystemChiSquare(
     const double &bJetPx, const double &bJetPy, const double &bJetPz,
     const double &bJetE, const double &bJetPtWidth, const double &bJetEtaWidth,
     const double &bJetPhiWidth, const double &measJet1Px,
@@ -56,7 +63,7 @@ hadronicTopSystemChiSquare::hadronicTopSystemChiSquare(
     setWMassWidth(sigmaMW);
 
     // printTopConstituents();
-}
+}*/
 
 hadronicTopSystemChiSquare::~hadronicTopSystemChiSquare()
 {
@@ -69,42 +76,42 @@ void hadronicTopSystemChiSquare::printTopConstituents()
     //  cout << "In the derived class:" << endl;
     cout
         << "b-jet: "
-        << "\npx = " << bJetPx_ << "\npy = " << bJetPy_ << "\npz = " << bJetPz_
-        << "\ne  = " << bJetE_
+        << "\npx = " << topsys.calc.b_px() << "\npy = " << topsys.calc.b_py() << "\npz = " << topsys.calc.b_pz()
+        << "\ne  = " << topsys.calc.b_e()
         //       << "\nm  = " <<
-        //       sqrt(max(0.,bJetE_*bJetE_-bJetPx_*bJetPx_-bJetPy_*bJetPy_-bJetPz_*bJetPz_))
+        //       sqrt(max(0.,topsys.calc.b_e()*topsys.calc.b_e()-topsys.calc.b_px()*topsys.calc.b_px()-topsys.calc.b_py()*topsys.calc.b_py()-topsys.calc.b_pz()*topsys.calc.b_pz()))
         << endl;
 
     cout
         << "first light quark: "
-        << "\npx = " << WDaughter1Px_ << "\npy = " << WDaughter1Py_
-        << "\npz = " << WDaughter1Pz_ << "\ne  = " << WDaughter1E_
+        << "\npx = " << topsys.calc.Wd1_px() << "\npy = " << topsys.calc.Wd1_py()
+        << "\npz = " << topsys.calc.Wd1_pz() << "\ne  = " << topsys.calc.Wd1_e()
         //       << "\nm  = " <<
-        //       sqrt(max(0.,WDaughter1E_*WDaughter1E_-WDaughter1Px_*WDaughter1Px_-WDaughter1Py_*WDaughter1Py_-WDaughter1Pz_*WDaughter1Pz_))
+        //       sqrt(max(0.,topsys.calc.Wd1_e()*topsys.calc.Wd1_e()-topsys.calc.Wd1_px()*topsys.calc.Wd1_px()-topsys.calc.Wd1_py()*topsys.calc.Wd1_py()-topsys.calc.Wd1_pz()*topsys.calc.Wd1_pz()))
         << endl;
 
     cout
         << "second light quark: "
-        << "\npx = " << WDaughter2Px_ << "\npy = " << WDaughter2Py_
-        << "\npz = " << WDaughter2Pz_ << "\ne  = " << WDaughter2E_
+        << "\npx = " << topsys.vars.Wd2_px << "\npy = " << topsys.vars.Wd2_py
+        << "\npz = " << topsys.vars.Wd2_pz << "\ne  = " << topsys.calc.Wd2_e()
         //       << "\nm  = " <<
-        //       sqrt(max(0.,WDaughter2E_*WDaughter2E_-WDaughter2Px_*WDaughter2Px_-WDaughter2Py_*WDaughter2Py_-WDaughter2Pz_*WDaughter2Pz_))
+        //       sqrt(max(0.,WDaughter2E_*WDaughter2E_-topsys.calc.Wd2_px()*topsys.calc.Wd2_px()-WDaughter2Py_*WDaughter2Py_-WDaughter2Pz_*WDaughter2Pz_))
         //       << "\nreco m = " << sqrt(reconstructed_WDaughter2Mass2_)
         << endl;
 
-    cout << "top mass: " << getTopMass() << endl;
+    cout << "top mass: " << topsys.calc.mTop() << endl;
 
-    cout << "W mass: " << getWMass() << endl;
+    cout << "W mass: " << topsys.calc.mW() << endl;
 
     //  cout << "reconstructed second light quark: "
-    //       << "\npx = " << reconstructed_WDaughter2Px_
+    //       << "\npx = " << reconstructed_topsys.calc.Wd2_px()
     //       << "\npy = " << reconstructed_WDaughter2Py_
     //       << "\npz = " << reconstructed_WDaughter2Pz_
     //       << "\ne  = " << reconstructed_WDaughter2E_
     //       << endl;
     //
     //  cout << "Second W daughter momentum:"
-    //       << "\npx = " << topSystemChiSquare::WDaughter2Px_
+    //       << "\npx = " << topSystemChiSquare::topsys.calc.Wd2_px()
     //       << "\npy = " << topSystemChiSquare::WDaughter2Py_
     //       << "\npz = " << topSystemChiSquare::WDaughter2Pz_
     //       << endl;
@@ -112,15 +119,15 @@ void hadronicTopSystemChiSquare::printTopConstituents()
     //  getTopMassRange(low,high);
 }
 
-void hadronicTopSystemChiSquare::setEllipseAngle(double theta)
+void hadronicTopSystemChiSquare::setEllipseAngle()
 {
-    theta_ = theta;
-    resetWDaughter2(theta_);
-    calcWDaughter2Deltas();
-    calcTopMomentum();
+    //theta_ = theta;
+    resetWDaughter2();
+    //calcWDaughter2Deltas();
+    //calcTopMomentum();
 }
 
-void hadronicTopSystemChiSquare::setWDaughter2(double px, double py, double pz)
+/*void hadronicTopSystemChiSquare::setWDaughter2(double px, double py, double pz)
 {
     WDaughter2Px_ = px;
     WDaughter2Py_ = py;
@@ -133,7 +140,7 @@ void hadronicTopSystemChiSquare::setWDaughter2(double px, double py, double pz)
         sqrt(WDaughter2Px_ * WDaughter2Px_ + WDaughter2Py_ * WDaughter2Py_);
     WDaughter2Phi_ = atan2(WDaughter2Py_, WDaughter2Px_);
     WDaughter2Eta_ = asinh(WDaughter2Pz_ / WDaughter2Pt_);
-}
+}*/
 
 // FIXME is this function necessary?
 // typically, set ellipse angle -> calculate momentum -> recalculate deltas
@@ -168,7 +175,7 @@ void hadronicTopSystemChiSquare::setWDaughter2(double px, double py, double pz)
 ////       << endl;
 //}
 
-void hadronicTopSystemChiSquare::getWDaughter2Deltas(double &ptDelta,
+/*void hadronicTopSystemChiSquare::getWDaughter2Deltas(double &ptDelta,
                                                      double &phiDelta,
                                                      double &etaDelta)
 {
@@ -178,9 +185,9 @@ void hadronicTopSystemChiSquare::getWDaughter2Deltas(double &ptDelta,
     ptDelta = WDaughter2PtDelta_;
     phiDelta = WDaughter2PhiDelta_;
     etaDelta = WDaughter2EtaDelta_;
-}
+}*/
 
-void hadronicTopSystemChiSquare::setWDaughter2Deltas(double ptDelta,
+/*void hadronicTopSystemChiSquare::setWDaughter2Deltas(double ptDelta,
                                                      double phiDelta,
                                                      double etaDelta)
 {
@@ -209,9 +216,9 @@ void hadronicTopSystemChiSquare::setWDaughter2Deltas(double ptDelta,
     WDaughter2PtDelta_ = ptDelta;
     WDaughter2PhiDelta_ = phiDelta;
     WDaughter2EtaDelta_ = etaDelta;
-}
+}*/
 
-void hadronicTopSystemChiSquare::calcWDaughter2Deltas()
+/*void hadronicTopSystemChiSquare::calcWDaughter2Deltas()
 {
     //  cout << "Calculating second W daughter deltas" << endl;
     //  cout << "Second W daughter momentum (cartesian coordinates):"
@@ -247,15 +254,15 @@ void hadronicTopSystemChiSquare::calcWDaughter2Deltas()
     }
     // deltaPhi /= WDaughter2PhiWidth_;
     setWDaughter2Deltas(deltaPt, deltaPhi, deltaEta);
-}
+}*/
 
 void hadronicTopSystemChiSquare::printWDaughter2()
 {
     cout << "Current second light quark: "
-         << "\npt  = " << WDaughter2Pt_ << "\nphi = " << WDaughter2Phi_
-         << "\neta = " << WDaughter2Eta_ << endl;
+         << "\npt  = " << topsys.calc.Wd2_pt() << "\nphi = " << topsys.calc.Wd2_phi()
+         << "\neta = " << topsys.calc.Wd2_eta() << endl;
 
-    cout << "theta is " << theta_ << endl;
+    cout << "theta is " << topsys.vars.theta << endl;
 
     //  cout << "reconstructed second light quark: "
     //       << "\npt  = " << reconstructed_WDaughter2Pt_
@@ -263,16 +270,16 @@ void hadronicTopSystemChiSquare::printWDaughter2()
     //       << "\neta = " << reconstructed_WDaughter2Eta_
     //       << endl;
     //
-    cout << "delta pt  = " << WDaughter2PtDelta_
-         << "\ndelta phi = " << WDaughter2PhiDelta_
-         << "\ndelta eta = " << WDaughter2EtaDelta_ << endl;
+    cout << "dif pt  = " << topsys.calc.Wd2_dif_pt()
+         << "\ndif phi = " << topsys.calc.Wd2_dif_phi()
+         << "\ndif eta = " << topsys.calc.Wd2_dif_eta() << endl;
 
     // cout << "second W daughter ellipse in homogeneous coordinates:" << endl;
     // TMatrixD* a=getHomogeneousWDaughterEllipse();
     // a->Print();
 }
 
-double hadronicTopSystemChiSquare::getBChiSquare()
+/*double hadronicTopSystemChiSquare::getBChiSquare()
 {
     double bchi2 = bJetPtDelta_ * bJetPtDelta_ + bJetPhiDelta_ * bJetPhiDelta_ +
                    bJetEtaDelta_ * bJetEtaDelta_;
@@ -309,15 +316,15 @@ void hadronicTopSystemChiSquare::calcChiSquare()
         //    minimization
         + breitWignerError(mW_, sigmaMW_, deltaMW_);
     //    +deltaMW_*deltaMW_;
-}
+}*/
 
-double hadronicTopSystemChiSquare::getChiSquare()
+/*double hadronicTopSystemChiSquare::getChiSquare()
 {
     calcChiSquare();
     return chi2_;
-}
+}*/
 
-double hadronicTopSystemChiSquare::getHadronicChiSquare()
+/*double hadronicTopSystemChiSquare::getHadronicChiSquare()
 {
     // calcWDaughter2Deltas();
     // cout << "Current second W daughter pt delta is " << WDaughter2PtDelta_ <<
@@ -332,4 +339,4 @@ double hadronicTopSystemChiSquare::getHadronicChiSquare()
     // cout << "Hadronic top decay: second W daughter chi square is " << hadChi2
     // << endl;
     return hadChi2;
-}
+}*/

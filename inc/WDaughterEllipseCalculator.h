@@ -22,14 +22,19 @@
 #include "Math/RootFinderAlgorithms.h"
 #include "Math/Polynomial.h"
 
+#include "commonstruct.h"
+
 using namespace std;
 using namespace ROOT::Math;
+//using namespace commonstruct;
 
 class WDaughterEllipseCalculator
 {
 
   private:
-    const double &bJetPx_;
+    commonstruct::top_system &topsys;
+
+    /*const double &bJetPx_;
     const double &bJetPy_;
     const double &bJetPz_;
     const double &bJetE_;
@@ -37,19 +42,20 @@ class WDaughterEllipseCalculator
     const double &WDaughter1Px_;
     const double &WDaughter1Py_;
     const double &WDaughter1Pz_;
-    const double &WDaughter1E_;
+    const double &WDaughter1E_;*/
 
     double bJetP2_, bJetP_, bJetMass2_;
     double bJetBeta_, bJetBeta2_, bJetGamma_, bJetGamma2_;
     double WDaughter1Beta_, WDaughter1Beta2_, WDaughter1Gamma_,
         WDaughter1Gamma2_;
     double WDaughter1P2_, WDaughter1P_, WDaughter1Mass2_;
-    double WDaughter1Phi_, WDaughter1Theta_;
+    //double WDaughter1Phi_;
+    double WDaughter1Theta_;
 
     // particle masses
-    double mW_, mTop_, WDaughter2Mass_;
-    double mW2_, mTop2_, WDaughter2Mass2_;
-    double mTopAssumed_;
+    //double mW_, mTop_, WDaughter2Mass_;
+    //double mW2_, mTop2_, WDaughter2Mass2_;
+    //double mTopAssumed_;
 
     // parameters
     double x0_, x0p_;
@@ -77,13 +83,13 @@ class WDaughterEllipseCalculator
     TVectorD WDaughterPerp_;
     TVectorD pWDaughter_;
 
-    double mTopEdgeLow_, mTopEdgeHigh_;
+    //double mTopEdgeLow_, mTopEdgeHigh_;
 
   public:
     void setBJetFactors();
     void setMeasuredWDaughterFactors();
 
-    double getZ2(double, double, double);
+    //double getZ2(double, double, double);
     double getZ2();
 
     void setAngles();
@@ -101,25 +107,29 @@ class WDaughterEllipseCalculator
 
     bool errorFlag_;
 
-    WDaughterEllipseCalculator(const double &, const double &, const double &,
+    WDaughterEllipseCalculator( commonstruct::top_system& );
+    //WDaughterEllipseCalculator( top_system& );
+/*    WDaughterEllipseCalculator(const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &);
     WDaughterEllipseCalculator(const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &, double, double,
                                double);
-
+*/
     ~WDaughterEllipseCalculator();
 
     bool badPoint() { return errorFlag_; };
 
-    void setupEllipse(double, double, double);
+    //void setupEllipse();
+    void preSetupEllipse();
+    void setupEllipsePart2();
 
     // void setBJet(const double , const double, const double , const double );
     // void setLepton(const double , const double, const double , const double
     // );
 
-    void setTopMass(double &mTop)
+/*    void setTopMass(double &mTop)
     {
         mTop_ = mTop;
         mTop2_ = mTop_ * mTop_;
@@ -139,11 +149,11 @@ class WDaughterEllipseCalculator
     double getTopMass() { return mTop_; };
     double getTopMassEdgeLow() { return mTopEdgeLow_; };
     double getTopMassEdgeHigh() { return mTopEdgeHigh_; };
-
+*/
     TMatrixD *getHomogeneousWDaughterEllipse();
     TMatrixD *getExtendedWDaughterEllipse();
 
-    TVectorD *getWDaughterMomentum(double theta);
+    void getWDaughterMomentum();
 
     void calcWDaughterEllipse();
     void calcExtendedWDaughterEllipse();

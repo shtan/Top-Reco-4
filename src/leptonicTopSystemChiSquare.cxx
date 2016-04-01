@@ -1,6 +1,13 @@
 #include "leptonicTopSystemChiSquare.h"
 
+using namespace commonstruct;
+
 leptonicTopSystemChiSquare::leptonicTopSystemChiSquare(
+        top_system & topsystem)
+    : topSystemChiSquare(topsystem) {}
+
+
+/*leptonicTopSystemChiSquare::leptonicTopSystemChiSquare(
     const double &bJetPx, const double &bJetPy, const double &bJetPz,
     const double &bJetE, const double &bJetPtWidth, const double &bJetEtaWidth,
     const double &bJetPhiWidth, const double &leptonPx, const double &leptonPy,
@@ -22,7 +29,7 @@ leptonicTopSystemChiSquare::leptonicTopSystemChiSquare(
     setWMassWidth(sigmaMW);
 
     // printTopConstituents();
-}
+}*/
 
 leptonicTopSystemChiSquare::~leptonicTopSystemChiSquare()
 {
@@ -34,16 +41,16 @@ void leptonicTopSystemChiSquare::printTopConstituents()
     cout << "Leptonic top decay products:" << endl;
     cout
         << "b-jet: "
-        << "\npx = " << bJetPx_ << "\npy = " << bJetPy_ << "\npz = " << bJetPz_
-        << "\ne  = " << bJetE_
+        << "\npx = " << topsys.calc.b_px() << "\npy = " << topsys.calc.b_py() << "\npz = " << topsys.calc.b_pz()
+        << "\ne  = " << topsys.calc.b_e()
         //       << "\nm  = " <<
         //       sqrt(max(0.,bJetE_*bJetE_-bJetPx_*bJetPx_-bJetPy_*bJetPy_-bJetPz_*bJetPz_))
         << endl;
 
     cout
         << "lepton: "
-        << "\npx = " << WDaughter1Px_ << "\npy = " << WDaughter1Py_
-        << "\npz = " << WDaughter1Pz_ << "\ne  = " << WDaughter1E_
+        << "\npx = " << topsys.calc.Wd1_px() << "\npy = " << topsys.calc.Wd1_px()
+        << "\npz = " << topsys.calc.Wd1_pz() << "\ne  = " << topsys.calc.Wd1_e()
         //       << "\nm  = " <<
         //       sqrt(max(0.,WDaughter1E_*WDaughter1E_-WDaughter1Px_*WDaughter1Px_-WDaughter1Py_*WDaughter1Py_-WDaughter1Pz_*WDaughter1Pz_))
         << endl;
@@ -65,14 +72,14 @@ void leptonicTopSystemChiSquare::printTopConstituents()
     //  getTopMassRange(low,high);
 }
 
-void leptonicTopSystemChiSquare::setEllipseAngle(double theta)
+void leptonicTopSystemChiSquare::setEllipseAngle()
 {
-    theta_ = theta;
-    resetWDaughter2(theta_);
-    calcTopMomentum();
+    //theta_ = theta;
+    resetWDaughter2();
+    //calcTopMomentum();
 }
 
-void leptonicTopSystemChiSquare::getWDaughter2Deltas(double &ptDelta,
+/*void leptonicTopSystemChiSquare::getWDaughter2Deltas(double &ptDelta,
                                                      double &phiDelta,
                                                      double &etaDelta)
 {
@@ -119,4 +126,4 @@ double leptonicTopSystemChiSquare::getChiSquare()
 {
     calcChiSquare();
     return chi2_;
-}
+}*/

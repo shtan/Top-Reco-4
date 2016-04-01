@@ -15,7 +15,7 @@ class hadronicTopSystemChiSquare : public topSystemChiSquare
     //  double WDaughter2Phi_;
     //  double WDaughter2Eta_;
 
-    double WDaughter2PtWidth_;
+/*    double WDaughter2PtWidth_;
     double WDaughter2PhiWidth_;
     double WDaughter2EtaWidth_;
 
@@ -33,7 +33,7 @@ class hadronicTopSystemChiSquare : public topSystemChiSquare
     double reconstructed_WDaughter2Eta_;
     double reconstructed_WDaughter2Mass2_;
 
-    double chi2_;
+    double chi2_;*/
     //
     //  double topPx_;
     //  double topPy_;
@@ -41,7 +41,9 @@ class hadronicTopSystemChiSquare : public topSystemChiSquare
     //  double topE_ ;
 
   public:
-    hadronicTopSystemChiSquare(const double &, const double &, const double &,
+    hadronicTopSystemChiSquare( commonstruct::top_system & );
+
+/*    hadronicTopSystemChiSquare(const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &, const double &,
@@ -50,26 +52,26 @@ class hadronicTopSystemChiSquare : public topSystemChiSquare
                                const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &);
-
+*/
     ~hadronicTopSystemChiSquare();
 
     virtual void printTopConstituents();
 
-    virtual void setEllipseAngle(double);
+    virtual void setEllipseAngle();
 
-    void setWDaughter2(double, double, double);
+/*    void setWDaughter2(double, double, double);
     // void resetWDaughter2();
     void calcWDaughter2Deltas();
     void setWDaughter2Deltas(double, double, double);
-    virtual void getWDaughter2Deltas(double &, double &, double &);
+    virtual void getWDaughter2Deltas(double &, double &, double &);*/
     virtual void printWDaughter2();
 
-    void calcChiSquare();
+/*    void calcChiSquare();
     double getChiSquare();
     virtual double getHadronicChiSquare();
     double getWMassChiSquare();
     double getWDaughter1ChiSquare();
-    double getBChiSquare();
+    double getBChiSquare();*/
 };
 
 #endif

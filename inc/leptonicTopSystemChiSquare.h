@@ -6,23 +6,25 @@
 class leptonicTopSystemChiSquare : public topSystemChiSquare
 {
   private:
-    double chi2_;
+    //double chi2_;
 
   public:
-    leptonicTopSystemChiSquare(const double &, const double &, const double &,
+    leptonicTopSystemChiSquare( commonstruct::top_system & );
+
+    /*leptonicTopSystemChiSquare(const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &, const double &,
                                const double &, const double &, const double &,
-                               const double &, const double &, const double &);
+                               const double &, const double &, const double &);*/
 
     ~leptonicTopSystemChiSquare();
 
     virtual void printTopConstituents();
 
-    virtual void setEllipseAngle(double);
+    virtual void setEllipseAngle();
 
-    virtual void setWDaughter2(double, double, double) { return; };
+/*    virtual void setWDaughter2(double, double, double) { return; };
     virtual void calcWDaughter2Deltas() { return; };
     virtual void getWDaughter2Deltas(double &, double &, double &);
     virtual void printWDaughter2() { return; };
@@ -33,7 +35,7 @@ class leptonicTopSystemChiSquare : public topSystemChiSquare
     double getWMassChiSquare();
     double getBChiSquare();
 
-    virtual double getHadronicChiSquare() { return 0; };
+    virtual double getHadronicChiSquare() { return 0; };*/
 };
 
 #endif

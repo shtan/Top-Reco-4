@@ -20,6 +20,7 @@
 #include "Math/GenVector/LorentzVector.h"
 #include "TLorentzVector.h"
 #include "topEventMinimizer.h"
+#include "commonstruct.h"
 
 using namespace std;
 
@@ -41,6 +42,7 @@ class handleEvent
         bestParticles, trueParticlesLH, smearedParticlesLH, bestParticlesLH;
     map<string, double> chiSquareds;
     bool leptonFlag;
+    commonstruct::big_struct bigstruct;
 
     handleEvent(vector<string> &particleNames, vector<string> &names,
                 vector<string> &chinames)
@@ -63,6 +65,9 @@ class handleEvent
             const string name = *t;
             chiSquareds[name] = double();
         }
+
+        bigstruct.tops.clear();
+
     }
 
     // clears a map of pointers
@@ -207,11 +212,16 @@ class topReconstructionFromLHE
     void PrintPhi(string, handleEvent &);
     void PrintEta(string, handleEvent &);
 
+    void reset_bigstruct(handleEvent &);
+    void Fill_struct(handleEvent &,
+            vector<double>&, vector<double>&, vector<double>&, vector<double>&,
+            vector<double>&, vector<double>&, vector<double>& );
     void Loop_diagnostics(handleEvent &);
     void Loop_load_eventh_SM(handleEvent &);
     void Loop_load_eventh_enu_SM(handleEvent &);
-    void Loop_load_event_tt_SM(handleEvent &, topEventMinimizer &);
-    void Loop_fill_results_SM(topEventMinimizer &, handleEvent &);
+    //void Loop_load_event_tt_SM(handleEvent &, topEventMinimizer &);
+    //void Loop_fill_results_SM(topEventMinimizer &, handleEvent &);
+    void Loop_get_results_SM(topEventMinimizer &, handleEvent &);
     void Print_smear_bs_SM(handleEvent &);
     void Print_smear_tt_SM(handleEvent &);
 

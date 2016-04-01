@@ -15,9 +15,12 @@
 class topEventMinimizer
 {
   private:
-    int nTops_;
+    commonstruct::big_struct & bigstruct;
+    commonstruct::nontop_system & nontops;
 
-    vector<int> bJets_;
+    //int nTops_;
+
+    /*vector<int> bJets_;
     vector<int> firstWDaughters_;
     vector<int> secondWDaughters_;
 
@@ -26,7 +29,7 @@ class topEventMinimizer
     vector<double> allObjectPhiWidths_;
     vector<double> allObjectEtaWidths_;
 
-    vector<bool> isLeptonicTopDecay_;
+    vector<bool> isLeptonicTopDecay_;*/
 
     // vector<XYZTLorentzVector> bJetLorentzVectors_;
 
@@ -43,7 +46,7 @@ class topEventMinimizer
     // vector<pair<double, double> > WDaughterPtWidths_, WDaughterEtaWidths_,
     // WDaughterPhiWidths_;
 
-    vector<XYZTLorentzVector> nonTopObjects_;
+    /*vector<XYZTLorentzVector> nonTopObjects_;
     vector<double> nonTopObjectPts_;
     vector<double> nonTopObjectPhis_;
     vector<double> nonTopObjectPtWidths_;
@@ -97,14 +100,16 @@ class topEventMinimizer
 
     double chi2_;
 
-    vector<pair<topSystemChiSquare *, bool>> topSystemChiSquares_;
+    vector<pair<topSystemChiSquare *, bool>> topSystemChiSquares_;*/
+    //vector< topSystemChiSquare* > topSysChiSqs_;
+    vector< topSystemChiSquare > topSysChiSqs_;
 
-    double nonTopChi2_;
-    double dx_, dy_, dz_;
+    /*double nonTopChi2_;
+    double dx_, dy_, dz_;*/
 
     lightJetChiSquareMinimumSolver nonTopChiSquare_;
 
-    vector<double> ellipseAngles_;
+    /*vector<double> ellipseAngles_;
     vector<double> ellipseAnglesBest_;
     vector<double> ellipseAnglesCurrent_;
     vector<double> ellipseAnglesInnerBest_;
@@ -123,7 +128,7 @@ class topEventMinimizer
     double thisInnerChi2Best_;
     double thisTopMassChi2Best_;
     double thisNonTopChi2Best_;
-    double thisHadChi2Best_;
+    double thisHadChi2Best_;*/
 
     double maxConsideredChiSquareRoot_;
 
@@ -132,31 +137,34 @@ class topEventMinimizer
     ROOT::Math::Minimizer *innerMin_;
     ROOT::Math::Minimizer *outerMin_;
 
-    bool checkInputSizes();
+    //DON'T DELETE THIS
+    //bool checkInputSizes();
 
     // void setBJets();
-    void setNonTopObjectCollections();
+    //void setNonTopObjectCollections();
     // void setWDaughters();
 
     //  void initializeDeltas();
-    void initializeChiSquares();
+    //void initializeChiSquares();
     void Initialize_minimizers(ROOT::Math::Minimizer *&outer,
                                ROOT::Math::Minimizer *&inner);
+    void initialize_best_outer_chiSquares();
+    void reset_best_inner_chiSquares();
 
-    void setRecoil(double, double, double);
+    //void setRecoil(double, double, double);
 
     void calcWDaughterEllipses();
 
-    void getDxDyFromEllipses();
-    void calcNonTopMomentum();
+    //void getDxDyFromEllipses();
+    //void calcNonTopMomentum();
 
-    void buildBestNonTopObjects();
+    //void buildBestNonTopObjects();
 
-    void setupNonTopChiSquare();
+    //void setupNonTopChiSquare();
 
-    void calcHadronicChiSquare();
-    void calcTopMassChiSquare();
-    void calcTopChiSquare();
+    //void calcHadronicChiSquare();
+    //void calcTopMassChiSquare();
+    //void calcTopChiSquare();
 
     /*  double getHadronicChiSquare();
       double getTopChiSquare();
@@ -165,41 +173,44 @@ class topEventMinimizer
     */
     void setBestValues();
 
-    void setupMap();
-    void testfunc();
+    //void setupMap();
+    //void testfunc();
 
-    typedef void (topEventMinimizer::*FnPtr)(int, double &, double &, double &,
-                                             double &);
-    map<string, FnPtr> funcMap;
+    //typedef void (topEventMinimizer::*FnPtr)(int, double &, double &, double &,
+    //                                         double &);
+    //map<string, FnPtr> funcMap;
 
     // typedef void (topEventMinimizer::FnTestPtr)();
     // map < string, FnTestPtr* > testMap;
 
-    commonstruct::top_system & topsys;
+    //commonstruct::top_system & topsys;
+    //commonstruct::big_struct & bigstruct;
 
   public:
     // flags
     const bool debug = true;
 
     // status observables
-    int innerMinStatus;
-    int outerMinStatus;
+    //int innerMinStatus;
+    //int outerMinStatus;
 
-    double outerMin_Edm;
+    //double outerMin_Edm;
 
     // functions
-    topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
+    topEventMinimizer(commonstruct::big_struct&);
+    
+/*    topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, vector<int>, vector<int>, vector<int>,
                       vector<bool>, double, double, double, double, double,
                       double, double, commonstruct::top_system&);
 
     topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, double, double, double, double, double,
-                      double, double, commonstruct::top_system&);
+                      double, double, commonstruct::top_system&);*/
 
     ~topEventMinimizer();
 
-    topSystemChiSquare *makeLeptonicTop(int, int);
+/*    topSystemChiSquare *makeLeptonicTop(int, int);
     topSystemChiSquare *makeHadronicTop(int, int, int);
 
     topSystemChiSquare *makeLeptonicTop(double, double, double, double, double,
@@ -221,12 +232,14 @@ class topEventMinimizer
     void addHadronicTop(double, double, double, double, double, double, double,
                         double, double, double, double, double, double, double,
                         double, double, double, double, double, double, double,
-                        double, double, double, double);
+                        double, double, double, double);*/
+
+    void create_tops();
 
     void printTopConstituents();
     void printNonTopObjects();
 
-    void calcTopMassRanges();
+    //void calcTopMassRanges();
 
     // double ellipseAngleMinimizationOperator(const double* );
     double outerMinimizationOperator(const double *);
@@ -236,7 +249,19 @@ class topEventMinimizer
     void minimizeNonTopChiSquare();
     void minimizeTotalChiSquare();
 
-    void calcTotalChiSquare();
+    TLorentzVector get_b(int);
+    TLorentzVector get_Wd1(int);
+    TLorentzVector get_Wd2(int);
+    TLorentzVector get_W(int);
+    TLorentzVector get_top(int);
+    TLorentzVector get_nontop_object(int);
+    double get_best_total_had_chi2();
+    double get_best_total_mTop_chi2();
+    double get_best_total_topsys_chi2();
+    double get_best_total_chi2();
+
+
+/*    void calcTotalChiSquare();
     double getChiSquare();
 
     double getBestTotalChiSquare() { return chi2Best_; };
@@ -259,11 +284,11 @@ class topEventMinimizer
     void getNonTopObject(int, double &, double &);
     void getNonTopObject4(int, double &, double &, double &, double &);
 
-    XYZTLorentzVector getConverter(string, int);
+    XYZTLorentzVector getConverter(string, int);*/
 
-    void plotEllipses(TString);
+    //void plotEllipses(TString);
 
-    double getHadronicChiSquare();
+/*    double getHadronicChiSquare();
     double getTopChiSquare();
     double getTopMassChiSquare();
     double getNonTopChiSquare();
@@ -273,7 +298,10 @@ class topEventMinimizer
     double getOneWDaughter1ChiSquare(int);
     double getOneWMassChiSquare(int);
 
-    void initializeDeltas();
+    void initializeDeltas();*/
+
+
+
 };
 
 #endif

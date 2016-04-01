@@ -10,12 +10,11 @@ LD = $(shell root-config --ld)
 LDFLAGS = $(shell root-config --ldflags)
 LDLIBS =  $(shell root-config --glibs) -lMinuit2 -lMathMore -l GenVector
 
-OBJECTS = src/WDaughterEllipseCalculator.o src/hadronicTopSystemChiSquare.o \
-	  src/leptonicTopSystemChiSquare.o src/lightJetChiSquareMinimumSolver.o \
+OBJECTS = src/WDaughterEllipseCalculator.o src/lightJetChiSquareMinimumSolver.o \
 	  src/topEventMinimizer.o src/topSystemChiSquare.o \
 	  src/topReconstructionFromLHE_core.o \
 	  src/topReconstructionFromLHE_diagnostics.o \
-	  src/topReconstructionFromLHE_methods.o
+	  src/topReconstructionFromLHE_methods.o 
 
 COMPILE = $(CXX) $(CXXFLAGS) -c
 LINK = $(LD) $(LDFLAGS)
@@ -39,5 +38,5 @@ clean:
 
 .SUFFIXES: .cpp .cc .cxx .c
 
-.cxx.o:
+.cxx.o: inc/commonstruct.h
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
