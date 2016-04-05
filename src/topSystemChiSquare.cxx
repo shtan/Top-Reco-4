@@ -7,9 +7,11 @@
 
 using namespace commonstruct;
 
-topSystemChiSquare::topSystemChiSquare( top_system & topsystem )
-    : topsys(topsystem), WDaughter2Calc_( topsys )
+topSystemChiSquare::topSystemChiSquare( top_system & topsystem, int &debug )
+    : topsys(topsystem), WDaughter2Calc_( topsys, debug ), debug_verbosity(debug)
 {
+    if (debug_verbosity >= 2)
+        cout << "starting topSystemChiSquare constructor" << endl;
     //setupWDaughter2Ellipse();
 }
 
@@ -857,8 +859,18 @@ double topSystemChiSquare::getTopMassChiSquare()
 
 void topSystemChiSquare::printTopConstituents()
 {
-    cout << "Hadronic top decay products:" << endl;
+    /*cout << "lepton flag = " << topsys.input.leptonic << endl;
+    cout << "Top decay products:" << endl;
+    cout << "input b pt = " << topsys.input.b_pt<< endl;
+    topsys.vars.b_delta_pt = 23.3;
+    cout<< "delta b pt = " << topsys.vars.b_delta_pt << endl;
+    //cout << "testfunc " << topsys.input.testfunc() << endl;
+    cout << "test " << topsys.testt.b_ptt() << endl;
+    cout << "width " << topsys.input.b_pt_width << endl;
+    cout <<"calc " << topsys.calc.vars.b_delta_pt << endl;
+    cout << "b pt = " << topsys.calc.b_pt()<< endl;*/
     //  cout << "In the derived class:" << endl;
+    cout << "leptonic = " << topsys.input.leptonic << endl;
     cout
         << "b-jet: "
         << "\npx = " << topsys.calc.b_px() << "\npy = " << topsys.calc.b_py() << "\npz = " << topsys.calc.b_pz()
@@ -868,7 +880,7 @@ void topSystemChiSquare::printTopConstituents()
         << endl;
 
     cout
-        << "first light quark: "
+        << "first W daughter: "
         << "\npx = " << topsys.calc.Wd1_px() << "\npy = " << topsys.calc.Wd1_py()
         << "\npz = " << topsys.calc.Wd1_pz() << "\ne  = " << topsys.calc.Wd1_e()
         //       << "\nm  = " <<
@@ -876,7 +888,11 @@ void topSystemChiSquare::printTopConstituents()
         << endl;
 
     cout
-        << "second light quark: "
+        << "second W daughter: "
+        << "input values: "
+        << "\npt = " << topsys.input.Wd2_pt << "\neta = " << topsys.input.Wd2_eta
+        << "\nphi = " << topsys.input.Wd2_phi << "\ne  = " << topsys.calc.Wd2_e()
+        << "current values: "
         << "\npx = " << topsys.vars.Wd2_px << "\npy = " << topsys.vars.Wd2_py
         << "\npz = " << topsys.vars.Wd2_pz << "\ne  = " << topsys.calc.Wd2_e()
         //       << "\nm  = " <<

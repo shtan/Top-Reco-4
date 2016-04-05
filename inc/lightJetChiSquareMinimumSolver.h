@@ -74,9 +74,12 @@ class lightJetChiSquareMinimumSolver
     commonstruct::nontop_system & nontops;
 
     const bool do3D_;
+    int & debug_verbosity;
+
+    commonstruct::nontop_system & testnontops;
 
   public:
-    lightJetChiSquareMinimumSolver( commonstruct::big_struct&, bool );
+    lightJetChiSquareMinimumSolver( commonstruct::big_struct&, bool, int&, commonstruct::nontop_system& );
 /*    lightJetChiSquareMinimumSolver(vector<XYZTLorentzVector> &,
                                    vector<double> &, vector<double> &,
                                    vector<double> &, double &, double &,

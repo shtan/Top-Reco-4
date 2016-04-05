@@ -83,7 +83,7 @@ struct top_system {
             const double total_py = b_vec.Py() + Wd1_vec.Py() + Wd2_vec.Py();
             const double total_pz = b_vec.Pz() + Wd1_vec.Pz() + Wd2_vec.Pz();
          
-            
+            //double testfunc() {return b_pt;}
 /*            const double b_px;
             const double b_py = 7;
             const double b_pz = 8;
@@ -173,7 +173,11 @@ struct top_system {
                 calculator(inputs & inpt, variables & var) : input(inpt), vars(var) {}
 
                 //Functions to calculate current value of momenta
-                double b_pt(){ return input.b_pt + vars.b_delta_pt*input.b_pt_width; }
+                double b_pt(){
+                    //cout << input.b_pt << endl;
+                    //cout << vars.b_delta_pt << endl;
+                    //cout << input.b_pt_width << endl;
+                    return input.b_pt + vars.b_delta_pt*input.b_pt_width; }
                 double b_eta(){ return input.b_eta + vars.b_delta_eta*input.b_eta_width; }
                 double b_phi(){ return input.b_phi + vars.b_delta_phi*input.b_phi_width; }
                 double Wd1_pt(){ return input.Wd1_pt + vars.Wd1_delta_pt*input.Wd1_pt_width; }
@@ -367,6 +371,35 @@ struct top_system {
 
         best_outer_parameters best_outer_params;
 
+        double testvar;
+
+        struct test {
+            inputs *inputt;
+            double *testvarr;
+
+            public:
+                test(inputs & inpt, double & tv) : inputt(&inpt), testvarr(&tv) {}
+                double b_delta_pt = 6;
+                double b_delta_eta = 0;
+                double b_delta_phi = 0;
+                double Wd1_delta_pt = 0;
+                double Wd1_delta_eta = 0;
+                double Wd1_delta_phi = 0;
+                double Wd2_delta_pt = 0;
+                double Wd2_delta_eta = 0;
+                double Wd2_delta_phi = 0;
+
+                double delta_mTop = 0;
+                double delta_mW = 0;
+
+                //Ellipse angle
+                double theta = 0;
+
+                double b_ptt(){ return b_delta_pt + inputt->b_pt; }
+                double b_pttt() { return b_delta_pt + *testvarr; }
+        };
+        test testt;
+
 /*        struct variables {
             inputs &input;
 
@@ -421,7 +454,7 @@ struct top_system {
                     Wd1PtWidth, Wd1EtaWidth, Wd1PhiWidth,
                     mTopCentral, mTopWidth, mWCentral, mWWidth,
                     Wd2Pt, Wd2Eta, Wd2Phi, Wd2M,
-                    Wd2PtWidth, Wd2EtaWidth, Wd2PhiWidth), vars(), calc(input, vars),
+                    Wd2PtWidth, Wd2EtaWidth, Wd2PhiWidth), vars(), calc(input, vars), testt(input, testvar),
                     best_inner_params(), best_outer_params() {}
 
 }; //END top_system definition
@@ -451,7 +484,13 @@ struct nontop_system{
                     const vector< double >& jetPtWidth, const vector< double >& jetEtaWidth,
                     const vector< double >& jetPhiWidth)
                 :   jet_pt(jetPt), jet_eta(jetEta), jet_phi(jetPhi), jet_m(jetM),
-                    jet_pt_width(jetPtWidth), jet_eta_width(jetEtaWidth), jet_phi_width(jetPhiWidth) {}
+                    jet_pt_width(jetPtWidth), jet_eta_width(jetEtaWidth), jet_phi_width(jetPhiWidth) {
+                    
+                    //cout << "in nontop_system constructor" << endl;
+                    //cout << jet_pt.at(0) << endl;
+                    //cout << jet_pt.size() << endl;
+                    //cout << n_objs << endl;
+                    }
 
         }; //END inputs sub-structure definition
         
@@ -640,7 +679,8 @@ struct big_struct{
 
         big_struct() {}
 
-        vector< top_system > tops;
+        //vector< top_system > tops;
+        vector< top_system* > tops;
 
         int n_tops(){ return (int)(tops.size()); }
         /*double total_top_px() {
@@ -673,7 +713,13 @@ struct big_struct{
                                 const vector <double> vec3, const vector <double> vec4,
                                 const vector <double> vec5, const vector <double> vec6,
                                 const vector <double> vec7);*/
-        nontop_system* nontops_ptr;
+        nontop_system* nontops_ptr = NULL;
+
+        //Only one nontop_system object is needed, so this vector should have size 1.
+        //The vector is created just as a trick to allow bigstruct to include a nontop_system object,
+        //without initializing the nontop_system object right when bigstruct is initialized.
+        vector< nontop_system > nontopsvec;
+        
         //nontop_system* nontops_ptr;
         //nontop_system& nontops = *nontops_ptr;
         //vector< nontop_system > nontops;
@@ -691,7 +737,7 @@ struct big_struct{
         double current_total_hadronic_chi2() {
             double hadchi2 = 0;
             for (auto top = tops.begin(); top != tops.end(); ++top){
-                hadchi2 += top->calc.Wd2_chi2();
+                hadchi2 += (*top)->calc.Wd2_chi2();
             }
             return hadchi2;
         }
@@ -699,8 +745,8 @@ struct big_struct{
         double current_total_inner_chi2() {
             double topinnerchi2 = 0;
             for (auto top = tops.begin(); top != tops.end(); ++top){
-                topinnerchi2 += top->calc.mTop_chi2();
-                topinnerchi2 += top->calc.Wd2_chi2();
+                topinnerchi2 += (*top)->calc.mTop_chi2();
+                topinnerchi2 += (*top)->calc.Wd2_chi2();
             }
             return topinnerchi2 + nontops_ptr->best_innermost_params.chi2;
         }
@@ -708,8 +754,8 @@ struct big_struct{
         double current_best_total_inner_chi2() {
             double besttopinnerchi2 = 0;
             for (auto top = tops.begin(); top != tops.end(); ++top){
-                besttopinnerchi2 += top->best_inner_params.mTop_chi2;
-                besttopinnerchi2 += top->best_inner_params.Wd2_chi2;
+                besttopinnerchi2 += (*top)->best_inner_params.mTop_chi2;
+                besttopinnerchi2 += (*top)->best_inner_params.Wd2_chi2;
             }
             return besttopinnerchi2 + nontops_ptr->best_inner_params.chi2;
         }
@@ -717,9 +763,9 @@ struct big_struct{
         double current_total_outer_chi2() {
             double topouterchi2 = 0;
             for (auto top = tops.begin(); top != tops.end(); ++top){
-                topouterchi2 += top->calc.mW_chi2();
-                topouterchi2 += top->calc.Wd1_chi2();
-                topouterchi2 += top->calc.b_chi2();
+                topouterchi2 += (*top)->calc.mW_chi2();
+                topouterchi2 += (*top)->calc.Wd1_chi2();
+                topouterchi2 += (*top)->calc.b_chi2();
             }
             return topouterchi2 + current_best_total_inner_chi2();
         }
@@ -727,11 +773,11 @@ struct big_struct{
         double current_best_total_outer_chi2() {
             double besttopouterchi2 = 0;
             for (auto top = tops.begin(); top != tops.end(); ++top){
-                besttopouterchi2 += top->best_outer_params.mTop_chi2;
-                besttopouterchi2 += top->best_outer_params.Wd2_chi2;
-                besttopouterchi2 += top->best_outer_params.Wd1_chi2;
-                besttopouterchi2 += top->best_outer_params.mW_chi2;
-                besttopouterchi2 += top->best_outer_params.b_chi2;
+                besttopouterchi2 += (*top)->best_outer_params.mTop_chi2;
+                besttopouterchi2 += (*top)->best_outer_params.Wd2_chi2;
+                besttopouterchi2 += (*top)->best_outer_params.Wd1_chi2;
+                besttopouterchi2 += (*top)->best_outer_params.mW_chi2;
+                besttopouterchi2 += (*top)->best_outer_params.b_chi2;
             }
             return besttopouterchi2 + nontops_ptr->best_outer_params.chi2;
         }
@@ -768,11 +814,11 @@ inline double adder(top_system & cha){
 inline double recoil_px(big_struct & bigstruct){
     double totalpx = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
-        totalpx += top->calc.total_px();
+        totalpx += (*top)->calc.total_px();
     }
     double totalpx_orig = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
-        totalpx_orig += top->input.total_px;
+        totalpx_orig += (*top)->input.total_px;
     }
 
     return totalpx - totalpx_orig;
@@ -781,11 +827,11 @@ inline double recoil_px(big_struct & bigstruct){
 inline double recoil_py(big_struct & bigstruct){
     double totalpy = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
-        totalpy += top->calc.total_py();
+        totalpy += (*top)->calc.total_py();
     }
     double totalpy_orig = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
-        totalpy_orig += top->input.total_py;
+        totalpy_orig += (*top)->input.total_py;
     }
 
     return totalpy - totalpy_orig;
@@ -794,11 +840,11 @@ inline double recoil_py(big_struct & bigstruct){
 inline double recoil_pz(big_struct & bigstruct){
     double totalpz = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
-        totalpz += top->calc.total_pz();
+        totalpz += (*top)->calc.total_pz();
     }
     double totalpz_orig = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
-        totalpz_orig += top->input.total_pz;
+        totalpz_orig += (*top)->input.total_pz;
     }
 
     return totalpz - totalpz_orig;

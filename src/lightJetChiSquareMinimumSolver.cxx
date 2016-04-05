@@ -8,10 +8,24 @@
 using namespace commonstruct;
 
 lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
-    big_struct &bigstructure, bool do3D)
+    big_struct &bigstructure, bool do3D, int &debug, nontop_system &testnontop)
     : bigstruct(bigstructure), nontops( *(bigstruct.nontops_ptr) ),
-      do3D_(do3D)
+      do3D_(do3D), debug_verbosity(debug), testnontops(testnontop)
 {
+    if (debug_verbosity >= 2)
+        cout << "Starting lightJetChiSquareMinimumSolver constructor" << endl;
+
+    //cout <<"bigstruct vector " << bigstruct.nontopsvec.at(0).input.n_objs << endl;
+    //cout << "bigstruct pointer = " << bigstruct.nontops_ptr << endl;
+    //cout <<"address = " << &(bigstruct.nontopsvec.at(0) ) << endl;
+    cout << "top 0 pt = " << bigstruct.tops.at(0)->input.b_pt << endl;
+    cout << "n_objs in bigstruct = " << (bigstruct.nontops_ptr)->input.n_objs << endl;
+    cout << "n_objs in nontops = " << nontops.input.n_objs << endl;
+    cout << "test " << testnontops.calc.jet_px_orig.at(0) << endl;
+    cout << "test " << nontops.calc.jet_px_orig.at(0) << endl;
+    cout << bigstruct.nontops_ptr->calc.jet_px_orig.at(0) << endl;
+    //cout << bigstruct.nontopsvec.at(0).calc.jet_px_orig.at(0) << endl;
+
     Init_data(data_);
 
     inverter3D_ = new TDecompLU(3);
@@ -70,17 +84,25 @@ lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
 
 inline void lightJetChiSquareMinimumSolver::Init_data(recoil_minimizer_data &da)
 {
+    if (debug_verbosity >= 2)
+        cout << "Starting init_data, n_nontop_objs = " << nontops.input.n_objs << endl;
+    
     //da.n_ps = sz;
     da.dxCheck = 0.;
     da.dyCheck = 0.;
     da.dzCheck = 0.;
+    cout<<"hoo"<< endl;
 
-    nontops.best_innermost_params.jet_dif_px.resize(nontops.input.n_objs, 0.);
-    nontops.best_innermost_params.jet_dif_py.resize(nontops.input.n_objs, 0.);
-    nontops.best_innermost_params.jet_dif_pz.resize(nontops.input.n_objs, 0.);
+    //nontops.best_innermost_params.jet_dif_px.resize(nontops.input.n_objs, 0.);
+    cout<<"loo"<<endl;
+    //nontops.best_innermost_params.jet_dif_py.resize(nontops.input.n_objs, 0.);
+    //nontops.best_innermost_params.jet_dif_pz.resize(nontops.input.n_objs, 0.);
+    cout << "lah"<< endl;
     da.cov_rad.reserve(nontops.input.n_objs);
+    cout << "blap"<<endl;
     da.cov.reserve(nontops.input.n_objs);
     da.inv_sum_x_cov.reserve(nontops.input.n_objs);
+    cout <<"lah2"<<endl;
     for (int i = 0; i < nontops.input.n_objs; ++i) {
         da.cov_rad.push_back(TMatrixD(3, 3));
         da.cov.push_back(TMatrixD(3, 3));
@@ -141,6 +163,9 @@ void lightJetChiSquareMinimumSolver::setupEquations()
 
 void lightJetChiSquareMinimumSolver::checkSize()
 {
+    if (debug_verbosity >= 2)
+                cout << "starting checkSize" << endl;
+
     if (nontops.input.jet_pt.size() != nontops.input.jet_eta.size()) {
         cout << "Unequal number of jet pts and jet pT widths!" << endl;
         cout << "there are " << nontops.input.jet_pt.size() << " jet pts and "

@@ -4,12 +4,15 @@
 using namespace commonstruct;
 
 //WDaughterEllipseCalculator::WDaughterEllipseCalculator(top_sys& topsystem) {}
-WDaughterEllipseCalculator::WDaughterEllipseCalculator( top_system& topsystem )
+WDaughterEllipseCalculator::WDaughterEllipseCalculator( top_system& topsystem, int &debug )
     : topsys(topsystem),
-      AWDaughter1_(4, 4), Htilde_(3, 3), H_(3, 3), Hperp_(3, 3),
+      Ab_(4, 4), AWDaughter1_(4, 4), Htilde_(3, 3), H_(3, 3), Hperp_(3, 3),
       HperpInv_(3, 3), Nperp_(3, 3), WDaughterPerp_(3), pWDaughter_(3),
-      errorFlag_(false)
+      errorFlag_(false), debug_verbosity(debug)
 {
+    if (debug_verbosity >= 2)
+        cout << "Starting WDaughterEllipseCalculator constructor" << endl;
+    
     // cout << "constructor" << endl;
 
     //setBJetFactors();
@@ -257,7 +260,7 @@ void WDaughterEllipseCalculator::Wsurface()
 
 void WDaughterEllipseCalculator::bJetEllipsoid()
 {
-    // cout << "calculating the b-jet ellipsoid" << endl;
+     //cout << "calculating the b-jet ellipsoid" << endl;
 
     Ab_[0][0] = 1 - c2_ * bJetBeta2_;
     Ab_[1][0] = -c_ * s_ * bJetBeta2_;

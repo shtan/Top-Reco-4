@@ -38,7 +38,7 @@ class handleEvent
 {
   public:
     // ROOT needs double pointer (**) to update containers, i.e., vectors
-    map<string, XYZTLorentzVector *> trueParticles, smearedParticles,
+    map<string, TLorentzVector *> trueParticles, smearedParticles,
         bestParticles, trueParticlesLH, smearedParticlesLH, bestParticlesLH;
     map<string, double> chiSquareds;
     bool leptonFlag;
@@ -49,16 +49,16 @@ class handleEvent
     {
         for (auto t = particleNames.begin(); t != particleNames.end(); ++t) {
             const string name = *t;
-            trueParticles[name] = new XYZTLorentzVector;
-            smearedParticles[name] = new XYZTLorentzVector;
-            bestParticles[name] = new XYZTLorentzVector;
+            trueParticles[name] = new TLorentzVector;
+            smearedParticles[name] = new TLorentzVector;
+            bestParticles[name] = new TLorentzVector;
         }
 
         for (auto t = names.begin(); t < names.end(); ++t) {
             const string name = *t;
-            trueParticlesLH[name] = new XYZTLorentzVector;
-            smearedParticlesLH[name] = new XYZTLorentzVector;
-            bestParticlesLH[name] = new XYZTLorentzVector;
+            trueParticlesLH[name] = new TLorentzVector;
+            smearedParticlesLH[name] = new TLorentzVector;
+            bestParticlesLH[name] = new TLorentzVector;
         }
 
         for (auto t = chinames.begin(); t < chinames.end(); ++t) {
@@ -92,6 +92,8 @@ class handleEvent
 class topReconstructionFromLHE
 {
   public:
+    //commonstruct::nontop_system nontops;
+
     // verbosity
     int debug_verbosity;
 
@@ -161,11 +163,11 @@ class topReconstructionFromLHE
     void Loop(TString, const int, const int, const int, const int);
     Bool_t Notify();
     void Show(Long64_t entry = -1);
-    void printVector(XYZTLorentzVector &);
+    void printVector(TLorentzVector &);
     void moveStatsBox(TH1D *);
 
-    double deltaR(XYZTLorentzVector &, XYZTLorentzVector &);
-    double deltaPhi(XYZTLorentzVector &, XYZTLorentzVector &);
+    double deltaR(TLorentzVector &, TLorentzVector &);
+    double deltaPhi(TLorentzVector &, TLorentzVector &);
 
     // store minimizer results in a tree;
     TFile *outFile;
@@ -200,7 +202,7 @@ class topReconstructionFromLHE
     void DeclareMaps();
     void DeclareHists();
     void FillHists(handleEvent &);
-    void FillHists_(const XYZTLorentzVector *, const XYZTLorentzVector *,
+    void FillHists_(const TLorentzVector *, const TLorentzVector *,
                     const string &, const string &, hmap3 &);
     void FillLH(handleEvent &);
     void DeclareCanvases();

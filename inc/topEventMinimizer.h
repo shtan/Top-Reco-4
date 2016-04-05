@@ -185,6 +185,7 @@ class topEventMinimizer
 
     //commonstruct::top_system & topsys;
     //commonstruct::big_struct & bigstruct;
+    int& debug_verbosity;
 
   public:
     // flags
@@ -197,7 +198,7 @@ class topEventMinimizer
     //double outerMin_Edm;
 
     // functions
-    topEventMinimizer(commonstruct::big_struct&);
+    topEventMinimizer(commonstruct::big_struct&, int&);
     
 /*    topEventMinimizer(vector<XYZTLorentzVector>, vector<double>, vector<double>,
                       vector<double>, vector<int>, vector<int>, vector<int>,
@@ -238,6 +239,7 @@ class topEventMinimizer
 
     void printTopConstituents();
     void printNonTopObjects();
+    void checkRecoil_after_fit();
 
     //void calcTopMassRanges();
 

@@ -83,6 +83,8 @@ class WDaughterEllipseCalculator
     TVectorD WDaughterPerp_;
     TVectorD pWDaughter_;
 
+    int& debug_verbosity;
+
     //double mTopEdgeLow_, mTopEdgeHigh_;
 
   public:
@@ -107,7 +109,7 @@ class WDaughterEllipseCalculator
 
     bool errorFlag_;
 
-    WDaughterEllipseCalculator( commonstruct::top_system& );
+    WDaughterEllipseCalculator( commonstruct::top_system&, int& );
     //WDaughterEllipseCalculator( top_system& );
 /*    WDaughterEllipseCalculator(const double &, const double &, const double &,
                                const double &, const double &, const double &,

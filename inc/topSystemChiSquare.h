@@ -146,8 +146,10 @@ class topSystemChiSquare
 
 //    commonstruct::top_system &topsys;
 
+    int& debug_verbosity;
+
   public:
-    topSystemChiSquare( commonstruct::top_system& );
+    topSystemChiSquare( commonstruct::top_system&, int& );
     
 /*    topSystemChiSquare(const double &, const double &, const double &,
                        const double &, const double &, const double &,

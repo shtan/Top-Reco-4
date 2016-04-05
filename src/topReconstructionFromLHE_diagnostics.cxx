@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void topReconstructionFromLHE::printVector(XYZTLorentzVector &v)
+void topReconstructionFromLHE::printVector(TLorentzVector &v)
 {
     cout << "px = " << v.Px() << endl;
     cout << "py = " << v.Py() << endl;
@@ -84,7 +84,7 @@ void topReconstructionFromLHE::PrintMass(string whichParticle, handleEvent &evh)
 
 void topReconstructionFromLHE::Print()
 {
-    inFilePlot = new TFile("output_files/output_0.root");
+    inFilePlot = new TFile("testoutput/output_0.root");
     inTreePlot = (TTree *)inFilePlot->Get("tree");
 
     handleEvent evh(particleNames, names, chinames);
@@ -180,15 +180,15 @@ void topReconstructionFromLHE::Print()
 
 void topReconstructionFromLHE::Loop_diagnostics(handleEvent &evh)
 {
-    XYZTLorentzVector gen_all =
+    TLorentzVector gen_all =
         *evh.smearedParticles["bottom"] + *evh.smearedParticles["antiBottom"] +
         *evh.smearedParticles["qFromW"] + *evh.smearedParticles["qbarFromW"] +
         *evh.smearedParticles["bFromH"] + *evh.smearedParticles["bbarFromH"] +
         *evh.smearedParticles["lepton"] + *evh.smearedParticles["antiNeutrino"];
-    XYZTLorentzVector best_all =
+    TLorentzVector best_all =
         *evh.bestParticles["top"] + *evh.bestParticles["antiTop"] +
         *evh.bestParticles["bFromH"] + *evh.bestParticles["bbarFromH"];
-    XYZTLorentzVector best_tt =
+    TLorentzVector best_tt =
         *evh.bestParticles["top"] + *evh.bestParticles["antiTop"];
 
     cout << "Event, pT(gen_all), pT(best_all), pT(tt) = " << eventNumber << ", "

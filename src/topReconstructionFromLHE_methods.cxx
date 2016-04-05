@@ -3,7 +3,9 @@
 
 #include "topReconstructionFromLHE.h"
 
-topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)
+topReconstructionFromLHE::topReconstructionFromLHE(TTree *tree) : fChain(0)//, 
+    //nontops(commonstruct::nontop_system( vector<double>(2,0.), vector<double>(2,0.), vector<double>(2,0.), vector<double>(2,0.),
+    //vector<double>(2,0.), vector<double>(2,0.), vector<double>(2,0.) ) ) 
 {
     debug_verbosity = 0;
 
@@ -102,8 +104,8 @@ topReconstructionFromLHE::~topReconstructionFromLHE()
     delete fChain->GetCurrentFile();
 }
 
-double topReconstructionFromLHE::deltaR(XYZTLorentzVector &p2,
-                                        XYZTLorentzVector &p1)
+double topReconstructionFromLHE::deltaR(TLorentzVector &p2,
+                                        TLorentzVector &p1)
 {
     double thisDeltaEta = p1.Eta() - p2.Eta();
     double thisDeltaPhi = p1.Phi() - p2.Phi();
@@ -117,8 +119,8 @@ double topReconstructionFromLHE::deltaR(XYZTLorentzVector &p2,
     return sqrt(thisDeltaPhi * thisDeltaPhi + thisDeltaEta * thisDeltaEta);
 }
 
-double topReconstructionFromLHE::deltaPhi(XYZTLorentzVector &p2,
-                                          XYZTLorentzVector &p1)
+double topReconstructionFromLHE::deltaPhi(TLorentzVector &p2,
+                                          TLorentzVector &p1)
 {
     double thisDeltaPhi = p1.Phi() - p2.Phi();
     while (thisDeltaPhi > 3.14159265359) {

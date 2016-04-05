@@ -186,8 +186,8 @@ void topReconstructionFromLHE::FillHists(handleEvent &evh)
 }
 
 // diff two loretz vectors for diff; first and third level of hmap3
-void topReconstructionFromLHE::FillHists_(const XYZTLorentzVector *v1,
-                                          const XYZTLorentzVector *v2,
+void topReconstructionFromLHE::FillHists_(const TLorentzVector *v1,
+                                          const TLorentzVector *v2,
                                           const string &DT, const string &name,
                                           hmap3 &hm)
 {
@@ -348,7 +348,15 @@ void topReconstructionFromLHE::Plot(TString dir)
 
 void topReconstructionFromLHE::reset_bigstruct(handleEvent &evh)
 {
+    for (int iTop = 0; iTop < evh.bigstruct.n_tops(); ++iTop){
+        delete evh.bigstruct.tops.at(iTop);
+        evh.bigstruct.tops.at(iTop) = NULL;
+    }
+    delete evh.bigstruct.nontops_ptr;
+    evh.bigstruct.nontops_ptr = NULL;
+
     evh.bigstruct.tops.clear();
+    evh.bigstruct.nontopsvec.clear();
     evh.bigstruct.innerMinStatus = -1;
     evh.bigstruct.outerMinStatus = -1;
     evh.bigstruct.outerMin_Edm = -1;
@@ -411,7 +419,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         cout << "Loop start, finish, n_entries: " << first_evt << ", "
              << jFinish << ", " << nentries << endl;
     for (Long64_t jentry = first_evt; jentry < jFinish; ++jentry) {
-        if (debug_verbosity >= 2)
+        if (debug_verbosity >= 0)
             cout << "BEGINNING BRANCH NUMBER " << jentry << endl;
         Long64_t ientry = LoadTree(jentry);
         // intree->GetEntry(jentry);
@@ -447,9 +455,9 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
             Print_smear_bs_SM(evh);
             cout << "Setting light partons" << endl;
         }
-        vector<XYZTLorentzVector> smearedOtherLightPartons;
+        vector<TLorentzVector> smearedOtherLightPartons;
         for (int ii = 0; ii < ((int)PID->size() - 21); ++ii) {
-            XYZTLorentzVector temp;
+            TLorentzVector temp;
             temp.SetPxPyPzE(P_X->at(ii + 21), P_Y->at(ii + 21),
                             P_Z->at(ii + 21), E->at(ii + 21));
             smearedOtherLightPartons.push_back(temp);
@@ -468,7 +476,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
                                            *(evh.smearedParticles["bbarFromH"]);
         if (debug_verbosity >= 2)
             cout << "Setting non-top objects" << endl;
-        vector<XYZTLorentzVector> nonTopObjects;
+        vector<TLorentzVector> nonTopObjects;
         vector<double> nonTopObjectPts;
         vector<double> nonTopObjectEtas;
         vector<double> nonTopObjectPhis;
@@ -508,7 +516,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
             nonTopObjectEtas.push_back( particle.Eta() );
             nonTopObjectPhis.push_back( particle.Phi() );
             nonTopObjectMs.push_back( particle.M() );
-            nonTopObjectPtWidths.push_back(sqrt(particle.pt()));
+            nonTopObjectPtWidths.push_back(sqrt(particle.Pt()));
             nonTopObjectEtaWidths.push_back(0.01);
             nonTopObjectPhiWidths.push_back(0.01);
         }
@@ -533,7 +541,7 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         Fill_struct(evh, nonTopObjectPts, nonTopObjectEtas, nonTopObjectPhis, nonTopObjectMs,
                 nonTopObjectPtWidths, nonTopObjectEtaWidths, nonTopObjectPhiWidths);
 
-        topEventMinimizer ev(evh.bigstruct);
+        topEventMinimizer ev(evh.bigstruct, debug_verbosity);
 
         /*topEventMinimizer ev(nonTopObjects, nonTopObjectPtWidths,
                              nonTopObjectEtaWidths, nonTopObjectPhiWidths, mTop,
@@ -724,61 +732,171 @@ void topReconstructionFromLHE::Fill_struct(handleEvent &evh,
         const auto b = evh.smearedParticles["bottom"];
         const auto al = evh.smearedParticles["antiLepton"]; 
         //top_sys leptonic_topsys();
-        evh.bigstruct.tops.push_back( top_system(1, b->Pt(), b->Eta(), b->Phi(), b->E(),
+        /*evh.bigstruct.tops.push_back( top_system(1, b->Pt(), b->Eta(), b->Phi(), b->E(),
                                 sqrt(b->Pt()), sigmaEtaJet, sigmaPhiJet,
                                 al->Pt(), al->Eta(), al->Phi(), al->E(),
+                                sigmaPtLep, sigmaEtaLep, sigmaPhiLep, 
+                                mTop, sigmaMTop, mW, sigmaMW) );*/
+
+        evh.bigstruct.tops.push_back( new top_system(1, b->Pt(), b->Eta(), b->Phi(), b->M(),
+                                sqrt(b->Pt()), sigmaEtaJet, sigmaPhiJet,
+                                al->Pt(), al->Eta(), al->Phi(), al->M(),
                                 sigmaPtLep, sigmaEtaLep, sigmaPhiLep, 
                                 mTop, sigmaMTop, mW, sigmaMW) );
 
         const auto bbar = evh.smearedParticles["antiBottom"];
         const auto Wq1 = evh.smearedParticles["qFromW"];
         const auto Wq2 = evh.smearedParticles["qbarFromW"];
+        //cout << "Wq2 " << Wq2->Pt() << " " << Wq2->Eta() << " " << Wq2->Phi() << " " << Wq2->E() << endl;
         //top_sys hadronic_topsys();
-        evh.bigstruct.tops.push_back( top_system(0, bbar->Pt(), bbar->Eta(), bbar->Phi(), bbar->E(),
+        evh.bigstruct.tops.push_back( new top_system(0, bbar->Pt(), bbar->Eta(), bbar->Phi(), bbar->M(),
                           sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
-                          Wq1->Pt(), Wq1->Eta(), Wq1->Phi(), Wq1->E(),
+                          Wq1->Pt(), Wq1->Eta(), Wq1->Phi(), Wq1->M(),
                           sqrt(Wq1->Pt()), sigmaEtaJet, sigmaPhiJet, 
                           mTop, sigmaMTop, mW, sigmaMW,     
-                          Wq2->Pt(), Wq2->Eta(), Wq2->Phi(), Wq2->E(),
+                          Wq2->Pt(), Wq2->Eta(), Wq2->Phi(), Wq2->M(),
                           sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet) );
+
     }
 
     if (evh.leptonFlag == true) {
         const auto b = evh.smearedParticles["bottom"];
         const auto Wq1 = evh.smearedParticles["qFromW"];
         const auto Wq2 = evh.smearedParticles["qbarFromW"];
-        evh.bigstruct.tops.push_back( top_system(0, b->Pt(), b->Eta(), b->Phi(), b->E(),
+        cout << "Wq2 " << Wq2->Pt() << " " << Wq2->Eta() << " " << Wq2->Phi() << " " << Wq2->E() << endl;
+        evh.bigstruct.tops.push_back( new top_system(0, b->Pt(), b->Eta(), b->Phi(), b->M(),
                           sqrt(b->Pt()), sigmaEtaJet, sigmaPhiJet,
+                          Wq1->Pt(), Wq1->Eta(), Wq1->Phi(), Wq1->M(),
+                          sqrt(Wq1->Pt()), sigmaEtaJet, sigmaPhiJet, 
+                          mTop, sigmaMTop, mW, sigmaMW,     
+                          Wq2->Pt(), Wq2->Eta(), Wq2->Phi(), Wq2->M(),
+                          sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet) );
+
+        const auto bbar = evh.smearedParticles["antiBottom"];
+        const auto l = evh.smearedParticles["lepton"];
+        evh.bigstruct.tops.push_back( new top_system(1, bbar->Pt(), bbar->Eta(), bbar->Phi(), bbar->M(),
+                                sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
+                                l->Pt(), l->Eta(), l->Phi(), l->M(),
+                                sigmaPtLep, sigmaEtaLep, sigmaPhiLep, 
+                                mTop, sigmaMTop, mW, sigmaMW) );
+
+    }
+
+    //nontop_system nontops( nontop_pts, nontop_etas, nontop_phis, nontop_ms,
+    //        nontop_ptwidths, nontop_etawidths, nontop_phiwidths);
+
+    //evh.bigstruct.nontopsvec.push_back( nontops );
+    //evh.bigstruct.nontops_ptr = &( evh.bigstruct.nontopsvec.at(0) );
+
+    evh.bigstruct.nontops_ptr = new nontop_system( nontop_pts, nontop_etas, nontop_phis, nontop_ms,
+            nontop_ptwidths, nontop_etawidths, nontop_phiwidths);
+
+
+    //nontop_system nontopstemp( nontop_pts, nontop_etas, nontop_phis, nontop_ms,
+    //        nontop_ptwidths, nontop_etawidths, nontop_phiwidths);
+//    nontops = nontop_system( nontop_pts, nontop_etas, nontop_phis, nontop_ms,
+//      nontop_ptwidths, nontop_etawidths, nontop_phiwidths);
+    //nontops = nontopstemp;
+    //cout << "TESTTTTT nontop_pts at 0 = " << nontops.input.jet_pt.at(0) <<endl;
+    //evh.bigstruct.nontops_ptr = &nontops;
+    //evh.bigstruct.nontops = nontops;
+
+/*    cout << "TESTTTTTT nontop_ptr " << evh.bigstruct.nontops_ptr->input.jet_pt.at(0) << endl;
+    //evh.bigstruct.nontops.jet_pts.at(0
+
+    cout << "size = " << evh.bigstruct.nontops_ptr->best_innermost_params.jet_dif_px.size() << endl;
+    //nontop_system &test_nontops = *(evh.bigstruct.nontops_ptr);
+    //cout << "test_nontops n_obj = " << test_nontops.input.n_objs << endl;
+    //test_nontops.best_innermost_params.jet_dif_px.at(0) = 26.4;
+    cout << "nontops_ptr jet_dif_px at 0= " << evh.bigstruct.nontops_ptr->best_innermost_params.jet_dif_px.at(0) << endl;
+    //cout << "pointer = " << evh.bigstruct.nontops_ptr << endl;
+    //cout << "address = " << &(evh.bigstruct.nontopsvec.at(0)) <<endl;
+
+    cout << evh.smearedParticles["bottom"]->Pt() << endl;
+    cout << evh.smearedParticles["antiBottom"]->Pt() << endl;
+    cout << evh.bigstruct.tops.at(0)->input.b_pt << endl;
+    cout << evh.bigstruct.tops.at(1)->input.b_pt << endl;
+
+    evh.bigstruct.tops.at(0)->vars.b_delta_pt = 2.1;
+    cout << "topr calc " << evh.bigstruct.tops.at(0)->calc.b_pt() << endl;
+
+    cout << "topr test " << evh.bigstruct.tops.at(0)->testt.b_ptt() << endl;
+    cout << "topr test " << evh.bigstruct.tops.at(0)->testt.b_ptt() << endl;
+    cout << "topr test " << evh.bigstruct.tops.at(0)->testt.b_pttt() << endl;
+    evh.bigstruct.tops.at(0)->testvar = 2.3;
+    cout << "topr test2 " << evh.bigstruct.tops.at(0)->testt.b_pttt() << endl;
+   
+    cout << "nontops " << evh.bigstruct.nontops_ptr->input.jet_pt.at(0) << endl;    
+    //evh.bigstruct.nontops_ptr->calc.jet_px_dif_given.at(0) = 12.2;
+    cout << "nontops "<< evh.bigstruct.nontops_ptr->calc.jet_px_orig.at(0) << endl;
+    cout << "nontops "<< evh.bigstruct.nontops_ptr->calc.jet_py_orig.at(0) << endl;*/
+
+    /*cout << "nontops " << evh.bigstruct.nontopsvec.at(0).input.jet_pt.at(0) << endl;    
+    //evh.bigstruct.nontops_ptr->calc.jet_px_dif_given.at(0) = 12.2;
+    cout << "nontops "<< evh.bigstruct.nontopsvec.at(0).calc.jet_px_orig.at(0) << endl;
+    cout << "nontops "<< evh.bigstruct.nontopsvec.at(0).calc.jet_py_orig.at(0) << endl;*/
+
+/*        const auto b = evh.smearedParticles["bottom"];
+        const auto al = evh.smearedParticles["antiLepton"]; 
+        const auto bbar = evh.smearedParticles["antiBottom"];
+        const auto Wq1 = evh.smearedParticles["qFromW"];
+        const auto Wq2 = evh.smearedParticles["qbarFromW"];
+
+        top_system testtopsys( top_system(0, bbar->Pt(), bbar->Eta(), bbar->Phi(), bbar->E(),
+                          sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
                           Wq1->Pt(), Wq1->Eta(), Wq1->Phi(), Wq1->E(),
                           sqrt(Wq1->Pt()), sigmaEtaJet, sigmaPhiJet, 
                           mTop, sigmaMTop, mW, sigmaMW,     
                           Wq2->Pt(), Wq2->Eta(), Wq2->Phi(), Wq2->E(),
                           sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet) );
 
-        const auto bbar = evh.smearedParticles["antiBottom"];
-        const auto l = evh.smearedParticles["lepton"];
-        evh.bigstruct.tops.push_back( top_system(1, bbar->Pt(), bbar->Eta(), bbar->Phi(), bbar->E(),
-                                sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
-                                l->Pt(), l->Eta(), l->Phi(), l->E(),
-                                sigmaPtLep, sigmaEtaLep, sigmaPhiLep, 
-                                mTop, sigmaMTop, mW, sigmaMW) );
+        top_system *testtest = new top_system(top_system(0, bbar->Pt(), bbar->Eta(), bbar->Phi(), bbar->E(),
+                          sqrt(bbar->Pt()), sigmaEtaJet, sigmaPhiJet,
+                          Wq1->Pt(), Wq1->Eta(), Wq1->Phi(), Wq1->E(),
+                          sqrt(Wq1->Pt()), sigmaEtaJet, sigmaPhiJet, 
+                          mTop, sigmaMTop, mW, sigmaMW,     
+                          Wq2->Pt(), Wq2->Eta(), Wq2->Phi(), Wq2->E(),
+                          sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet) );
 
-    }
+*/
+    //top_system testtopsys(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25);
+/*    cout <<"TOPR  test"<< endl;
+    cout << testtopsys.input.b_pt << endl;
+    testtopsys.vars.b_delta_pt = 20;
+    testtopsys.testvar = 2.3;
+    cout << testtopsys.calc.b_pt() << endl;
+    cout << testtopsys.testt.b_ptt() << endl;
+    cout << testtopsys.testt.b_pttt() << endl;*/
 
-    nontop_system nontops( nontop_pts, nontop_etas, nontop_phis, nontop_ms,
-            nontop_ptwidths, nontop_etawidths, nontop_phiwidths);
-    cout << "TESTTTTT nontop_pts at 0 = " << nontops.input.jet_pt.at(0) <<endl;
-    evh.bigstruct.nontops_ptr = &nontops;
-    //evh.bigstruct.nontops = nontops;
+/*    vector <top_system> topvec;
+    topvec.clear();
+    topvec.push_back(testtopsys);
+    cout <<"TOPR  test"<< endl;
+    cout << topvec.at(0).input.b_pt << endl;
+    topvec.at(0).vars.b_delta_pt = 20;
+    topvec.at(0).testvar = 2.3;
+    cout << topvec.at(0).vars.b_delta_pt << endl;
+    cout << topvec.at(0).testvar << endl;
+    cout <<"now calc" << endl;
+    cout << topvec.at(0).calc.b_pt() << endl;
+    cout << topvec.at(0).testt.b_ptt() << endl;
+    cout << topvec.at(0).testt.b_pttt() << endl;
 
-    cout << evh.bigstruct.nontops_ptr->input.jet_pt.at(0) << endl;
-    //evh.bigstruct.nontops.jet_pts.at(0
+    vector <top_system* > topvecptr;
+    topvecptr.clear();
+    topvecptr.push_back(testtest);
+    cout <<"TOPR  test"<< endl;
+    cout << topvecptr.at(0)->input.b_pt << endl;
+    topvecptr.at(0)->vars.b_delta_pt = 20;
+    topvecptr.at(0)->testvar = 2.3;
+    cout << topvecptr.at(0)->vars.b_delta_pt << endl;
+    cout << topvecptr.at(0)->testvar << endl;
+    cout <<"now calc" << endl;
+    cout << topvecptr.at(0)->calc.b_pt() << endl;
+    cout << topvecptr.at(0)->testt.b_ptt() << endl;
+    cout << topvecptr.at(0)->testt.b_pttt() << endl;*/
 
-    cout << evh.smearedParticles["bottom"]->Pt() << endl;
-    cout << evh.smearedParticles["antiBottom"]->Pt() << endl;
-    cout << evh.bigstruct.tops.at(0).input.b_pt << endl;
-    cout << evh.bigstruct.tops.at(1).input.b_pt << endl;
-
+    cout << "done fill struct" << endl;
     //bigstruct.tops.push_back( &
 }
 
@@ -899,36 +1017,36 @@ void topReconstructionFromLHE::Loop_get_results_SM(topEventMinimizer &ev, handle
     evh.chiSquareds["total"] = ev.get_best_total_chi2();
     evh.chiSquareds["qbarFromW"] = ev.get_best_total_had_chi2();
 
-    evh.chiSquareds["top_topMass"] = evh.bigstruct.tops.at(0).best_outer_params.mTop_chi2;
-    evh.chiSquareds["antiTop_topMass"] = evh.bigstruct.tops.at(1).best_outer_params.mTop_chi2;
-    evh.chiSquareds["bottom"] = evh.bigstruct.tops.at(0).best_outer_params.b_chi2;
-    evh.chiSquareds["antiBottom"] = evh.bigstruct.tops.at(1).best_outer_params.b_chi2;
-    evh.chiSquareds["Wplus_Wmass"] = evh.bigstruct.tops.at(0).best_outer_params.mW_chi2;
-    evh.chiSquareds["Wminus_Wmass"] = evh.bigstruct.tops.at(1).best_outer_params.mW_chi2;
+    evh.chiSquareds["top_topMass"] = evh.bigstruct.tops.at(0)->best_outer_params.mTop_chi2;
+    evh.chiSquareds["antiTop_topMass"] = evh.bigstruct.tops.at(1)->best_outer_params.mTop_chi2;
+    evh.chiSquareds["bottom"] = evh.bigstruct.tops.at(0)->best_outer_params.b_chi2;
+    evh.chiSquareds["antiBottom"] = evh.bigstruct.tops.at(1)->best_outer_params.b_chi2;
+    evh.chiSquareds["Wplus_Wmass"] = evh.bigstruct.tops.at(0)->best_outer_params.mW_chi2;
+    evh.chiSquareds["Wminus_Wmass"] = evh.bigstruct.tops.at(1)->best_outer_params.mW_chi2;
 
     if (evh.leptonFlag == 0) {
-        evh.chiSquareds["leptonicTopMass"] = evh.bigstruct.tops.at(0).best_outer_params.mTop_chi2;
-        evh.chiSquareds["hadronicTopMass"] = evh.bigstruct.tops.at(1).best_outer_params.mTop_chi2;
-        evh.chiSquareds["leptonicBottom"] = evh.bigstruct.tops.at(0).best_outer_params.b_chi2;
-        evh.chiSquareds["hadronicBottom"] = evh.bigstruct.tops.at(1).best_outer_params.b_chi2;
-        evh.chiSquareds["leptonicWMass"] = evh.bigstruct.tops.at(0).best_outer_params.mW_chi2;
-        evh.chiSquareds["hadronicWMass"] = evh.bigstruct.tops.at(1).best_outer_params.mW_chi2;
-        evh.chiSquareds["qFromW"] = evh.bigstruct.tops.at(1).best_outer_params.Wd1_chi2;
-        evh.chiSquareds["lepton"] = evh.bigstruct.tops.at(0).best_outer_params.Wd1_chi2;
+        evh.chiSquareds["leptonicTopMass"] = evh.bigstruct.tops.at(0)->best_outer_params.mTop_chi2;
+        evh.chiSquareds["hadronicTopMass"] = evh.bigstruct.tops.at(1)->best_outer_params.mTop_chi2;
+        evh.chiSquareds["leptonicBottom"] = evh.bigstruct.tops.at(0)->best_outer_params.b_chi2;
+        evh.chiSquareds["hadronicBottom"] = evh.bigstruct.tops.at(1)->best_outer_params.b_chi2;
+        evh.chiSquareds["leptonicWMass"] = evh.bigstruct.tops.at(0)->best_outer_params.mW_chi2;
+        evh.chiSquareds["hadronicWMass"] = evh.bigstruct.tops.at(1)->best_outer_params.mW_chi2;
+        evh.chiSquareds["qFromW"] = evh.bigstruct.tops.at(1)->best_outer_params.Wd1_chi2;
+        evh.chiSquareds["lepton"] = evh.bigstruct.tops.at(0)->best_outer_params.Wd1_chi2;
         evh.chiSquareds["lepton_or_antilepton"] =
-            evh.bigstruct.tops.at(0).best_outer_params.Wd1_chi2;
+            evh.bigstruct.tops.at(0)->best_outer_params.Wd1_chi2;
 
     } else if (evh.leptonFlag == 1) {
-        evh.chiSquareds["leptonicTopMass"] = evh.bigstruct.tops.at(1).best_outer_params.mTop_chi2;
-        evh.chiSquareds["hadronicTopMass"] = evh.bigstruct.tops.at(0).best_outer_params.mTop_chi2;
-        evh.chiSquareds["leptonicBottom"] = evh.bigstruct.tops.at(1).best_outer_params.b_chi2;
-        evh.chiSquareds["hadronicBottom"] = evh.bigstruct.tops.at(0).best_outer_params.b_chi2;
-        evh.chiSquareds["leptonicWMass"] = evh.bigstruct.tops.at(1).best_outer_params.mW_chi2;
-        evh.chiSquareds["hadronicWMass"] = evh.bigstruct.tops.at(0).best_outer_params.mW_chi2;
-        evh.chiSquareds["qFromW"] = evh.bigstruct.tops.at(0).best_outer_params.Wd1_chi2;
-        evh.chiSquareds["antiLepton"] = evh.bigstruct.tops.at(1).best_outer_params.Wd1_chi2;
+        evh.chiSquareds["leptonicTopMass"] = evh.bigstruct.tops.at(1)->best_outer_params.mTop_chi2;
+        evh.chiSquareds["hadronicTopMass"] = evh.bigstruct.tops.at(0)->best_outer_params.mTop_chi2;
+        evh.chiSquareds["leptonicBottom"] = evh.bigstruct.tops.at(1)->best_outer_params.b_chi2;
+        evh.chiSquareds["hadronicBottom"] = evh.bigstruct.tops.at(0)->best_outer_params.b_chi2;
+        evh.chiSquareds["leptonicWMass"] = evh.bigstruct.tops.at(1)->best_outer_params.mW_chi2;
+        evh.chiSquareds["hadronicWMass"] = evh.bigstruct.tops.at(0)->best_outer_params.mW_chi2;
+        evh.chiSquareds["qFromW"] = evh.bigstruct.tops.at(0)->best_outer_params.Wd1_chi2;
+        evh.chiSquareds["antiLepton"] = evh.bigstruct.tops.at(1)->best_outer_params.Wd1_chi2;
         evh.chiSquareds["lepton_or_antilepton"] =
-            evh.bigstruct.tops.at(1).best_outer_params.Wd1_chi2;
+            evh.bigstruct.tops.at(1)->best_outer_params.Wd1_chi2;
     }
 
 
