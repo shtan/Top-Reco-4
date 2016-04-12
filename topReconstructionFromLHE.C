@@ -9,10 +9,10 @@ int main()
     t.debug_verbosity = 1;
     //t.Loop("output_files", 0, 1, 1, 10);
     
-    //t.Loop("testoutput", 0, 10, 0, 10);
+    t.Loop("testoutput", 0, 10, 0, 10);
 
 //     t.Plot("plots");
-    t.Print();
+    //t.Print();
 /*
     top_system foxtrot(26);
     //foxtrot.input.b_px = 5;

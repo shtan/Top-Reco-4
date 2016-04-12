@@ -559,6 +559,7 @@ void topEventMinimizer::printTopConstituents()
         cout << "This is top number " << iTop + 1 << endl;
         (*it).printTopConstituents();
         (*it).printWDaughter2();
+        (*it).printChiSquareInfo();
     }
 }
 
@@ -600,12 +601,38 @@ void topEventMinimizer::checkRecoil_after_fit()
 
 void topEventMinimizer::printNonTopObjects()
 {
+    cout << "input objects: " << endl;
     for (int iObj = 0; iObj < bigstruct.nontops_ptr->input.n_objs; iObj++) {
         cout << "Light jet " << iObj + 1
              << "\npt = " << nontops.input.jet_pt.at(iObj)
              << "\neta = " << nontops.input.jet_eta.at(iObj)
              << "\nphi = " << nontops.input.jet_phi.at(iObj) << endl;
+        cout << "\npx = " << nontops.calc.jet_px_orig.at(iObj)
+             << "\npy = " << nontops.calc.jet_py_orig.at(iObj)
+             << "\npz = " << nontops.calc.jet_pz_orig.at(iObj) << endl;
     }
+
+    cout << "best outer objects: " << endl;
+    nontops.calc.jet_dif_px_given = nontops.best_outer_params.jet_dif_px;
+    nontops.calc.jet_dif_py_given = nontops.best_outer_params.jet_dif_py;
+    nontops.calc.jet_dif_pz_given = nontops.best_outer_params.jet_dif_pz;
+    double sumPx = 0;
+    double sumPy = 0;
+    for (int iObj = 0; iObj < bigstruct.nontops_ptr->input.n_objs; iObj++) {
+        cout << "Light jet " << iObj + 1
+             << "\npx = " << nontops.calc.jet_vec_new().at(iObj).Px()
+             << "\npy = " << nontops.calc.jet_vec_new().at(iObj).Py()
+             << "\npz = " << nontops.calc.jet_vec_new().at(iObj).Pz() << endl;
+        sumPx += nontops.calc.jet_vec_new().at(iObj).Px();
+        sumPy += nontops.calc.jet_vec_new().at(iObj).Py();
+ 
+    }
+
+    cout << "sum Px and Py of best outer objects: " << endl;
+    cout << "sum Px = " << sumPx;
+    cout << "sum Py = " << sumPy;
+
+
     cout << "recoil px = " << recoil_px(bigstruct) << endl;
     cout << "recoil py = " << recoil_py(bigstruct) << endl;
 }
@@ -1135,11 +1162,11 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 
 void topEventMinimizer::minimizeTotalChiSquare()
 {
-    if (debug_verbosity >= 2)
+    if (debug_verbosity >= 2){
         cout << "minimizeTotalChiSquare" << endl;
-
-    printTopConstituents();
-    printNonTopObjects();
+        //printTopConstituents();
+        //printNonTopObjects();
+    }
 
     //     std::cout<<"at min"<<std::endl;
     const int nParameters = 7 * bigstruct.n_tops(); // 3 per b-jet + 3 per W daughter 1 + 1
@@ -1265,6 +1292,9 @@ void topEventMinimizer::setBestValues()
     nontops.calc.jet_dif_pz_given = nontops.best_outer_params.jet_dif_pz;
 
     printTopConstituents();
+    cout << "total top Px = " << total_top_px(bigstruct) << endl;
+    cout << "total top Py = " << total_top_py(bigstruct) << endl;
+
     printNonTopObjects();
     checkRecoil_after_fit();
 

@@ -68,7 +68,7 @@ struct top_system {
             const double b_px = b_vec.Px();
             const double b_py = b_vec.Py();
             const double b_pz = b_vec.Pz();
-            const double b_pe = b_vec.E();
+            const double b_e = b_vec.E();
             const double Wd1_px = Wd1_vec.Px();
             const double Wd1_py = Wd1_vec.Py();
             const double Wd1_pz = Wd1_vec.Pz();
@@ -719,7 +719,10 @@ struct big_struct{
         //The vector is created just as a trick to allow bigstruct to include a nontop_system object,
         //without initializing the nontop_system object right when bigstruct is initialized.
         vector< nontop_system > nontopsvec;
-        
+
+        double MET_px = 0;
+        double MET_py = 0;
+
         //nontop_system* nontops_ptr;
         //nontop_system& nontops = *nontops_ptr;
         //vector< nontop_system > nontops;
@@ -820,8 +823,9 @@ inline double recoil_px(big_struct & bigstruct){
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
         totalpx_orig += (*top)->input.total_px;
     }
+    totalpx_orig += bigstruct.MET_px;
 
-    return totalpx - totalpx_orig;
+    return -(totalpx - totalpx_orig);
 }
 
 inline double recoil_py(big_struct & bigstruct){
@@ -833,8 +837,9 @@ inline double recoil_py(big_struct & bigstruct){
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
         totalpy_orig += (*top)->input.total_py;
     }
+    totalpy_orig += bigstruct.MET_py;
 
-    return totalpy - totalpy_orig;
+    return -(totalpy - totalpy_orig);
 }
 
 inline double recoil_pz(big_struct & bigstruct){
@@ -847,7 +852,23 @@ inline double recoil_pz(big_struct & bigstruct){
         totalpz_orig += (*top)->input.total_pz;
     }
 
-    return totalpz - totalpz_orig;
+    return -(totalpz - totalpz_orig);
+}
+
+inline double total_top_px(big_struct & bigstruct){
+    double totalpx = 0;
+    for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
+        totalpx += (*top)->calc.total_px();
+    }
+    return totalpx;
+}
+
+inline double total_top_py(big_struct & bigstruct){
+    double totalpy = 0;
+    for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
+        totalpy += (*top)->calc.total_py();
+    }
+    return totalpy;
 }
 
 /*inline double print_top(const top_system & top){

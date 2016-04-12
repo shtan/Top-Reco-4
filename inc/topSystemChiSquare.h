@@ -219,6 +219,7 @@ class topSystemChiSquare
 
     void printTopConstituents();
     void printWDaughter2();
+    void printChiSquareInfo();
 };
 
 // void topSystemChiSquare::printTopInfo()

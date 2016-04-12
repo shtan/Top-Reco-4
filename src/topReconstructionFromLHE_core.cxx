@@ -587,6 +587,11 @@ void topReconstructionFromLHE::Loop(TString dir, const int whichLoop,
         outerMinStatus = ev.outerMinStatus;
         outerMinEdm = ev.outerMin_Edm;*/
 
+        //FIXME
+        innerMinStatus = evh.bigstruct.innerMinStatus;
+        outerMinStatus = evh.bigstruct.outerMinStatus;
+        outerMinEdm = evh.bigstruct.outerMin_Edm;
+
         // NEW Get best values
         if (debug_verbosity >= 2)
             cout << "Getting best values" << endl;
@@ -757,6 +762,10 @@ void topReconstructionFromLHE::Fill_struct(handleEvent &evh,
                           Wq2->Pt(), Wq2->Eta(), Wq2->Phi(), Wq2->M(),
                           sqrt(Wq2->Pt()), sigmaEtaJet, sigmaPhiJet) );
 
+        evh.bigstruct.MET_px = evh.smearedParticles["neutrino"]->Px();
+        evh.bigstruct.MET_py = evh.smearedParticles["neutrino"]->Py();
+        cout << "MET HERE " << evh.bigstruct.MET_px << endl;
+
     }
 
     if (evh.leptonFlag == true) {
@@ -780,6 +789,10 @@ void topReconstructionFromLHE::Fill_struct(handleEvent &evh,
                                 sigmaPtLep, sigmaEtaLep, sigmaPhiLep, 
                                 mTop, sigmaMTop, mW, sigmaMW) );
 
+        evh.bigstruct.MET_px = evh.smearedParticles["antiNeutrino"]->Px();
+        evh.bigstruct.MET_py = evh.smearedParticles["antiNeutrino"]->Py();
+        cout << "MET HERE " << evh.bigstruct.MET_px << endl;
+ 
     }
 
     //nontop_system nontops( nontop_pts, nontop_etas, nontop_phis, nontop_ms,

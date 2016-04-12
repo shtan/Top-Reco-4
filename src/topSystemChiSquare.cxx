@@ -856,6 +856,39 @@ double topSystemChiSquare::getTopMassChiSquare()
     // return deltaMTop_*deltaMTop_;
 }*/
 
+void topSystemChiSquare::printChiSquareInfo()
+{
+    cout << "PRINTING CHI2 INFO" << endl;
+
+    cout << "leptonic = " << topsys.input.leptonic << endl;
+    cout
+        << "b-jet current: "
+        << "\npt = " << topsys.calc.b_pt() << "\neta = " << topsys.calc.b_eta() << "\nphi = " << topsys.calc.b_phi()
+        << "\nm  = " << topsys.calc.b_m()
+        << endl;
+
+    cout << "b-jet inputs: "
+        << "\npt = " << topsys.input.b_pt << "\neta = " << topsys.input.b_eta << "\nphi = " << topsys.input.b_phi
+        << "\nm  = " << topsys.input.b_m
+        << endl;
+
+    cout << "b-jet deltas: "
+        << "\npt = " << topsys.vars.b_delta_pt << "\neta = " << topsys.vars.b_delta_eta << "\nphi = " << topsys.vars.b_delta_phi
+        << endl;
+
+    cout << "b-jet widths: "
+        << "\npt = " << topsys.input.b_pt_width << "\neta = " << topsys.input.b_eta_width << "\nphi = " << topsys.input.b_phi_width
+        << endl;
+
+    cout << "b-jet chi2 = " << topsys.calc.b_chi2() << endl;
+
+/*    cout
+        << "first W daughter: "
+        << "\npx = " << topsys.calc.Wd1_px() << "\npy = " << topsys.calc.Wd1_py()
+        << "\npz = " << topsys.calc.Wd1_pz() << "\ne  = " << topsys.calc.Wd1_e()
+        << endl;*/
+
+}
 
 void topSystemChiSquare::printTopConstituents()
 {
@@ -870,6 +903,8 @@ void topSystemChiSquare::printTopConstituents()
     cout <<"calc " << topsys.calc.vars.b_delta_pt << endl;
     cout << "b pt = " << topsys.calc.b_pt()<< endl;*/
     //  cout << "In the derived class:" << endl;
+    cout << endl;
+    cout << "PRINTING TOP CONSTITUENTS" << endl;
     cout << "leptonic = " << topsys.input.leptonic << endl;
     cout
         << "b-jet: "
@@ -887,7 +922,7 @@ void topSystemChiSquare::printTopConstituents()
         //       sqrt(max(0.,topsys.calc.Wd1_e()*topsys.calc.Wd1_e()-topsys.calc.Wd1_px()*topsys.calc.Wd1_px()-topsys.calc.Wd1_py()*topsys.calc.Wd1_py()-topsys.calc.Wd1_pz()*topsys.calc.Wd1_pz()))
         << endl;
 
-    cout
+/*    cout
         << "second W daughter: "
         << "input values: "
         << "\npt = " << topsys.input.Wd2_pt << "\neta = " << topsys.input.Wd2_eta
@@ -898,7 +933,18 @@ void topSystemChiSquare::printTopConstituents()
         //       << "\nm  = " <<
         //       sqrt(max(0.,WDaughter2E_*WDaughter2E_-topsys.calc.Wd2_px()*topsys.calc.Wd2_px()-WDaughter2Py_*WDaughter2Py_-WDaughter2Pz_*WDaughter2Pz_))
         //       << "\nreco m = " << sqrt(reconstructed_WDaughter2Mass2_)
-        << endl;
+        << endl;*/
+
+    printWDaughter2();
+
+    cout << "total Px for this top = " << topsys.calc.total_px() << endl;
+    cout << "total Py for this top = " << topsys.calc.total_py() << endl;
+
+    cout << "input values: " << endl;
+    cout << "b_px = " << topsys.input.b_px << endl;
+    cout << "Wd1_px = " << topsys.input.Wd1_px << endl;
+    cout << "Wd2_px = " << topsys.input.Wd2_px << endl;
+    cout << "total px = " << topsys.input.total_px << endl;
 
     cout << "top mass: " << topsys.calc.mTop() << endl;
 
@@ -925,6 +971,10 @@ void topSystemChiSquare::printWDaughter2()
     cout << "Current second light quark: "
          << "\npt  = " << topsys.calc.Wd2_pt() << "\nphi = " << topsys.calc.Wd2_phi()
          << "\neta = " << topsys.calc.Wd2_eta() << endl;
+
+    cout << "\npx  = " << topsys.vars.Wd2_px << "\npy = " << topsys.vars.Wd2_py
+         << "\npz = " << topsys.vars.Wd2_pz << endl;
+
 
     cout << "theta is " << topsys.vars.theta << endl;
 
