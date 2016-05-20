@@ -36,51 +36,6 @@ lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
 
 }
 
-/*lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
-    vector<XYZTLorentzVector> &input_ps, vector<double> &jetPtWidths,
-    vector<double> &jetPhiWidths, vector<double> &jetEtaWidths, double &dx,
-    double &dy, double &dz, bool do3D)
-    : do3D_(do3D)
-{
-    input_.dx = &dx;
-    input_.dy = &dy;
-    input_.dz = &dz;
-    input_.ps = &input_ps;
-    input_.jetPtWidths = &jetPtWidths;
-    input_.jetPhiWidths = &jetPhiWidths;
-    input_.jetEtaWidths = &jetEtaWidths;
-    chi2_ = 0.;
-
-    Init_data(input_ps.size(), data_);
-
-    inverter3D_ = new TDecompLU(3);
-
-    checkSize(input_);
-    Eval_covariance(input_, data_);
-    Eval_cov_sum(data_);
-}*/
-
-/*lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
-    const unsigned int nObjects, double &dx, double &dy, double &dz, bool do3D)
-    : do3D_(do3D)
-{
-    input_.dx = &dx;
-    input_.dy = &dy;
-    input_.dz = &dz;
-    chi2_ = 0.;
-
-    Init_data(nObjects, data_);
-
-    inverter3D_ = new TDecompLU(3);
-    // cout << "Light jet chi square constructor" << endl;
-    // cout << "dx is " << dx_ << endl;
-    // cout << "dy is " << dy_ << endl;
-    // cout << "dz is " << dz_ << endl;
-    // cout << "dxCheck is " << dxCheck_ << endl;
-    // cout << "dyCheck is " << dyCheck_ << endl;
-    // cout << "dzCheck is " << dzCheck_ << endl;
-    // cout << "End light jet chi square constructor" << endl;
-}*/
 
 inline void lightJetChiSquareMinimumSolver::Init_data(recoil_minimizer_data &da)
 {
@@ -110,44 +65,12 @@ inline void lightJetChiSquareMinimumSolver::Init_data(recoil_minimizer_data &da)
     }
 }
 
-/*lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
-    const lightJetChiSquareMinimumSolver &other)
-    : do3D_(other.do3D_)
-{
-    input_ = other.input_;
-    data_ = other.data_;
-    chi2_ = other.chi2_;
-
-    inverter3D_ = new TDecompLU(3);
-    *inverter3D_ = *(other.inverter3D_);
-}*/
 
 lightJetChiSquareMinimumSolver::~lightJetChiSquareMinimumSolver()
 {
     delete inverter3D_;
 }
 
-// void lightJetChiSquareMinimumSolver::setRecoil(double x, double y, double z)
-//{
-//  cout << "dx is " << dx_ << endl;
-//  cout << "dy is " << dy_ << endl;
-//  cout << "dz is " << dz_ << endl;
-//  cout << "dxCheck is " << dxCheck_ << endl;
-//  cout << "dyCheck is " << dyCheck_ << endl;
-//  cout << "dzCheck is " << dzCheck_ << endl;
-//
-//  //cout << "Setting recoil" << endl;
-////  dxCheck_=x;
-////  dyCheck_=y;
-////  if(do3D_) dzCheck_=z;
-//
-////  cout << "dx is " << dx_ << endl;
-////  cout << "dy is " << dy_ << endl;
-////  cout << "dz is " << dz_ << endl;
-////  cout << "dxCheck is " << dxCheck_ << endl;
-////  cout << "dyCheck is " << dyCheck_ << endl;
-////  cout << "dzCheck is " << dzCheck_ << endl;
-//}
 
 void lightJetChiSquareMinimumSolver::setupEquations()
 {
@@ -205,120 +128,6 @@ void lightJetChiSquareMinimumSolver::checkSize()
     return;
 }
 
-// void lightJetChiSquareMinimumSolver::Eval_covariance(
-//     const recoil_minimizer_input &in, recoil_minimizer_data &da)
-// {
-// //     if (do3D_)
-// //         return Eval_covariance_3D(in, da);
-// //     return Eval_covariance_2D(in, da);
-//     return Eval_covariance_3D(in, da);
-//
-//     // old part
-//     if (debug)
-//         cout << "lightJetChiSquareMinimumSolver::Eval_covariance\n";
-//     for (unsigned int i = 0; i < da.n_ps; i++) {
-//         if (debug) {
-//             cout << "Setting cartesian widths:" << endl;
-//             cout << "jetPtWidth = " << (*in.jetPtWidths)[i] << endl;
-//             cout << "jetPhiWidth = " << (*in.jetPhiWidths)[i] << endl;
-//             cout << "jetEtaWidth = " << (*in.jetEtaWidths)[i] << endl;
-//         }
-//
-//         /*      double halfPt2 = 0.5*jets[i].Pt()*jets[i].Pt();
-//         //      double sigmaPt2 = log(1+jetPtWidths[i]);//WHY?
-//               double sigmaPt2 = jetPtWidths[i];//try just setting it exactly
-//         equal to what we put in
-//               sigmaPt2*=sigmaPt2;
-//               double sigmaPhi2 = jetPhiWidths[i]*jetPhiWidths[i];
-//               double sigmaEta = jetEtaWidths[i];
-//               double sigmaEta2 = sigmaEta*sigmaEta;
-//
-//               double expSigmaPt2 = exp(sigmaPt2);
-//               double expTwoSigmaPt2 = expSigmaPt2*expSigmaPt2;
-//               double expMinusSigmaPhi2 = exp(-sigmaPhi2);
-//               double expMinusTwoSigmaPhi2 =
-//               expMinusSigmaPhi2*expMinusSigmaPhi2;
-//               double expMinusSigmaPhi2Over2 = exp(-0.5*sigmaPhi2);
-//               double expSigmaEta2 = exp(sigmaEta2);
-//               double expTwoSigmaEta2 = expSigmaEta2*expSigmaEta2;
-//              double expSigmaEta2OverTwo = exp(-0.5*sigmaEta2);//Should really
-//         have a minus in the name
-//               double cosPhi = cos(jets[i].Phi());
-//               double sinPhi = sin(jets[i].Phi());
-//               double cosTwoPhi = cos(2.*jets[i].Phi());
-//               double sinTwoPhi = sin(2.*jets[i].Phi());
-//               double coshTwoEta = cosh(2.*jets[i].Eta());
-//               double sinhEta  = sinh(jets[i].Eta());
-//               double sinhEta2 = sinhEta*sinhEta;
-//               jetPxWidths2_[i]   =  halfPt2* ( expTwoSigmaPt2 * (1 +
-//         cosTwoPhi*expMinusTwoSigmaPhi2)
-//                               - expSigmaPt2 * (1 + cosTwoPhi) *
-//         expMinusSigmaPhi2) ;
-//               jetPyWidths2_[i]   =  halfPt2* ( expTwoSigmaPt2 * (1 -
-//         cosTwoPhi*expMinusTwoSigmaPhi2)
-//                               - expSigmaPt2 * (1 - cosTwoPhi) *
-//         expMinusSigmaPhi2) ;
-//               jetPzWidths2_[i]   =  halfPt2* ( expTwoSigmaPt2 *
-//         (expTwoSigmaEta2*coshTwoEta - 1) //FIXMEis there a typo here?
-//         expMinusTwoSigmaEta instead?
-//                               - 2.*expSigmaPt2*expSigmaEta2*sinhEta2 );
-//               jetPxPyWidths_[i] = halfPt2 * sinTwoPhi *( expTwoSigmaPt2
-//         *expMinusTwoSigmaPhi2
-//                                 - expSigmaPt2 * expMinusSigmaPhi2);
-//               jetPxPzWidths_[i] =
-//         2.*halfPt2*cosPhi*sinhEta*expSigmaEta2OverTwo*expMinusSigmaPhi2Over2
-//         * (
-//         expTwoSigmaPt2 - expSigmaPt2 );
-//               jetPyPzWidths_[i] =
-//         2.*halfPt2*sinPhi*sinhEta*expSigmaEta2OverTwo*expMinusSigmaPhi2Over2
-//         * (
-//         expTwoSigmaPt2 - expSigmaPt2 );
-//
-//               //Temp quick "fix" to try setting PxPy to square roots (or
-//         something like that) of the Px and Py
-//             double px_temp = jets[i].Pt()*cos(jets[i].Phi());
-//             double py_temp = jets[i].Pt()*sin(jets[i].Phi());
-//             jetPxWidths2_[i] = abs(px_temp);
-//             jetPyWidths2_[i] = abs(py_temp);
-//             jetPxPyWidths_[i] = sqrt(abs(px_temp*py_temp));
-//             cout<< "jetPxPyWidths is "<< jetPxPyWidths_[i];
-//             //jetPyPxWidths_[i] = jetPxPyWidths_[i];*/
-//
-// //         // newer version
-// //         const double Pt2 = pow((*in.ps)[i].Pt(), 2);
-// //         const double sigmaPt2 = pow((*in.jetPtWidths)[i], 2);
-// //         const double sigmaPhi2 = pow((*in.jetPhiWidths)[i], 2);
-// //         const double cosPhi = cos((*in.ps)[i].Phi());
-// //         const double sinPhi = sin((*in.ps)[i].Phi());
-// //         const double cosPhi2 = pow(cosPhi, 2);
-// //         const double sinPhi2 = pow(sinPhi, 2);
-// //         jetPxWidths2_[i] = sigmaPt2 * cosPhi2 + sigmaPhi2 * Pt2 * sinPhi2;
-// //         jetPyWidths2_[i] = sigmaPt2 * sinPhi2 + sigmaPhi2 * Pt2 * cosPhi2;
-// //         jetPxPyWidths_[i] =
-// //             sigmaPt2 * sinPhi * cosPhi - sigmaPhi2 * Pt2 * sinPhi *
-// cosPhi;
-// //         jetPzWidths2_[i] = 0;
-// //         jetPxPzWidths_[i] = 0;
-// //         jetPyPzWidths_[i] = 0;
-// //
-// //         if (debug) {
-// //             cout << "Calculating widths:\n"
-// //                  << "pt  is " << (*in.ps)[i].Pt() << " with width of "
-// //                  << (*in.jetPtWidths)[i] << "\n"
-// //                  << "phi is " << (*in.ps)[i].Phi() << " with width of "
-// //                  << (*in.jetPhiWidths)[i] << "\n"
-// //                  << "px  is " << (*in.ps)[i].Pt() * cos((*in.ps)[i].Phi())
-// //                  << " with width of " << sqrt(jetPxWidths2_[i]) << "\n"
-// //                  << "py  is " << (*in.ps)[i].Pt() * sin((*in.ps)[i].Phi())
-// //                  << " with width of " << sqrt(jetPyWidths2_[i]) << "\n"
-// //                  << "pxpy  width is " << sqrt(jetPxPyWidths_[i]) << "\n"
-// //                  << "correlation coefficient is "
-// //                  << jetPxPyWidths_[i] /
-// //                         (sqrt(jetPxWidths2_[i]) * sqrt(jetPyWidths2_[i]))
-// //                  << endl;
-// //         }
-//     }
-// }
 
 inline void lightJetChiSquareMinimumSolver::Eval_covariance(
     recoil_minimizer_data &da)
@@ -450,25 +259,5 @@ void lightJetChiSquareMinimumSolver::printResults()
     }
 }
 
-/*void lightJetChiSquareMinimumSolver::getChiSquare()
-{
-    calcMin();
-    //  vector<double>::iterator thisDeltaX = minDeltasX.begin();
-    //  double deltaXCheck(0.);
-    //  double deltaYCheck(0.);
-    //  for(vector<double>::iterator thisDeltaY = minDeltasY.begin();
-    //  thisDeltaY != minDeltasY.end(); thisDeltaX++, thisDeltaY++)
-    //    {
-    //      deltaXCheck+=*thisDeltaX;
-    //      deltaYCheck+=*thisDeltaY;
-    //    }
-    //  cout << "delta x = " << dx_ << " and delta x check = " << deltaXCheck <<
-    //  endl;
-    //  cout << "delta y = " << dy_ << " and delta y check = " << deltaYCheck <<
-    //  endl;
-    // cout<<"light jet get chi square"<<endl;
-    // cout<< "light jet chi2 = " << chi2_<<endl;
-    //return chi2_;
-}*/
 
 #endif
