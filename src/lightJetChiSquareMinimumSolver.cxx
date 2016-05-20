@@ -355,9 +355,11 @@ inline void lightJetChiSquareMinimumSolver::Eval_covariance(
         R[1][0] = sin(phi);
         R[1][1] = pT * cos(phi);
         R[1][2] = 0;
-        R[2][0] = tan(eta);
+        //R[2][0] = tan(eta);
+        R[2][0] = sinh(eta);
         R[2][1] = 0;
-        R[2][2] = pT * (1 + pow(tan(eta), 2));
+        //R[2][2] = pT * (1 + pow(tan(eta), 2));
+        R[2][2] = pT * cosh(eta);
         RT.Transpose(R);
 
         // tranform to cartesian coordinate system
