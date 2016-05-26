@@ -244,6 +244,7 @@ void WDaughterEllipseCalculator::WDaughterSolution()
         // called to propagate the changes to the top mass
 
         errorFlag_ = true;
+        topsys.vars.error_flag = true;
         Z2_ = 0;
 
         //      calcTopMassCorrection(); //calls to Wsurface and bJetEllipsoid
@@ -253,7 +254,11 @@ void WDaughterEllipseCalculator::WDaughterSolution()
     } else {
         // cout << "Z^2 is positive, no need to vary the top mass" << endl;
         errorFlag_ = false;
+        topsys.vars.error_flag = false;
     }
+
+    //topsys.vars.error_flag = errorFlag_;
+
     double Z = sqrt(Z2_);
 
     Htilde_[0][0] = Z / Omega_;

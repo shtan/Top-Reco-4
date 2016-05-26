@@ -256,10 +256,25 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
 
 
     //Calculate Wd2 momenta using ellipse method, given the theta that is being tried by minuit
-    for (auto it = topSysChiSqs_.begin(); it != topSysChiSqs_.end(); ++it){
+/*    for (int j=0; j < bigstruct.n_tops(); ++j){
         //(*it)->setupWDaughter2EllipsePart2();
+        if (  == true ){
+            return bigstruct.last_total_inner_chi2 + 0.1;
+        }
         (*it).calc_hperp_nperp();
         (*it).setEllipseAngle();
+    }*/
+
+    //Calculate Wd2 momenta using ellipse method, given the theta that is being tried by minuit
+    int jhere = 0;
+    for (auto it = topSysChiSqs_.begin(); it != topSysChiSqs_.end(); ++it){
+        //(*it)->setupWDaughter2EllipsePart2();
+        if ( bigstruct.tops.at(jhere)->vars.error_flag == true ){
+            return bigstruct.last_total_inner_chi2 + 0.1;
+        }
+        (*it).calc_hperp_nperp();
+        (*it).setEllipseAngle();
+        ++jhere;
     }
 
     //Calculate minimum non-top chisquare configuration for this theta
@@ -282,6 +297,8 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
 
         nontops.best_inner_params.chi2 = nontops.best_innermost_params.chi2;
     }
+
+    bigstruct.last_total_inner_chi2 = bigstruct.current_total_inner_chi2();
 
     //return innerChi2;
     return bigstruct.current_total_inner_chi2();
@@ -528,8 +545,15 @@ void topEventMinimizer::setBestValues()
     //in top_system and nontop_system structures in bigstruct,
     //so that their calculator functions can be used to calculate best-fit values of p, etc.
 
+    cout << "0" << endl;
+
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
+
+        cout << "0.5" << endl;
+
         (*top)->vars.b_delta_pt = (*top)->best_outer_params.b_delta_pt;
+
+        cout << "0.6" << endl;
         (*top)->vars.b_delta_eta = (*top)->best_outer_params.b_delta_eta;
         (*top)->vars.b_delta_phi = (*top)->best_outer_params.b_delta_phi;
         (*top)->vars.Wd1_delta_pt = (*top)->best_outer_params.Wd1_delta_pt;
@@ -545,10 +569,14 @@ void topEventMinimizer::setBestValues()
         (*top)->vars.delta_mW = (*top)->best_outer_params.delta_mW;
  
     }
+ 
+    cout << "1" << endl;
 
     nontops.calc.jet_dif_px_given = nontops.best_outer_params.jet_dif_px;
     nontops.calc.jet_dif_py_given = nontops.best_outer_params.jet_dif_py;
     nontops.calc.jet_dif_pz_given = nontops.best_outer_params.jet_dif_pz;
+
+    cout << "2" << endl;
 
     printTopConstituents();
     cout << "total top Px = " << total_top_px(bigstruct) << endl;

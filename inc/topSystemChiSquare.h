@@ -33,6 +33,7 @@ class topSystemChiSquare
 
     bool rangeFlag_;
 
+    //moved to public
     WDaughterEllipseCalculator WDaughter2Calc_;
     void resetWDaughter2();
 
@@ -43,6 +44,8 @@ class topSystemChiSquare
     topSystemChiSquare( commonstruct::top_system&, int& );
     
     virtual ~topSystemChiSquare();
+
+    //WDaughterEllipseCalculator WDaughter2Calc_;
 
     void preSetupWDaughter2Ellipse();
     void setupWDaughter2EllipsePart2();

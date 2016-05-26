@@ -160,6 +160,9 @@ struct top_system {
                 double delta_mTop_range_high = 0;
                 bool has_high_edge = 0;
 
+                //error flag to indicate if Z^2 < 0
+                bool error_flag = false;
+
         }; //END variables sub-structure
 
         variables vars;
@@ -339,6 +342,10 @@ struct top_system {
         }; //END best_inner_parameters definition
 
         best_inner_parameters best_inner_params;
+
+        //This is not to store the best parameters, rather the parameters from the last loop.
+        //Used so that if Z^2 < 0, we can have minuit "skip" this particular set of tried values
+        //best_inner_parameters last_inner_params;
 
         struct best_outer_parameters {
             best_outer_parameters() {}
@@ -736,6 +743,8 @@ struct big_struct{
         }*/
 
         //best_innermost_chi2() { return nontops.best_innermost_params.chi2; }
+
+        double last_total_inner_chi2;
 
         double current_total_hadronic_chi2() {
             double hadchi2 = 0;
