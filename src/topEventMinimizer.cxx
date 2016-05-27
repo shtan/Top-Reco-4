@@ -346,6 +346,11 @@ void topEventMinimizer::minimizeNonTopChiSquare()
         hasHighEdge = bigstruct.tops.at(iTop)->vars.has_high_edge;
         deltaMTopRangeLow = bigstruct.tops.at(iTop)->vars.delta_mTop_range_low;
         deltaMTopRangeHigh = min(bigstruct.tops.at(iTop)->vars.delta_mTop_range_high, maxConsideredChiSquareRoot_);
+
+        //test giving it full range of top mass
+        deltaMTopRangeLow = -30.;
+        deltaMTopRangeHigh = 30.;
+
         //(topSysChiSqs_.at(iTop))
         //    ->getTopMassDeltaRange(hasHighEdge, deltaMTopRangeLow,
         //                                 deltaMTopRangeHigh);
@@ -361,6 +366,9 @@ void topEventMinimizer::minimizeNonTopChiSquare()
             innerMin_->SetLimitedVariable(
                 iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, 0.1,
                 deltaMTopRangeLow, deltaMTopRangeHigh);
+            //cout << "HAS HIGH EDGE" << endl;
+            //cout << "low = " << deltaMTopRangeLow << endl;
+            //cout << "high = " << deltaMTopRangeHigh << endl;
         } else {
             // cout << "Current top mass delta is " << topMassDeltas_.at(iTop)
             // << endl;
@@ -368,6 +376,8 @@ void topEventMinimizer::minimizeNonTopChiSquare()
             innerMin_->SetLowerLimitedVariable(iPar, string(parName),
                                                bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, 0.1,
                                                deltaMTopRangeLow);
+            //cout << "HAS NO HIGH EDGE" << endl;
+            //cout << "low = " << deltaMTopRangeLow << endl;
         }
         iPar += 1;
     }
