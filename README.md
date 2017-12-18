@@ -1,4 +1,4 @@
-This repository contains a C++ implementation of a method to improve objects resolutions in events containing two top quarks.
+This repository contains a C++ implementation of a method to improve object resolutions in events containing two top quarks.
 
 This package is based on original code from Gala Kaufman and Luke Winstrom.  In this repo I have heavily restructured the code to make it more efficient and less error-prone.  I have also added additional functionality (results analysis, plotting).
 
