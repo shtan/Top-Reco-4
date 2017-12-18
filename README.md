@@ -23,21 +23,27 @@ The framework has been extended to consider either leptonic or hadronic top deca
 #### Methods of interest
 
 - preSetupEllipse() and setupEllipsePart2()
+
 Set the assumed top, W, and second W daughter masses and recalculate the different variables defined in the Betchart paper.
 
 - calcWDaughterEllipse()
+
 Calculate the second W daughter ellipse in the transverse plane px, py (Hperp).
 
 - calcExtendedWDaughterEllipse()
+
 Calculate the second W daughter ellipse in the extended representation px, py, pz (Nperp).
 
 - getExtendedWDaughterEllipse()
+
 Return Hperp.
 
 - getHomogeneousWDaughterEllipse()
+
 Return Nperp.
 
 - getWDaughterMomentum()
+
 Given a point on the second W daughter ellipse, defined by an angle theta, calculate the corresponding momentum (px, py, pz).
 
 
@@ -53,12 +59,15 @@ We can write and minimize a chi square variable representing the distance betwee
 #### Methods of interest
 
 - Eval_covariance
+
 Transform from polar (pT, phi, eta) to Cartesian widths (px, py, pz).  Once the light jet object collections have been set, calculate the global covariance matrix and invert it.
 
 - setupEquations
+
 Pass in the vectors of non-top object four-momenta and resolutions. Calls setCartesianWidths and calcSigmas.
 
 - calcMin
+
 Calculate the vector of deltas (corrections to the light jets) defined in Eq. C.7, i.e., calculate the B_i matrices and multiply by the displacement vector. From the vector of deltas, calculate the chi square. This method needs to be called only when the displacement vector changes.
 
 
@@ -77,12 +86,15 @@ One limitation of the Betchart paper is that solutions do not exist in the case 
 #### Methods of interest
 
 - preSetupWDaughter2Ellipse and setupWDaughter2EllipsePart2
+
 Calls the preSetupEllipse and setupEllipsePart2 methods of the WDaughterEllipseCalculator class. Allows to update the ellipse with each new step in the minimization.
 
 - calcWDaughter2Ellipse
+
 Calculates the ellipse matrix in both representations (Hperp, homogeneous and Nperp, extended). Since the extended representation involves inverting the Hperp matrix, care must be taken to ensure that it is invertible. This is equivalent to requiring Z^2>0, and so the method calcTopMassRange (see below) is first called.
 
 - calcTopMassRange
+
 Calculates the roots mTopEdge1 and mTopEdge 2 of a quadratic equation in mTop^2, then finds the range in which Z^2 is positive. Three cases must be considered:
 	1. Both roots are negative: only need to check whether Z^2 is positive in the range mTop>0.
 	2. One positive and one negative root: two intervals to check, [0; sqrt(mTopEdge2)] and [sqrt(mTopEdge2); +inf[.
@@ -103,12 +115,15 @@ Although in practice the code has been tested using two assumed tops, it can in 
 #### Methods of interest
 
 - findStartingValues
+
 Find starting values for the ellipse angles by looping around ellipses. At each point the sum of top momenta is recalculated and the non-top objects are set to recoil against it; the sum of the non-top (light jet) and hadronic chi squares is then computed. The values corresponding to the minimum are then used as a starting point for the inner minimizer.
 
 - minimizeNonTopChiSquare
+
 The inner minimizer parameters are the ellipse angles and top mass deltas (one each per top system). For each top system the top mass delta parameter is restricted in range by the edges computed in the topSystemChiSquare::calcTopMassRange method (see above).  The chi square to minimize is the sum of top mass, hadronic second W daughter, and non-top object chi squares.
 
 - minimizeTotalChiSquare
+
 The outer minimizer parameters are the b-jet pT, eta and phi deltas, the first W daughter pT, eta and phi deltas, and the W mass deltas (one each per top system). At each step in the minimization procedure, the second W daughter ellipses are recalculated using the updated b-jet and first W daughter momenta and W mass. Next the inner piece is calculated, ie, the inner minimization performed. The total chi square is defined as the sum of the minimum of the inner chi square at this outer step, and the sum of top system chi squares.
 
 
