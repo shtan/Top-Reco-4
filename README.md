@@ -1,6 +1,6 @@
 This repository contains a C++ implementation of a method to improve objects resolutions in events containing two top quarks.
 
-The original code was forked from galank (https://github.com/galank/TopReconstruction).  In this repo I have heavily restructured the code to make it more efficient and less error-prone.  I have also added additional functionality (results analysis, plotting).
+This package is based on original code from Gala Kaufman and Luke Winstrom.  In this repo I have heavily restructured the code to make it more efficient and less error-prone.  I have also added additional functionality (results analysis, plotting).
 
 This repo is no longer updated -- as of July 2016, using new version at https://github.com/shtan/ttH_framework.
 
